@@ -6,14 +6,14 @@
 int execute_assert_word(char * adr,char * val)
 { DEBUG_MSG("VALEUR A tester : %s à l'adresse %s ",val,adr);
     if(is_word_byte(val)==WORD)
-INFO_MSG("ASSERT WORLD à l'adresse %s par la valeur %d",adr,*val);
+INFO_MSG("ASSERT WORLD à l'adresse %s par la valeur %s",adr,val);
 	else WARNING_MSG("VALEUR DONNEE NON WORD");
 return 0;}
 
 int execute_assert_byte(char * adr,char * val)
 {   printf("\nBIP 1\n");
     if(is_word_byte(val)==BYTE)
-     INFO_MSG("ASSERT BYTE à l'adresse %s par la valeur %d",adr,*val);
+     INFO_MSG("ASSERT BYTE à l'adresse %s par la valeur %s",adr,*val);
 	else WARNING_MSG("VALEUR DONNEE NON BYTE");
 return 0;}
 
@@ -24,18 +24,18 @@ return 0;}
 
 
 
-int test_cmd_assert(interpreteur inter,char * wb,char * value,char * adr)
+int test_cmd_assert(interpreteur inter,char * wb,char ** value,char ** adr)
 {  DEBUG_MSG("DEBUT de la commande de TEST d'assert %s",wb);
     char * token = get_next_token(inter);
 	DEBUG_MSG("TOKEN ENTREE : %s",token);
     if(token==NULL) return PAS_DADRESSE_ENTREE;
 	
 	else if(is_hexa_v2(token)!=0) 
-    	{adr=strdup(token);
+    	{*adr=strdup(token);
         token=get_next_token(inter);
 	           DEBUG_MSG("ADRS RECONNUE PASSONS A LA VALEUR : %s",token);
 		if(token==NULL) return PAS_VALEUR_A_TESTER;
-        else value=strdup(token);
+        else *value=strdup(token);
         }
       
 	else return ADRS_NON_HEXA2;
@@ -117,7 +117,7 @@ char * adresse=NULL;
     {
         if(strcmp(token,"word")==0)
         {       DEBUG_MSG("TEST DES ARGUMENTS DE LA FONCTION ASSERT WORD");
-              verif=test_cmd_assert(inter,word,valeur,adresse);  
+              verif=test_cmd_assert(inter,word,&valeur,&adresse);  
               if(verif==CMD_ASSERT_WORD_OK) return execute_assert_word(adresse,valeur);
               else  erreur_cmd_assert(verif);
         }
@@ -135,7 +135,7 @@ char * adresse=NULL;
         }
         else if(strcmp(token,"byte")==0)
         {    DEBUG_MSG("TEST DES ARGUMENT DE LA FONCTION ASSERT BYTE"); 
-            verif=test_cmd_assert(inter,byte,valeur,adresse);
+            verif=test_cmd_assert(inter,byte,&valeur,&adresse);
                 if(verif==CMD_ASSERT_BYTE_OK) return execute_assert_byte(adresse,valeur);
                     else erreur_cmd_assert(verif);
         }
