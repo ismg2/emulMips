@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "get_type_token.h"
 
 /* la librairie readline */
 #include <readline/readline.h>
@@ -19,8 +20,7 @@
 /* taille max pour nos chaines de char */
 #define MAX_STR 1024
 
-// type de token  
-enum {UNKNOWN,HEXA,DECIMAL,OCTAL,WORD,BYTE};
+
 
 /*************************************************************\
 Valeur de retour speciales lorsqu'on pour la fonction
@@ -50,8 +50,6 @@ typedef struct {
 interpreteur init_inter(void);
 void del_inter(interpreteur inter);
 char* get_next_token(interpreteur inter);
-int is_hexa(char* chaine);
-int get_type(char* chaine);
 int _testcmd(int hexValue);
 int testcmd(interpreteur inter);
 int exitcmd(interpreteur inter);

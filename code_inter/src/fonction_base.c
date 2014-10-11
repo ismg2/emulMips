@@ -55,31 +55,7 @@ char* get_next_token(interpreteur inter) {
  *@param chaine le token à analyser
  *@return 0 si non-hexa, non null autrement
  */ 
-int is_hexa(char* chaine) {
-    int i;
-    return (chaine!=NULL && strlen(chaine)>2&& chaine[0]=='0' && chaine[1]=='x' && sscanf(chaine,"%x",&i)==1);
-}
 
-/**
- * retourne le type du token (fonction très incomplete)
- * @param chaine le token à analyser
- * @return un entier correspondant au type du token
- * 
- */
-int get_type(char* chaine) {
-    if (is_hexa_v2(chaine)!=0)
-        return HEXA;    
-    else if(is_decimal(chaine)!=0)
-        return DECIMAL;
-    else if(is_octal(chaine)!=0)
-        return OCTAL;
-    else if(is_byte(chaine)!=0)
-	return BYTE;
-    else if(is_word(chaine)!=0)
-	return WORD;
-
-   else return UNKNOWN;
-}
 
 /*************************************************************\
 Les commandes de l'émulateur.

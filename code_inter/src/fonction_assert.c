@@ -2,15 +2,18 @@
 #include "fonction_assert.h"
 
 
+
 int execute_assert_word(char * adr,char * val)
-{	if(get_type(val)!=WORD)
+{ DEBUG_MSG("VALEUR A tester : %s à l'adresse %s ",val,adr);
+    if(is_word_byte(val)==WORD)
 INFO_MSG("ASSERT WORLD à l'adresse %s par la valeur %d",adr,*val);
 	else WARNING_MSG("VALEUR DONNEE NON WORD");
 return 0;}
 
 int execute_assert_byte(char * adr,char * val)
-{if(get_type(val)!=BYTE)
-   INFO_MSG("ASSERT BYTE à l'adresse %s par la valeur %d",adr,*val);
+{   printf("\nBIP 1\n");
+    if(is_word_byte(val)==BYTE)
+     INFO_MSG("ASSERT BYTE à l'adresse %s par la valeur %d",adr,*val);
 	else WARNING_MSG("VALEUR DONNEE NON BYTE");
 return 0;}
 
@@ -140,7 +143,7 @@ char * adresse=NULL;
 
         else
         {  
-        WARNING_MSG(" Wrong argument given to command %s \n","disp");
+        WARNING_MSG(" Wrong argument given to command %s \n","assert");
         return 1;
         }    
         

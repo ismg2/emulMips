@@ -2,6 +2,7 @@
 #define _fonction_assert_h
 
 #include "fonction_token.h"
+#include "get_type_token.h"
 
 enum {CMD_ASSERT_REG_OK,CMD_ASSERT_WORD_OK,CMD_ASSERT_BYTE_OK,NO_TYPE_VALUE,PAS_VALEUR_A_TESTER,ADRS_NON_HEXA2,REGI_NON_EXISTANT,ERROR_i};
 
