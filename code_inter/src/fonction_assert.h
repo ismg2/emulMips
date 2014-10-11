@@ -8,10 +8,10 @@ enum {CMD_ASSERT_REG_OK,CMD_ASSERT_WORD_OK,CMD_ASSERT_BYTE_OK,NO_TYPE_VALUE,PAS_
 
 int execute_assert_word(char * adr,char * val);
 int execute_assert_byte(char * adr,char * val);
-int execute_assert_reg(char * reg1);
+int execute_assert_reg(char * reg1,char ** value);
 int test_cmd_assert(interpreteur inter,char * wb,char ** value,char ** adr);
 void erreur_cmd_assert(int verif);
-int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1);
+int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1,char ** value);
 int cmd_assert(interpreteur inter); 
 
 #endif

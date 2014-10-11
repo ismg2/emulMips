@@ -11,15 +11,14 @@ INFO_MSG("ASSERT WORLD à l'adresse %s par la valeur %s",adr,val);
 return 0;}
 
 int execute_assert_byte(char * adr,char * val)
-{   printf("\nBIP 1\n");
-    if(is_word_byte(val)==BYTE)
-     INFO_MSG("ASSERT BYTE à l'adresse %s par la valeur %s",adr,*val);
+{   if(is_word_byte(val)==BYTE)
+     INFO_MSG("ASSERT BYTE à l'adresse %s par la valeur %s",adr,val);
 	else WARNING_MSG("VALEUR DONNEE NON BYTE");
 return 0;}
 
-int execute_assert_reg(char * reg1)
+int execute_assert_reg(char * reg1,char ** value)
 {
-    INFO_MSG("ASSERT REG = %s",reg1);
+    INFO_MSG("ASSERT REG = %s VALEUR = %s ",reg1,*value);
 return 0;}
 
 
@@ -81,7 +80,7 @@ void erreur_cmd_assert(verif)
 
 
 
-int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1)
+int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1,char ** value)
 { 
 //   int i=0;
         INFO_MSG("INPUT test_cmd_ASSERT_reg : %s",reg1);
@@ -90,7 +89,17 @@ int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1)
         
    else if(reg_exist(reg1,tab_tout_reg)==0)  
     {  
+        *value = get_next_token(inter);
+        DEBUG_MSG("Valeur à tester : %s",*value);
+        if(*value==NULL)
+        {
+        return PAS_VALEUR_A_TESTER;
+        }
+        else 
+        {
         return CMD_ASSERT_REG_OK;
+        }
+
     }   
     
     else    return REGI_NON_EXISTANT;
@@ -128,8 +137,8 @@ char * adresse=NULL;
             tab_all_reg=init_tab_registre();
 		token=get_next_token(inter);
 		DEBUG_MSG("REGISTRE ENTREE : %s",token);
-                verif = test_cmd_assert_reg(inter,tab_all_reg,token);
-                if(verif==CMD_ASSERT_REG_OK) return execute_assert_reg(token);
+                verif = test_cmd_assert_reg(inter,tab_all_reg,token,&valeur);
+                if(verif==CMD_ASSERT_REG_OK) return execute_assert_reg(token,&valeur);
                     else    erreur_cmd_assert(verif);
                 
         }
