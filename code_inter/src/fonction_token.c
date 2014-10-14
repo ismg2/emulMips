@@ -44,7 +44,7 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification)
 
   case CMD_DISP_REG_ALL_OK : INFO_MSG("ON AFFICHE TOUT "); break;
 
-  case CMD_DISP_MEM_PLAGE_OK : INFO_MSG("VOICI LA PLAGE QUE L'ON VA AFFICHER :");
+  case CMD_DISP_REG_PLAGE_OK : INFO_MSG("VOICI LA PLAGE QUE L'ON VA AFFICHER :");
                             for (i = 0; i < 70; i++)
                             {
                                 INFO_MSG(" %s ",tab_reg_demm[i]);
@@ -146,31 +146,41 @@ int test_cmd_dispmem(interpreteur inter,char * adr1,char * adr2)
     adr1=get_next_token(inter);
     char * two_point=get_next_token(inter);
     adr2=get_next_token(inter);
+    int deux_point=1;
     int verif=0;
     DEBUG_MSG("adresse analysed test_cmd_dispmem function  '%s'   '%s' ",adr1,adr2);
     DEBUG_MSG("LES FAMEUX DEUX POINT '%s' ",two_point);
-    int deux_point=cherche_deux_point(two_point);
-    if (adr1==NULL||adr2==NULL) return verif = PAS_DADRESSE_ENTREE;
-        else if (strcmp(adr1,"map")==0) return verif = CMD_DISP_MEM_MAP_OK; 
+    if(two_point!=NULL) {printf("\nBIP\t BIP\n");deux_point=cherche_deux_point(two_point);}
 
-            else if (is_hexa_v2(adr1)==0 || is_hexa_v2(adr2)==0) return verif = ADRS_NON_HEXA;
-            else if (deux_point==1) return verif = DEUX_POINT_MANQUANT;
+    if (adr1==NULL||adr2==NULL) {printf("\nBIP2");return PAS_DADRESSE_ENTREE;}
+        else if (strcmp(adr1,"map")==0) {printf("\nBIP3");return CMD_DISP_MEM_MAP_OK;} 
+
+            else if (is_hexa_v2(adr1)==0 || is_hexa_v2(adr2)==0) {printf("\nBIP0");return  ADRS_NON_HEXA;}
+            else if (deux_point==1) {printf("\nBIP4");return DEUX_POINT_MANQUANT;}
             
-    else return verif = CMD_DISP_MEM_PLAGE_OK;
+    else {printf("\nBIP6");return CMD_DISP_MEM_PLAGE_OK;}
+    
+
+    
 }
 
 //Execute la commande d'affichage d'une plage d'adresse ou de toute la map
 // si map = CMD_DISP_MEM_MAP_OK  on affiche toute la map , sinon juste entre adr1 et adr2 
 
 
-void execute_disp_mem(char * adr1,char * adr2,int map)
-{
+void execute_disp_mem(char * adr1,char * adr2,int map,mem memoires,stab symtabs)
+{ printf("\n BIP 22");
 	switch(map)
 	{
-		case CMD_DISP_MEM_PLAGE_OK : DEBUG_MSG("On affiche la plage de registre entre %s et %s",adr1,adr2);break;
-		case CMD_DISP_MEM_MAP_OK : DEBUG_MSG("ON AFFICHE LA MAP DE MEMOIRE");
-//						print_mem;
-						break;
+		case CMD_DISP_MEM_PLAGE_OK : 
+        break;
+		case CMD_DISP_MEM_MAP_OK : printf("\nBIP 24 execute_disp_mem");
+                                    if(memoires==NULL) {WARNING_MSG("ERROR [7] : Aucun programme n'a été chargé en memoire");}
+                                    else	{   printf("\n BIP 423 \n");
+                                                print_mem(memoires);
+                                                stab32_print( symtabs);
+                                            }
+                                        break;
 		default : WARNING_MSG("POSITION IMPOSSIBLE");
 	}
 }
@@ -225,7 +235,7 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
     if(token==NULL) return NO_VALUE_REG;
         
    else if(strcmp(token,"all")==0) return CMD_DISP_REG_ALL_OK;
-
+/*
    else if(cherche_deux_point((two_point=get_next_token(inter)))==0)
    {
         char * token2=get_next_token(inter);
@@ -239,7 +249,7 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
                 return CMD_DISP_REG_PLAGE_OK;
             }
    }
-
+*/
 
    else if(reg_exist(token,tab_tout_reg)==0)  
     {   DEBUG_MSG("TOKEN : '%s' ",token);
@@ -270,7 +280,7 @@ return ERROR;
 }
 
 
-int cmd_disp(interpreteur inter) 
+int cmd_disp(interpreteur inter,mem memoire,stab symTAB) 
 {
     DEBUG_MSG("Chaine : %s", inter->input);
     int verif;
@@ -290,11 +300,11 @@ int cmd_disp(interpreteur inter)
             switch(verif)
             {
                 case CMD_DISP_MEM_PLAGE_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK);
+                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK,memoire,symTAB);
                     break;
 
                 case CMD_DISP_MEM_MAP_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK);
+                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK,memoire,symTAB);
                     break;
 
                 default : erreur_cmd_disp(verif);
@@ -334,10 +344,6 @@ int cmd_disp(interpreteur inter)
 return 400;}
 
 
-void cmd_load(interpreteur inter)
-{
-    printf("Commande non executer");
-}
 
 void aff(char **m, int b)
 {int j;

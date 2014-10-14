@@ -12,15 +12,15 @@ void visualiser_liste(Liste_A L) //visualiser_liste
 
 { Liste_A p;
     for (p=L;!est_vide(p); p=p->suiv)
- {puts("");
- printf("Arc de %d à %d et une distance %lf et pheromones = %lf",(p->val).debut,(p->val).fin,(p->val).dist,(p->val).quantite_pheromone);
- puts("");
+ {
+ printf("\n \n");
+ 
 }
  
 }
 
 
-Liste_A ajout_tete(Arc C, Liste_A L)
+Liste_A ajout_tete(int C, Liste_A L)
 { Liste_A p=calloc(1,sizeof(*p));
     if (p==NULL) return NULL;
     else {p->val=C;
@@ -35,7 +35,7 @@ Liste_A supprimer_tete(Liste_A L)
     free(L);
     return p;}
 
-Liste_A ajout_queue(Arc C, Liste_A L)
+Liste_A ajout_queue(int C, Liste_A L)
 { Liste_A p; Liste_A k;
     p=calloc(1,sizeof(*p));
     p->val=C;
@@ -61,7 +61,7 @@ Liste_A concat(Liste_A l1, Liste_A l2)
     
     if(l1==NULL) { return l2; }
     
-    for(q=l1;q->suiv!=NULL;q=q->suiv);       //On parcourt tout et on sarrete au bon moment avec q->suiv!=NULL //
+    for(q=l1;q->suiv!=NULL;q=q->suiv);       //On pintourt tout et on sarrete au bon moment avec q->suiv!=NULL //
     q->suiv=l2;
     
     return l1;

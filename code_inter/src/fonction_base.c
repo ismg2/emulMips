@@ -157,7 +157,10 @@ int exitcmd(interpreteur inter) {
 int execute_cmd(interpreteur inter) {
     DEBUG_MSG("input '%s'", inter->input);
     char cmdStr[MAX_STR];
+    mem memory;
     memset( cmdStr, '\0', MAX_STR );
+    int verification;
+    stab symtableau; // table des symboles;
 
     /* gestion des commandes vides, commentaires, etc*/
     if(strlen(inter->input) == 0
@@ -176,15 +179,17 @@ int execute_cmd(interpreteur inter) {
     else if(strcmp(token, "test") == 0) {
         return testcmd(inter);
     }
-    else if(strcmp(token, "load")== 0) { 
-        return cmd_load(inter);
-    }
     else if (strcmp(token,"disp")== 0) {
-        return cmd_disp(inter);
+        return cmd_disp(inter,memory);
     }
     else if(strcmp(token,"assert")==0)
     {
         return cmd_assert(inter);
+    }
+    else if(strcmp(token,"load")== 0)
+    {   token = get_next_token(inter);
+        return cmd_load(token,&memory,&symtableau);
+
     }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;
