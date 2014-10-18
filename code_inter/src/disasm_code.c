@@ -67,17 +67,17 @@ else {int j=0;
 
 /**
  * Lance l'execution des programmes de desassamblage selon la commande faites par l'utilisateur
- * @param  inter2 Commande entrée par l'utilisateur
+ * @param  inter Commande entrée par l'utilisateur
  * @return       vers les differentes fonction utile
  */
 
-int cmd_disasm(interpreteur inter2)
+int cmd_disasm(interpreteur inter)
 {
   int verif;
   uint32_t adresse1;
   uint32_t adresse2;
   int deca;
-  verif = test_cmd_disasm(inter2,&adresse1,&adresse2,&deca);
+  verif = test_cmd_disasm(inter,&adresse1,&adresse2,&deca);
   switch(verif)
   {
     case CMD_DISASM_OK_PLAGE : DEBUG_MSG("CMD_DISASM_OK_PLAGE");
@@ -98,26 +98,29 @@ return 1;
 
 /**
  * Test si les commandes entré par l'utilisateur sont corrects
- * @param  inter2 Commande entrée par l'utilisateur
+ * @param  inter Commande entrée par l'utilisateur
  * @param  adr1,adr2 Adresse demandé pour l'affichage du code à dessasembler
  * @param  decalage Decalage donnant le nombre de ligne de code a afficher
  * @return  variable d'erreur ou cmd d'execution des fonctions
  */
 
 
-int test_cmd_disasm(interpreteur inter2, uint32_t * adr1, uint32_t * adr2,int * decalage)
+int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * decalage)
 {
   uint32_t temp_adr1;
-  char * token=get_next_token(inter2);
+
+  char * token=get_next_token(inter);
   if(token==NULL) return PAS_ADRESSE;
   else if(is_hexa_v2(token)==0) return ADRS_NON_HEXA3;
   else {
     sscanf(token,"%x",&temp_adr1);
     *adr1 = temp_adr1;
-    token=get_next_token(inter2);
-    if(strcmp(token,"+")==0)
-            {
-                token=get_next_token(inter2);
+    token=get_next_token(inter);
+    if (token == NULL) return ERREUR_SYNTAXE;
+    else if(strcmp(token,"+")==0)
+            {   
+                token=get_next_token(inter);
+                if (token == NULL) return PAS_ADRESSE;
                 int temp_decalage;
                 sscanf(token,"%d",&temp_decalage);
                 if(temp_decalage % 4 != 0) return MAUVAIS_DECALAGE;
@@ -127,8 +130,9 @@ int test_cmd_disasm(interpreteur inter2, uint32_t * adr1, uint32_t * adr2,int * 
                      }
             }
     else if(strcmp(token,":")==0)
-            {   token=get_next_token(inter2);
-                if(is_hexa_v2(token)==0) return ADRS_NON_HEXA3;
+            {   token=get_next_token(inter);
+                if ( token == NULL) return PAS_ADRESSE;
+                else if(is_hexa_v2(token)==0) return ADRS_NON_HEXA3;
                 else
                 { 
                   uint32_t temp_adr2;
@@ -160,8 +164,9 @@ void erreur_fonction_disasm(int verification)
     case ADRS_NON_HEXA3 : WARNING_MSG("ERROR [1] : Les adresses entrée ne sont pas hexadecimal ou désignent un emplacement non existant dans la memoire");break;
     case MAUVAIS_DECALAGE : WARNING_MSG("ERROR [15] : Les instruction MIPS sont dur 32 bits, le decalage entré est mauvais !");break;
     case ERREUR_SYNTAXE : WARNING_MSG("ERROR [16] : Mauvaise syntaxe ; utilisé un + pour un decalage ou : pour une plage  ");break; 
-    case PAS_ADRESSE : WARNING_MSG("ERROR [17] : Vous n'avez pas entrez d'adresse !!!");
+    case PAS_ADRESSE : WARNING_MSG("ERROR [17] : Vous n'avez pas entrez d'adresse !!!");break;
     case POSITION_IMPOSSIBLE : WARNING_MSG("ERREUR INCONNUE ; LE PROGRAMME SE TROUVE DANS UNE POSITION IMPOSSIBLE");break;
+    default : WARNING_MSG("ERREUR NON REFERENCE");
   }
 }
 

@@ -41,8 +41,8 @@ typedef struct {
 
 enum{CMD_DISASM_OK_PLAGE,CMD_DISASM_OK_DECALAGE,ADRS_NON_HEXA3,MAUVAIS_DECALAGE,ERREUR_SYNTAXE,POSITION_IMPOSSIBLE,PAS_ADRESSE};
 
-int test_cmd_disasm(interpreteur inter2, uint32_t * adr1, uint32_t * adr2,int * decalage);
-int cmd_disasm(interpreteur inter2);
+int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * decalage);
+int cmd_disasm(interpreteur inter);
 void lecture_dictionnaire(char * file_name);
 void erreur_fonction_disasm(int verification);
 
