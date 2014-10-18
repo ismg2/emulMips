@@ -1,85 +1,49 @@
-#ifndef _disasm_code_h
-#define _disasm_code_h
-
-
+#ifndef _DISASM_CODE_H
+#define _DISASM_CODE_H
+#include <stdint.h>
 #include "fonction_base.h"
 #include "fonction_token.h"
-#include <stdint.h>
+#define MAX_NOM 64
+
+typedef struct {
+  uint32_t signature;
+  uint32_t masque;
+  char nom[MAX_NOM];
+  char  type;
+  char * op_mapping[MAX_NOM];
+  int nmbr_oper;
+} *definition;
 
 
-/*
 typedef struct {
 	unsigned int function : 6;
-	unsigned int sa : 4;
-	unsigned int rd : 4;
-	unsigned int rt : 4;
-	unsigned int rs : 4;
-	unsigned int opcode : 5;
-}R;
+	unsigned int sa : 5;
+	unsigned int rd : 5;
+	unsigned int rt : 5;
+	unsigned int rs : 5;
+	unsigned int opcode : 6;
 
+}R;
 
 typedef struct {
 	unsigned int immediate : 16;
-	unsigned int rt : 4;
-	unsigned int rs : 4;
-	unsigned int opcode : 5;
+	unsigned int rt : 5;
+	unsigned int rs : 5;
+	unsigned int opcode : 6;
+
 }I;
 
 
 typedef struct {
 	unsigned int target : 26;
-	unsigned int opcode : 5;	
+	unsigned int opcode : 6;
 }J;
 
+enum{CMD_DISASM_OK_PLAGE,CMD_DISASM_OK_DECALAGE,ADRS_NON_HEXA3,MAUVAIS_DECALAGE,ERREUR_SYNTAXE,POSITION_IMPOSSIBLE,PAS_ADRESSE};
 
-typedef struct {
-	signature uint32_t;
-	masque uint32_t;
-	char nom[MAX_NOM];
-	char type;
-	char * op_mapping[MAX_NOM];
-	int nmbr_oper;
-}definition;
-
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int test_cmd_disasm(interpreteur inter2, uint32_t * adr1, uint32_t * adr2,int * decalage);
+int cmd_disasm(interpreteur inter2);
+void lecture_dictionnaire(char * file_name);
+void erreur_fonction_disasm(int verification);
 
 #endif

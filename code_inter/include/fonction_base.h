@@ -7,6 +7,7 @@
 #include "get_type_token.h"
 #include "mem.h"
 #include "mipself_test.h"
+#include "disasm_code.h"
 
 /* la librairie readline */
 #include <readline/readline.h>

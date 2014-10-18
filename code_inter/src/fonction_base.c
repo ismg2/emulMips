@@ -191,6 +191,10 @@ int execute_cmd(interpreteur inter) {
         return cmd_load(token,&memory,&symtableau);
 
     }
+    else if(strcmp(token,"disasm")==0)
+    {
+        return cmd_disasm(inter);
+    }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;
 }

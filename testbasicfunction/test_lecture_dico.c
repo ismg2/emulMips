@@ -83,7 +83,7 @@ else {int j=0;
 
 int main() { 
 
-  char fichier_nom[64]="dico_def.txt";
+  char fichier_nom[64]="dico_definitif.txt";
   printf(" %s \n",fichier_nom);
   lecture_cmd(fichier_nom);
 
