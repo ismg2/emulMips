@@ -173,7 +173,6 @@ void print_mem( mem vm ) {
                 n++;
             }
         }
-
         printf( "Virtual memory map (%u segments)\n", n );
 
         for ( i= 0; i< vm->nseg; i++ ) {

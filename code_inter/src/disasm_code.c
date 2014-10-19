@@ -4,7 +4,7 @@
  * Lecture du fichier texte regroupant toutes les commandes et affiche le tableau memmoire allooué pour
  * @param file_name : nom du dictionnaire de toutes les commandes
  */
-void lecture_dictionnaire(char * file_name)
+definition lecture_dictionnaire(char * file_name)
 {
     
 FILE * fp;
@@ -21,32 +21,32 @@ else {int j=0;
 
   while(fgets(ligne,2054,fp)!=NULL)
   { 
-    printf("---------------------------------------------------\n");
-    printf("---------------------------------------------------\n");
+    //printf("---------------------------------------------------\n");
+    //printf("---------------------------------------------------\n");
     //printf("\n LIGNE : %s \n",ligne);
       char * token=strtok(ligne,"   ");
       sscanf(token,"%s",(def[j].nom));
-      printf("\n NOM : %s",(def[j].nom));
+      //printf("\n NOM : %s",(def[j].nom));
 
       token=strtok(NULL,"   ");
       sscanf(token,"%s",&(def[j].type));
-      printf("\n TYPE : %c ",def[j].type);
+      //printf("\n TYPE : %c ",def[j].type);
 
       token=strtok(NULL,"   ");
       sscanf(token,"%x",&(temp->signature));
       def[j].signature = (temp->signature);
-      printf("\n SIGNATURE : %08x ",def[j].signature);
+      //printf("\n SIGNATURE : %08x ",def[j].signature);
 
 
       token=strtok(NULL,"   ");
       sscanf(token,"%x",&(temp->masque));
       def[j].masque = temp->masque;
-      printf("\n MASQUE: %08x",def[j].masque);
+      //printf("\n MASQUE: %08x",def[j].masque);
 
 
       token=strtok(NULL,"   ");
       sscanf(token,"%d",&(def[j].nmbr_oper));
-      printf("\n NBR OPERANDE : %d\n",def[j].nmbr_oper);
+      //printf("\n NBR OPERANDE : %d\n",def[j].nmbr_oper);
       if(def[j].nmbr_oper!=0)
       {
         for (int i = 0; i < def[j].nmbr_oper ; i++)
@@ -54,15 +54,15 @@ else {int j=0;
             char * tempo = calloc(2,sizeof(*tempo));
             sscanf(token,"%s",tempo);
             def[j].op_mapping[i]=strdup(tempo);
-            printf("\t OPERANDE numero %d : %s\n",i+1,def[j].op_mapping[i]);
+            //printf("\t OPERANDE numero %d : %s\n",i+1,def[j].op_mapping[i]);
           }
       }
-      printf("\n\n\n");
+      //printf("\n\n\n");
       j++;
     }
 }
 
-//return 1;
+return def;
 }
 
 /**
@@ -71,7 +71,7 @@ else {int j=0;
  * @return       vers les differentes fonction utile
  */
 
-int cmd_disasm(interpreteur inter)
+int cmd_disasm(interpreteur inter,mem  memoire)
 {
   int verif;
   uint32_t adresse1;
@@ -80,14 +80,19 @@ int cmd_disasm(interpreteur inter)
   verif = test_cmd_disasm(inter,&adresse1,&adresse2,&deca);
   switch(verif)
   {
-    case CMD_DISASM_OK_PLAGE : DEBUG_MSG("CMD_DISASM_OK_PLAGE");
-    DEBUG_MSG(" LA PLAGE A AFFICHER %08x --> %08x ",adresse1,adresse2);  
-    return 0;
+    case CMD_DISASM_OK_PLAGE : 
+        DEBUG_MSG("CMD_DISASM_OK_PLAGE");
+        DEBUG_MSG(" LA PLAGE A AFFICHER %08x --> %08x ",adresse1,adresse2);  
+        return execute_cmd_disasm(adresse1,adresse2,deca,CMD_DISASM_OK_PLAGE,memoire);
+        //return 0;
     break;
-    case CMD_DISASM_OK_DECALAGE : DEBUG_MSG("CMD_DISASM_OK_DECALAGE");
-    DEBUG_MSG(" LA PLAGE A AFFICHER %08x + %d ",adresse1,deca);
-    return 0;
-    break;
+
+    case CMD_DISASM_OK_DECALAGE : 
+        DEBUG_MSG("CMD_DISASM_OK_DECALAGE");
+        DEBUG_MSG(" LA PLAGE A AFFICHER %08x + %d ",adresse1,deca);
+        return execute_cmd_disasm(adresse1,adresse2,deca,CMD_DISASM_OK_DECALAGE,memoire);
+        break;
+    
     default : erreur_fonction_disasm(verif);
   }
 
@@ -170,7 +175,28 @@ void erreur_fonction_disasm(int verification)
   }
 }
 
-
+int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire)
+{ definition dictionnaire;
+  dictionnaire = lecture_dictionnaire("dico_definitif.txt");
+  uint32_t adr;
+  uint32_t adr_2bis;
+  switch(decalage_plage)
+  {
+    case CMD_DISASM_OK_PLAGE :
+      for(adr = adr1;adr<=adr2;adr=adr+4)
+      {
+        affiche_mot(memoire,adr);
+      }
+      break;
+    case CMD_DISASM_OK_DECALAGE :
+      adr_2bis = adr1+decalage;
+      for(adr = adr1;adr<adr_2bis;adr=adr+4)
+      {
+        affiche_mot(memoire,adr);
+      }
+      break;
+  }
+printf("POSITION IMPOSSIBLE");}
 
 
 

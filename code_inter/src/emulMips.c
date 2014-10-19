@@ -10,6 +10,7 @@
 #include "fonction_token.h"
 
 
+
 /**
  * Programme principal
  */
@@ -21,6 +22,9 @@ int main ( int argc, char *argv[] ) {
     DEBUG_MSG("Un message DEBUG_MSG !"); /* macro DEBUG_MSG : uniquement si compil en mode DEBUG_MSG */
     interpreteur inter=init_inter(); /* structure gardant les infos et états de l'interpreteur*/
     FILE *fp = NULL; /* le flux dans lequel les commande seront lues : stdin (mode shell) ou un fichier */
+    mem memoire_virtuelle=NULL;
+    stab tableau_symboles;// table des symboles;
+
 
     if ( argc > 2 ) {
         usage_ERROR_MSG( argv[0] );
@@ -52,7 +56,7 @@ int main ( int argc, char *argv[] ) {
         if (acquire_line( fp,  inter)  == 0 ) {
             /* Une nouvelle ligne a ete acquise dans le flux fp*/
 
-            int res = execute_cmd(inter); /* execution de la commande */
+            int res = execute_cmd(inter,&memoire_virtuelle,&tableau_symboles); /* execution de la commande */
 
             // traitement des erreurs
             switch(res) {

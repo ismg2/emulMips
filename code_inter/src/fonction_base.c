@@ -154,13 +154,11 @@ int exitcmd(interpreteur inter) {
 * @return CMD_UNKOWN_RETURN_VALUE si la commande n'est pas reconnue. (-2)
 * @return tout autre nombre (eg tout nombre positif) si erreur d'execution de la commande
 */
-int execute_cmd(interpreteur inter) {
+int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab)
+{
     DEBUG_MSG("input '%s'", inter->input);
     char cmdStr[MAX_STR];
-    mem memory;
     memset( cmdStr, '\0', MAX_STR );
-    int verification;
-    stab symtableau; // table des symboles;
 
 
     /* gestion des commandes vides, commentaires, etc*/
@@ -181,7 +179,7 @@ int execute_cmd(interpreteur inter) {
         return testcmd(inter);
     }
     else if (strcmp(token,"disp")== 0) {
-        return cmd_disp(inter,&memory,&symtableau);
+        return cmd_disp(inter,*vmemoire,*symtab);
     }
     else if(strcmp(token,"assert")==0)
     {
@@ -189,12 +187,12 @@ int execute_cmd(interpreteur inter) {
     }
     else if(strcmp(token,"load")== 0)
     {   token = get_next_token(inter);
-        return cmd_load(token,&memory,&symtableau);
+        return cmd_load(token,vmemoire,symtab);
 
     }
     else if(strcmp(token,"disasm")==0)
     {    
-        return cmd_disasm(inter);
+        return cmd_disasm(inter,*vmemoire);
     }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;

@@ -9,7 +9,7 @@ enum {CMD_DISP_MEM_PLAGE_OK,  CMD_DISP_MEM_MAP_OK   ,CMD_DISP_REG_OK,CMD_DISP_RE
 
 
 int taille(char* chaine);
-int cmd_disp(interpreteur inter,mem * memoire,stab * symTAB);
+int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB) ;
 int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_commander);
 void erreur_cmd_disp(int verif);
 int test_cmd_disp_mem(interpreteur inter,char * adr1,char * adr2,mem memoires);

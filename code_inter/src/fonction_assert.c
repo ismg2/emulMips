@@ -2,7 +2,12 @@
 #include "fonction_assert.h"
 
 
-
+/**
+ * fonction d'execution de la fonction ASSERT d'un mot de 32 bits
+ * @param  adr adresse de valeur a tester
+ * @param  val valeur a tester
+ * @return     pour le moment il ne retourne qu'un message verifiant que les parametres sont bon
+ */
 int execute_assert_word(char * adr,char * val)
 { DEBUG_MSG("VALEUR A tester : %s à l'adresse %s ",val,adr);
     if(is_word_byte(val)==WORD)
@@ -10,16 +15,41 @@ INFO_MSG("ASSERT WORLD à l'adresse %s par la valeur %s",adr,val);
 	else WARNING_MSG("VALEUR DONNEE NON WORD");
 return 0;}
 
+/**
+ * fonction d'execution de la fonction ASSERT d'un mot de 8 bits
+ * @param  adr adresse de valeur a tester
+ * @param  val valeur a tester
+ * @return     pour le moment il ne retourne qu'un message verifiant que les parametres sont bon
+ */
+
 int execute_assert_byte(char * adr,char * val)
 {   if(is_word_byte(val)==BYTE)
      INFO_MSG("ASSERT BYTE à l'adresse %s par la valeur %s",adr,val);
 	else WARNING_MSG("VALEUR DONNEE NON BYTE");
 return 0;}
 
+/**
+ * fonction d'execution de la fonction ASSERT d'un registre
+ * @param  reg1 nom du registre a tester
+ * @param  value valeur a tester
+ * @return     pour le moment il ne retourne qu'un message verifiant que les parametres sont bon
+ */
+
+
+
 int execute_assert_reg(char * reg1,char ** value)
 {
     INFO_MSG("ASSERT REG = %s VALEUR = %s ",reg1,*value);
 return 0;}
+
+/**
+ * 
+ * @param  inter
+ * @param  wb
+ * @param  value
+ * @param  adr 
+ * @return 
+ */
 
 
 
@@ -47,7 +77,6 @@ int test_cmd_assert(interpreteur inter,char * wb,char ** value,char ** adr)
 
 return 1;
 }
-
 
 
 // Gere les messages d'erreur ppour la fonction 
@@ -79,7 +108,6 @@ void erreur_cmd_assert(verif)
 
 
 
-
 int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1,char ** value)
 { 
 //   int i=0;
@@ -107,7 +135,6 @@ int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1,char
 
 return ERROR;
 }
-
 
 
 int cmd_assert(interpreteur inter) 

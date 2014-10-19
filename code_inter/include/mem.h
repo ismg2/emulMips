@@ -20,7 +20,6 @@ extern "C" {
 #include "common/types.h"
 
 
-
 typedef union {
     uint32_t _32;
     uint64_t _64;

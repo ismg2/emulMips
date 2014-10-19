@@ -3,28 +3,33 @@
 // fonction qui cherche dans une chaine de caractere ":"
 // renvoie 0 si on trouve ":" positif sinon
 
+
+
 int cherche_deux_point(char * chaine)
 { int resultat=1; int i=0;
-   if(chaine==NULL) resultat=1;
+    if(chaine==NULL) resultat=1;
 
-   else 
- {
-
-    while(resultat!=0&&i<strlen(chaine))
-    {   
+    else 
+    {
+        while(resultat!=0&&i<strlen(chaine))
+        {   
         if(chaine[i]==':') resultat=0;
 
         else i++;
+        }
     }
-  }
 return resultat;
 }
 
+
+
+
 int taille(char* chaine)
-{	int i,compteur=0;
+{	
+int i,compteur=0;
 	if(is_hexa_v2(chaine)==0) return CMD_UNKOWN_RETURN_VALUE;
-	else for(i=2;i<strlen(chaine);i++) compteur++;
-	return compteur;
+    else for(i=2;i<strlen(chaine);i++) compteur++;
+return compteur;
 }
 
 
@@ -60,12 +65,13 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification)
 int reg_exist(char * reg1,char ** tab_tout_reg)
 { int j=0;int erreur=1;
     while(j<69&&erreur!=0)
-                    {
-                        if(strcmp(reg1,tab_tout_reg[j])==0)  erreur=0;
-                        else j++;   
-                    }
+    {
+    if(strcmp(reg1,tab_tout_reg[j])==0)  erreur=0;
+    else j++;   
+    }
 return erreur;
 }
+
 // Initialise une matrice mm taille 70 lignes 64 colonnes
 
 char** init_matrice()
@@ -280,7 +286,7 @@ return ERROR;
 }
 
 
-int cmd_disp(interpreteur inter,mem * memoire,stab * symTAB) 
+int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB) 
 {
     DEBUG_MSG("Chaine : %s", inter->input);
     int verif;
@@ -300,11 +306,11 @@ int cmd_disp(interpreteur inter,mem * memoire,stab * symTAB)
             switch(verif)
             {
                 case CMD_DISP_MEM_PLAGE_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK,*memoire,*symTAB);
+                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK,memoire,symTAB);
                     break;
 
                 case CMD_DISP_MEM_MAP_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK,*memoire,*symTAB);
+                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK,memoire,symTAB);
                     break;
 
                 default : erreur_cmd_disp(verif);
