@@ -15,9 +15,15 @@ definition temp = NULL;
 def = calloc(1028,sizeof(*def));
 temp = calloc(2,sizeof(*def));
 ligne = calloc (2054,sizeof(*ligne));
+
  
-if(fp==NULL) { printf("\nImpoosible d'ouvrir le fichier test ");}
-else {int j=0;
+if(fp==NULL)  
+  {
+    WARNING_MSG("Impoosible d'ouvrir le fichier de Dictionnaire ");
+  }
+else 
+{
+  int j=0;
 
   while(fgets(ligne,2054,fp)!=NULL)
   { 
@@ -61,7 +67,7 @@ else {int j=0;
       j++;
     }
 }
-
+fclose(fp);
 return def;
 }
 
@@ -177,7 +183,8 @@ void erreur_fonction_disasm(int verification)
 
 int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire)
 { definition dictionnaire;
-  dictionnaire = lecture_dictionnaire("dico_definitif.txt");
+  char f_name[64] = "dico_definitif.txt";
+  dictionnaire = lecture_dictionnaire(f_name);
   uint32_t adr;
   uint32_t adr_2bis;
   switch(decalage_plage)
@@ -192,11 +199,25 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
       adr_2bis = adr1+decalage;
       for(adr = adr1;adr<adr_2bis;adr=adr+4)
       {
-        affiche_mot(memoire,adr);
-      }
+        //DEBUG_MSG("ADR : %08x",adr);
+        //affiche_mot(memoire,adr);
+        uint32_t word = renvoi_mot (memoire,adr);
+        //DEBUG_MSG("WORD : %08x ",word);
+        int k=0;
+        while(k<41)
+        {
+          if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
+          {
+            printf(" %04x :: %08x   %s\n",adr,word,dictionnaire[k].nom);
+            k++;
+          }
+          else k++;
+        }
+      } 
       break;
   }
-printf("POSITION IMPOSSIBLE");}
+
+return 0;}
 
 
 
