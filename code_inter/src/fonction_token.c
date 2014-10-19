@@ -150,15 +150,15 @@ int test_cmd_dispmem(interpreteur inter,char * adr1,char * adr2)
     int verif=0;
     DEBUG_MSG("adresse analysed test_cmd_dispmem function  '%s'   '%s' ",adr1,adr2);
     DEBUG_MSG("LES FAMEUX DEUX POINT '%s' ",two_point);
-    if(two_point!=NULL) {printf("\nBIP\t BIP\n");deux_point=cherche_deux_point(two_point);}
+    if(two_point!=NULL) {deux_point=cherche_deux_point(two_point);}
 
-    if (adr1==NULL||adr2==NULL) {printf("\nBIP2");return PAS_DADRESSE_ENTREE;}
-        else if (strcmp(adr1,"map")==0) {printf("\nBIP3");return CMD_DISP_MEM_MAP_OK;} 
+    if (adr1==NULL||adr2==NULL) {return PAS_DADRESSE_ENTREE;}
+        else if (strcmp(adr1,"map")==0) {return CMD_DISP_MEM_MAP_OK;} 
 
-            else if (is_hexa_v2(adr1)==0 || is_hexa_v2(adr2)==0) {printf("\nBIP0");return  ADRS_NON_HEXA;}
-            else if (deux_point==1) {printf("\nBIP4");return DEUX_POINT_MANQUANT;}
+            else if (is_hexa_v2(adr1)==0 || is_hexa_v2(adr2)==0) {return  ADRS_NON_HEXA;}
+            else if (deux_point==1) {return DEUX_POINT_MANQUANT;}
             
-    else {printf("\nBIP6");return CMD_DISP_MEM_PLAGE_OK;}
+    else {return CMD_DISP_MEM_PLAGE_OK;}
     
 
     
@@ -169,14 +169,14 @@ int test_cmd_dispmem(interpreteur inter,char * adr1,char * adr2)
 
 
 void execute_disp_mem(char * adr1,char * adr2,int map,mem memoires,stab symtabs)
-{ printf("\n BIP 22");
+{ 
 	switch(map)
 	{
 		case CMD_DISP_MEM_PLAGE_OK : 
         break;
-		case CMD_DISP_MEM_MAP_OK : printf("\nBIP 24 execute_disp_mem");
+		case CMD_DISP_MEM_MAP_OK : 
                                     if(memoires==NULL) {WARNING_MSG("ERROR [7] : Aucun programme n'a été chargé en memoire");}
-                                    else	{   printf("\n BIP 423 \n");
+                                    else	{   
                                                 print_mem(memoires);
                                                 stab32_print( symtabs);
                                             }
@@ -280,7 +280,7 @@ return ERROR;
 }
 
 
-int cmd_disp(interpreteur inter,mem memoire,stab symTAB) 
+int cmd_disp(interpreteur inter,mem * memoire,stab * symTAB) 
 {
     DEBUG_MSG("Chaine : %s", inter->input);
     int verif;
@@ -300,11 +300,11 @@ int cmd_disp(interpreteur inter,mem memoire,stab symTAB)
             switch(verif)
             {
                 case CMD_DISP_MEM_PLAGE_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK,memoire,symTAB);
+                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK,*memoire,*symTAB);
                     break;
 
                 case CMD_DISP_MEM_MAP_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK,memoire,symTAB);
+                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK,*memoire,*symTAB);
                     break;
 
                 default : erreur_cmd_disp(verif);
@@ -354,6 +354,91 @@ void aff(char **m, int b)
 
 
 
+
+int cmd_load(char * file_name,mem * memoire,stab * symtab)
+{
+    //int verif;
+    FILE * pf_elf;
+
+    if ((pf_elf = fopen(file_name,"r")) == NULL) {
+        DEBUG_MSG("cannot open file %s", file_name);
+        return 1;
+    }
+
+    else if (!assert_elf_file(pf_elf))
+       { DEBUG_MSG("file %s is not an ELF file", file_name);
+        return 1;}
+
+    else {
+        fclose(pf_elf);return execute_fonction_load(file_name,memoire,symtab);
+            }
+}
+
+
+
+
+// le main charge un fichier elf en entrée en utilisant
+// les arguments du prototype de la fonction main (cf. fiches infos)
+//
+int execute_fonction_load(char * file_name,mem * memoire, stab * symtab) 
+{
+
+    char* section_names[NB_SECTIONS]= {TEXT_SECTION_STR,RODATA_SECTION_STR,DATA_SECTION_STR,BSS_SECTION_STR};
+    unsigned int segment_permissions[NB_SECTIONS]= {R_X,R__,RW_,RW_};
+    unsigned int nsegments;
+    int i=0,j=0;
+    unsigned int type_machine;
+    unsigned int endianness;   //little ou big endian
+    unsigned int bus_width;    // 32 bits ou 64bits
+    unsigned int next_segment_start = START_MEM; // compteur pour designer le début de la prochaine section
+
+    *symtab= new_stab(0); // table des symboles
+    FILE * pf_elf;
+
+    if ((pf_elf = fopen(file_name,"r")) == NULL) {
+        DEBUG_MSG("cannot open file %s", file_name);
+    }
+
+    if (!assert_elf_file(pf_elf))
+        DEBUG_MSG("file %s is not an ELF file", file_name);
+
+
+    // recuperation des info de l'architecture
+    elf_get_arch_info(pf_elf, &type_machine, &endianness, &bus_width);
+    // et des symboles
+    elf_load_symtab(pf_elf, bus_width, endianness,symtab);//
+
+
+    nsegments = get_nsegments(*symtab,section_names,NB_SECTIONS);
+
+    // allouer la memoire virtuelle
+    *memoire=init_mem(nsegments);
+
+    // Ne pas oublier d'allouer les differentes sections
+    j=0;
+    for (i=0; i<NB_SECTIONS; i++) {
+        if (is_in_symbols(section_names[i],*symtab)) {
+            elf_load_section_in_memory(pf_elf,*memoire, section_names[i],segment_permissions[i],next_segment_start);
+            next_segment_start+= (((*memoire)->seg[j].size._32+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
+//            print_segment_raw_content(&memory->seg[j]);
+            j++;
+        }
+    }
+
+    //TO DO allouer la pile (et donc modifier le nb de segments)
+
+    //printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", file_name) ;
+    //print_mem(memoire);
+    DEBUG_MSG("Programme Charge en memoire");
+    printf("-----------------------------------------------------------------------------");
+    //stab32_print( symtab);
+
+    // on fait le ménage avant de partir
+    //del_mem(memory);
+    //del_stab(symtab);
+    fclose(pf_elf);
+    puts("");
+return 1;}
 
 
 

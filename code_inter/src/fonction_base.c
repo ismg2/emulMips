@@ -162,6 +162,7 @@ int execute_cmd(interpreteur inter) {
     int verification;
     stab symtableau; // table des symboles;
 
+
     /* gestion des commandes vides, commentaires, etc*/
     if(strlen(inter->input) == 0
             || sscanf(inter->input, "%s", cmdStr) == 0
@@ -180,7 +181,7 @@ int execute_cmd(interpreteur inter) {
         return testcmd(inter);
     }
     else if (strcmp(token,"disp")== 0) {
-        return cmd_disp(inter,memory);
+        return cmd_disp(inter,&memory,&symtableau);
     }
     else if(strcmp(token,"assert")==0)
     {
