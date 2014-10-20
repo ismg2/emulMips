@@ -69,7 +69,7 @@ uint32_t renvoi_mot (mem virtualm, uint32_t vaddr1)
             uint32_t difference = vaddr1 - adr_depart_seg1;
             for(j=0; j<4; j++)
             {
-                mot = ( mot << 8 ) + (virtualm)->seg[i].content[difference+j];
+                mot = ( mot << 8 ) + (virtualm)->seg[i].content[difference+j]; //On lit un Byte = 8 bits
             }
         return mot;
         }

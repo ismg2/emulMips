@@ -187,6 +187,7 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
   dictionnaire = lecture_dictionnaire(f_name);
   uint32_t adr;
   uint32_t adr_2bis;
+  union_RIJ union_struct;
   switch(decalage_plage)
   {
     case CMD_DISASM_OK_PLAGE :
@@ -202,14 +203,30 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
         //DEBUG_MSG("ADR : %08x",adr);
         //affiche_mot(memoire,adr);
         uint32_t word = renvoi_mot (memoire,adr);
-        //DEBUG_MSG("WORD : %08x ",word);
+        //DEBUG_MSG("WORD : %u ",word);
         int k=0;
         while(k<41)
         {
           if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
           {
-            printf(" %04x :: %08x   %s\n",adr,word,dictionnaire[k].nom);
-            k++;
+            union_struct = return_operande(dictionnaire[k].type,word);
+            switch(dictionnaire[k].type)
+            {
+              case 'R' :
+              printf(" %04x :: %08x   %s $%u,$%u,$%u \n",adr,word,dictionnaire[k].nom,union_struct.r.rd,union_struct.r.rs,union_struct.r.rt);
+              k++;
+              break;
+              case 'I' :
+              printf(" %04x :: %08x   %s $%u,$%u,%u \n",adr,word,dictionnaire[k].nom,union_struct.i.rt,union_struct.i.rs,union_struct.i.immediate);
+              k++;
+              break;
+              case 'J' :
+              printf(" %04x :: %08x   %s %u \n",adr,word,dictionnaire[k].nom,union_struct.j.target);
+              k++;
+              break;
+              default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
+            }
+            
           }
           else k++;
         }
@@ -219,7 +236,46 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
 
 return 0;}
 
+union_RIJ return_operande(char type_struct,uint32_t mot)
+{   
+    // Masque pour les structures de type R  
+    uint32_t masque_rs =0x3E00000;
+    uint32_t masque_rt = 0x1F0000;
+    uint32_t masque_rd = 0xF800;
+    uint32_t masque_sa = 0x7C0;
 
+    // Masque pour les structures de type I
+    uint32_t masque_immediate = 0xffff;
+
+    //Masque pour les structures de type J
+    uint32_t masque_target = 0x3ffffff;
+
+    //initialisation de l'union a renvoyer
+    union_RIJ uni;
+
+    switch(type_struct)
+    {
+      case 'R' : 
+
+      uni.r.rs = (mot & masque_rs) >> 21;
+      uni.r.rt = (mot & masque_rt) >> 16;
+      uni.r.rd = (mot & masque_rd) >> 11;
+      return uni;
+      break;
+      case 'I' :
+      uni.i.rs = (mot & masque_rs) >> 21;
+      uni.i.rt = (mot & masque_rt) >> 16;
+      uni.i.immediate = (mot & masque_immediate);
+      return uni;
+      break;
+      case 'J' :
+      uni.j.target = (mot & masque_target);
+      return uni;
+      default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
+    }
+
+
+}
 
 
 
