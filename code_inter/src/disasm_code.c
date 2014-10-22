@@ -126,6 +126,7 @@ int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * d
   else {
     sscanf(token,"%x",&temp_adr1);
     *adr1 = temp_adr1;
+    if (*adr1<0x3000) return HORS_ZONE_TEXTE;
     token=get_next_token(inter);
     if (token == NULL) return ERREUR_SYNTAXE;
     else if(strcmp(token,"+")==0)
@@ -148,7 +149,9 @@ int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * d
                 { 
                   uint32_t temp_adr2;
                   sscanf(token,"%x",&temp_adr2);
-                  unsigned int dif = (temp_adr2-*adr1)%4;
+                  int dif = ((int)temp_adr2-(int)*adr1)%4;
+                  DEBUG_MSG(" ADR2 %08x :: ADR1 %08x",temp_adr2,*adr1);
+                  DEBUG_MSG("Decalage : %d ",dif);
                   if (dif!=0) return MAUVAIS_DECALAGE;
                   else 
                   {
@@ -177,6 +180,7 @@ void erreur_fonction_disasm(int verification)
     case ERREUR_SYNTAXE : WARNING_MSG("ERROR [16] : Mauvaise syntaxe ; utilisé un + pour un decalage ou : pour une plage  ");break; 
     case PAS_ADRESSE : WARNING_MSG("ERROR [17] : Vous n'avez pas entrez d'adresse !!!");break;
     case POSITION_IMPOSSIBLE : WARNING_MSG("ERREUR INCONNUE ; LE PROGRAMME SE TROUVE DANS UNE POSITION IMPOSSIBLE");break;
+    case HORS_ZONE_TEXTE : WARNING_MSG("L'adresse que vous avez entrer n'est pas dans la zone de texte ou se trouve le code à desassambler");break;
     default : WARNING_MSG("ERREUR NON REFERENCE");
   }
 }
@@ -188,53 +192,124 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
   uint32_t adr;
   uint32_t adr_2bis;
   union_RIJ union_struct;
+
+
+
+
+
   switch(decalage_plage)
   {
     case CMD_DISASM_OK_PLAGE :
-      for(adr = adr1;adr<=adr2;adr=adr+4)
-      {
-        affiche_mot(memoire,adr);
-      }
+      adr_2bis=adr2;
       break;
     case CMD_DISASM_OK_DECALAGE :
-      adr_2bis = adr1+decalage;
-      for(adr = adr1;adr<adr_2bis;adr=adr+4)
-      {
-        //DEBUG_MSG("ADR : %08x",adr);
-        //affiche_mot(memoire,adr);
-        uint32_t word = renvoi_mot (memoire,adr);
-        //DEBUG_MSG("WORD : %u ",word);
-        int k=0;
-        while(k<41)
+     adr_2bis = adr1 | (uint32_t) decalage;
+    break;
+  }
+
+DEBUG_MSG("ADRESSE DE DEBUT DE DESSASAMBLAGE : %08x",adr1);
+DEBUG_MSG("ADRESSE DE FIN DU DESSASAMBLAGE : %08x",adr_2bis);
+
+for(adr = adr1;adr<adr_2bis;adr=adr+4)
+{ int sortie = 0;
+  //DEBUG_MSG("ADR : %08x",adr);
+  //affiche_mot(memoire,adr);
+  uint32_t word = renvoi_mot (memoire,adr);
+  //DEBUG_MSG("WORD : %u ",word);
+  int k=0;
+    while(k<40&&sortie==0)
+    {
+      if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
         {
-          if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
-          {
             union_struct = return_operande(dictionnaire[k].type,word);
+            printf("\n %04x :: %08x   %s",adr,word,dictionnaire[k].nom);
             switch(dictionnaire[k].type)
             {
               case 'R' :
-              printf(" %04x :: %08x   %s $%u,$%u,$%u \n",adr,word,dictionnaire[k].nom,union_struct.r.rd,union_struct.r.rs,union_struct.r.rt);
+                        switch(dictionnaire[k].nmbr_oper)
+                        {
+                          case 3 : if( strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"rd") == 0)
+                                    {
+                                      printf(" $%u,$%u,$%u \n",union_struct.r.rd,union_struct.r.rs,union_struct.r.rt);sortie = 1;
+                                    }
+                                    else if ( strcmp(dictionnaire[k].op_mapping[0],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rd") == 0 && strcmp(dictionnaire[k].op_mapping[2],"sa") == 0)
+                                    {
+                                      printf(" $%u,$%u,$%u \n",union_struct.r.rd,union_struct.r.rt,union_struct.r.sa);sortie = 1;
+                                    }
+                                    break;
+                          case 2 : if (strcmp(dictionnaire[k].op_mapping[0],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rd") == 0)
+                                    {
+                                      printf(" $%u,$%u \n",union_struct.r.rd,union_struct.r.rt);sortie = 1;
+                                    }
+                                    else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0)
+                                    {
+                                      printf(" $%u,$%u \n",union_struct.r.rs,union_struct.r.rt);sortie = 1;
+                                    }
+                                    else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"hint") == 0)
+                                    {
+                                      printf(" $%u\n",union_struct.r.rs);sortie = 1;
+                                    }
+                                    break;
+                          case 1 : if (strcmp(dictionnaire[k].op_mapping[0],"rd") == 0)
+                                    {
+                                      printf(" $%u\n",union_struct.r.rd);sortie = 1;
+                                    }
+                                    else if (strcmp(dictionnaire[k].op_mapping[0],"code") == 0)
+                                    {
+                                      printf("\n");sortie = 1;
+                                    }
+                          case 0 : printf("\n");sortie = 1;break;
+
+                          default :ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE"); 
+                        }
               k++;
               break;
               case 'I' :
-              printf(" %04x :: %08x   %s $%u,$%u,%u \n",adr,word,dictionnaire[k].nom,union_struct.i.rt,union_struct.i.rs,union_struct.i.immediate);
+                        switch(dictionnaire[k].nmbr_oper)
+                        {
+                          case 3 : if( strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"immediate") == 0)
+                                    {
+                                      printf(" $%u,$%u,%u \n",union_struct.i.rt,union_struct.i.rs,union_struct.i.immediate);sortie = 1;
+                                    }
+                                    else if ( strcmp(dictionnaire[k].op_mapping[0],"base") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
+                                    {
+                                      printf(" $%u,%u(%u) \n",union_struct.i.rt,union_struct.i.immediate,union_struct.i.rs);sortie = 1;
+                                    }
+                                    else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
+                                    {
+                                      printf(" $%u,$%u,%u \n",union_struct.i.rs,union_struct.i.rt,union_struct.i.immediate);sortie = 1;
+                                    }
+                                    break;
+                          case 2 : if (strcmp(dictionnaire[k].op_mapping[0],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[1],"immediate") == 0)
+                                    {
+                                      printf(" $%u,%u \n",union_struct.i.rt,union_struct.i.immediate);sortie = 1;
+                                    }
+                                    else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"offset") == 0)
+                                    {
+                                      printf(" $%u,%u \n",union_struct.i.rs,union_struct.i.immediate);sortie = 1;
+                                    }
+                                    break;
+                          default :ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE"); 
+                        }
               k++;
               break;
               case 'J' :
-              printf(" %04x :: %08x   %s %u \n",adr,word,dictionnaire[k].nom,union_struct.j.target);
+              printf(" %u \n",union_struct.j.target);sortie = 1;
               k++;
               break;
               default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
-            }
+            } 
+        //printf("\n");   
             
-          }
-          else k++;
-        }
-      } 
-      break;
-  }
+        }    
+      else k++;
+    }
+}
 
-return 0;}
+return 0;
+}
+
+
 
 union_RIJ return_operande(char type_struct,uint32_t mot)
 {   
