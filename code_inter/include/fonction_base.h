@@ -7,6 +7,7 @@
 #include "get_type_token.h"
 #include "mem.h"
 #include "mipself_test.h"
+#include "registre.h"
 
 
 /* la librairie readline */
@@ -56,7 +57,7 @@ char* get_next_token(interpreteur inter);
 int _testcmd(int hexValue);
 int testcmd(interpreteur inter);
 int exitcmd(interpreteur inter);
-int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab);
+int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg);
 void string_standardise( char* in, char* out );
 int  acquire_line(FILE *fp, interpreteur inter);
 void usage_ERROR_MSG( char *command );

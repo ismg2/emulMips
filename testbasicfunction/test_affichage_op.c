@@ -26,7 +26,7 @@ typedef struct {
 }R;
 
 typedef struct {
-	unsigned int immediate : 16;
+	int immediate : 16; //
 	unsigned int rt : 5;
 	unsigned int rs : 5;
 	unsigned int opcode : 6;
@@ -107,49 +107,29 @@ else {int j=0;
 }
 
 
-
-
-
-
-void bin_print_int(unsigned number)
-{
-	unsigned int MAX_MIPS = 0xffffffff;
-    unsigned mask = ~(MAX_MIPS >> 1);
-
-    putchar('0');
-    putchar('b');
-    while (mask != 0)
-    {
-        if (number & mask)
-        {
-            putchar('1');
-        }
-        else
-        {
-            putchar('0');
-        }
-        mask >>= 1;
-    }
-    putchar('\n');
-}
+//Premiere essai pour afficher les differentes opérandes d'un mot pris du fichier ELF
+//On affiche les numero des registres pour le moment ! Pas de mnemonique !
 
 
 
 
 int main(void)
 {
-R b;
-    uint32_t a=0x00641020;
-    printf("a = %08x \n",a);
+I b;
+    uint32_t a=0x2009000c;
+    printf("On affiche d'abord le mot a : %08x \n",a);
     uint32_t masque_rs =0x3E00000;
     uint32_t masque_rt = 0x1F0000;
     uint32_t masque_rd = 0xF800;
     uint32_t masque_sa = 0x7C0;
+    int masque_immediate =0xffff ; //
      b.rs = (a & masque_rs) >> 21;
      b.rt = (a & masque_rt) >> 16;
      b.rd = (a & masque_rd) >> 11;
      b.sa = (a & masque_sa) >> 6 ;
-    printf (" rs : %u \t rt : %u \t rd : %u \t sa : %u \n",b.rs,b.rt,b.rd,b.sa);
+     b.immediate =(int) (a & masque_immediate); //
+     printf("On recupere immediate : %08x -- %d --- %d \n",b.immediate,b.immediate,temp_signed);
+    printf (" rs : %u \t rt : %u \t immediate : %d \n",b.rs,b.rt,b.immediate);
 
 
 //    bin_print_int(a);

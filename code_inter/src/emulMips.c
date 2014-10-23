@@ -8,6 +8,7 @@
 
 
 #include "fonction_token.h"
+#include "registre.h"
 
 
 
@@ -24,6 +25,9 @@ int main ( int argc, char *argv[] ) {
     FILE *fp = NULL; /* le flux dans lequel les commande seront lues : stdin (mode shell) ou un fichier */
     mem memoire_virtuelle=NULL;
     stab tableau_symboles;// table des symboles;
+    map_reg * mrg; //MAP DE TOUT LES REGISTRES
+
+    mrg=creer_map_reg();
 
 
     if ( argc > 2 ) {
@@ -56,7 +60,7 @@ int main ( int argc, char *argv[] ) {
         if (acquire_line( fp,  inter)  == 0 ) {
             /* Une nouvelle ligne a ete acquise dans le flux fp*/
 
-            int res = execute_cmd(inter,&memoire_virtuelle,&tableau_symboles); /* execution de la commande */
+            int res = execute_cmd(inter,&memoire_virtuelle,&tableau_symboles,mrg); /* execution de la commande */
 
             // traitement des erreurs
             switch(res) {

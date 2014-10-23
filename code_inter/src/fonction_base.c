@@ -154,7 +154,7 @@ int exitcmd(interpreteur inter) {
 * @return CMD_UNKOWN_RETURN_VALUE si la commande n'est pas reconnue. (-2)
 * @return tout autre nombre (eg tout nombre positif) si erreur d'execution de la commande
 */
-int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab)
+int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg)
 {
     DEBUG_MSG("input '%s'", inter->input);
     char cmdStr[MAX_STR];
@@ -192,7 +192,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab)
     }
     else if(strcmp(token,"disasm")==0)
     {    
-        return cmd_disasm(inter,*vmemoire);
+        return cmd_disasm(inter,*vmemoire,*mrg);
     }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;
