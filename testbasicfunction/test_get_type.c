@@ -144,7 +144,7 @@ int erreur=0;
 return erreur;}
 
 
-
+//On affiche le typer de differentes variables !
 
 int main () {
 

@@ -79,7 +79,7 @@ else {int j=0;
 //return 1;
 }
 
-
+//On lit toutes les commandes du dictionnaire et on affiche toutes les caracteristiques
 
 int main() { 
 

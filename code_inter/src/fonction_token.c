@@ -43,7 +43,12 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification)
                             INFO_MSG("VOICI LES REGISTRES QUE L'ON VA AFFICHER :");
                             for (i = 0; i < 70; i++)
                             {
-                               if(strcmp(tab_reg_demm[i],"")!=0) INFO_MSG(" %s ",tab_reg_demm[i]);
+                               if(strcmp(tab_reg_demm[i],"")!=0) 
+                                {
+                                    int numero;
+                                    sscanf(tab_reg_demm[i]+1,"%d",&numero);
+                                    INFO_MSG(" %s , %d ",tab_reg_demm[i],numero);
+                                }
                             }
                              break;
 

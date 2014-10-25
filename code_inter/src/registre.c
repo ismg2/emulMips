@@ -81,8 +81,8 @@ void suppr_map_reg(map_reg rm) {
         free(rm);
     }
 }
-
-// Fonction qui renvoie une plage de registre (qui peut se réduire un comme à toute la page)
+*/
+ //Fonction qui renvoie une plage de registre (qui peut se réduire un comme à toute la page)
 void affiche_reg (int indic, int origine, int fin, map_reg rm) {
     int i;
     if (indic==1) {
@@ -90,7 +90,7 @@ void affiche_reg (int indic, int origine, int fin, map_reg rm) {
             ERROR_MSG("Votre registre n'existe pas.");
         }
         else {
-            printf("%d", *(rm->pointeur));
+            printf("%s : %d",rm[origine].mnemonique, *(rm[origine].pointeur));
             return;
         }
     }
@@ -122,7 +122,7 @@ void affiche_reg (int indic, int origine, int fin, map_reg rm) {
 
 
 
-*/
+
 /* Fonctions associées au numero du registre*/
 
 /* Fonction qui copie la valeur située dans le registre source vers le registre de destination

@@ -283,7 +283,8 @@ char * convert_num_mnemonique(map_reg * rm, int num)
 }
 
 
-// Test reg
+// il s'agit ici pour le moment de l'implementation du tableaux de registre ainsi que de la fonction qui donne la mnemonique en fontion du numero
+
 int main(){
     map_reg * mrg;
     int res;

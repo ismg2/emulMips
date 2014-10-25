@@ -9,6 +9,4 @@
 #TEST_COMMENT="Teste fonctionnement standard"\
 #-------\
 \
-display mem \
-disp m\'e9moire \
-disp }
+display mem }

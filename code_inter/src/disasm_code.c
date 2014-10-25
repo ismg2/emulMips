@@ -149,8 +149,8 @@ int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * d
                 { 
                   uint32_t temp_adr2;
                   sscanf(token,"%x",&temp_adr2);
-                  int dif = ((int)temp_adr2-(int)*adr1)%4;
-                  DEBUG_MSG(" ADR2 %08x :: ADR1 %08x",temp_adr2,*adr1);
+                  int dif = ((int)temp_adr2 - (int)*adr1)%4;
+                  DEBUG_MSG(" ADR2 %d :: ADR1 %d",temp_adr2,*adr1);
                   DEBUG_MSG("Decalage : %d ",dif);
                   if (dif!=0) return MAUVAIS_DECALAGE;
                   else 
