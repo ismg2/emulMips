@@ -1,24 +1,26 @@
 #include "registre.h"
 
 
-// Fonction : créer ensemble des registres, copier reg dans autre, suppr registre, initialiser registre, transformer mnémonique en numéro
-
-map_reg remplir_registre(char* mnemo, int num, int val)
+/* Fonction permettant de remplir un registre
+    map_reg rm : 
+ */
+map_reg remplir_registre(char* mnemo, int num, uint32_t val)
 {
     map_reg  temp = calloc(1, sizeof(*temp));
-
         temp->numero=num;
-        temp->pointeur=&val;
+        temp->valeur=val;
         temp->mnemonique=strdup(mnemo);
     return temp;
 }
 
+// Fonction qui crée la map_reg en remplissant chaque registre individuellement
 map_reg * creer_map_reg() 
 {
     map_reg *  rm;
     rm=calloc(38,sizeof(*rm));
     rm[0]= remplir_registre("$zero", 0, 0);
-        rm[1]= remplir_registre("$at", 1, 0);
+    //printf ("%s \n",*rm[0]->mnemonique);
+    rm[1]= remplir_registre("$at", 1, 0);
     rm[2]= remplir_registre("$v0", 2, 0);
     rm[3]= remplir_registre("$v1", 3, 0);
     rm[4]= remplir_registre("$a0", 4, 0);
@@ -53,72 +55,62 @@ return rm;
 }
 
 
+// Fonction qui permet la supression d'un registre à partir 
 /*
-//map_reg creer_map_reg() {
-//	char*p;
-	
-
-
-
-
-
-void suppr_reg (map_reg rm, int num) {
-    if((rm+num)->mnemonique != NULL) {
-        free((rm+num)->mnemonique);
+void suppr_reg (map_reg * rm, int num) 
+{
+    if(rm[num]->mnemonique != NULL) 
+    {
+        free(rm[num]->mnemonique);
     }
-    if((rm+num)->pointeur != NULL) {
-        free((rm+num)->pointeur);
+    if((rm+num)->pointeur != NULL) 
+    {
+        free(rm[num]->mnemonique);
     }
-    free((rm+num));
+    free(rm[num]);
 }
 
-void suppr_map_reg(map_reg rm) {
-	int i;
-    if (rm!=NULL){
-        for (i=0; i<32; i++){
+void suppr_map_reg(map_reg * rm) 
+{
+    int i;
+    if (rm!=NULL)
+    {
+        for (i=0; i<31; i++)
+        {
             suppr_reg(rm,i);
         }
         free(rm);
     }
 }
 */
- //Fonction qui renvoie une plage de registre (qui peut se réduire un comme à toute la page)
-void affiche_reg (int indic, int origine, int fin, map_reg rm) {
+// Fonction qui renvoie une plage de registre (qui peut se réduire un comme à toute la page)
+void affiche_reg (int indic, int numero, map_reg * rm) {
     int i;
-    if (indic==1) {
-        if ( (origine <0) || (origine > 32) ) {
+    if (indic==AFFICHE_1) 
+    {
+        if ( (numero <0) || (numero > 32) ) 
+        {
             ERROR_MSG("Votre registre n'existe pas.");
         }
-        else {
-            printf("%s : %d",rm[origine].mnemonique, *(rm[origine].pointeur));
-            return;
+        else 
+        {
+            printf(" %s : %u \t",rm[numero]->mnemonique, (rm[numero]->valeur));
         }
     }
-    if (indic==0) {
-        if ( (origine <0) || (origine > 32) ) {
-            WARNING_MSG("Votre registre d'origine n'existe pas.");
-            return;
+
+    else if (indic==AFFICHE_TOUT) {
+        printf("\n-------------------------------------------------------------------------------\n");
+        for(i=0; i<31; i++) {
+            printf(" %s : %u \t",rm[i]->mnemonique, (rm[i]->valeur));
+            if(i%4==0) {printf("\n");}
         }
-        else if ( (fin <0) || (fin > 32) ) {
-            WARNING_MSG("Votre registre de fin n'existe pas");
-            return;
-        }
-        else {
-            for(i=origine; i<fin; i++) {
-                printf("%d", *((rm->pointeur)+i));
-            }
-        }
-    }
-    if (indic==2) {
-        for(i=0; i<32; i++) {
-            printf("%d", *((rm->pointeur)+i));
-        }
+        printf("\n-------------------------------------------------------------------------------\n");
     }
     else {
         WARNING_MSG("L'indicateur n'est pas reconnu.");
         return;
     }
-}
+printf("\n");}
 
 
 
@@ -126,64 +118,75 @@ void affiche_reg (int indic, int origine, int fin, map_reg rm) {
 /* Fonctions associées au numero du registre*/
 
 /* Fonction qui copie la valeur située dans le registre source vers le registre de destination
-    > map_reg : pointeur sur l'ensemble des registres
+    > map_reg : pointeur sur l'ensemble     printf("Première modif via num\n");des registres
     > num_src : numero du registre source
     > num_dest : numero du registre de destination
  */
-/*
-void copier_reg_reg_via_num (map_reg rm, int num_src, int num_dest) {
-    if ( (num_src <0) || (num_src > 32) ) {
+void copier_reg_reg_via_num (map_reg * rm, int num_src, int num_dest) {
+    if ( (num_src <0) || (num_src > 31) ) {
         WARNING_MSG("Votre registre source n'existe pas");
     }
-    else if( (num_dest <0) || (num_dest > 32) ) {
+    else if( (num_dest <0) || (num_dest > 31) ) {
         WARNING_MSG("Votre registre destination n'existe pas");
     }
     else {
-      int valeur=*((rm+num_src)->pointeur);
-      *((rm+num_dest)->pointeur)=valeur;
+      int valeur=rm[num_src]->valeur;
+      rm[num_dest]->valeur=valeur;
+    printf("Valeur dans registre %s : %d\n",rm[num_dest]->mnemonique,rm[num_dest]->valeur);
       return;
     }
 }
 
-int renvoi_reg_num (map_reg rm, int num) {
-    int valeur;
-    if ( (num <0) || (num > 32) ) {
+
+// Fonction qui renvoi la valeur stockée dans un registre à partir du numero du registre
+uint32_t renvoi_reg_num (map_reg * rm, int num) {
+    uint32_t valeur;
+    if ( (num <0) || (num > 31) ) 
+    {
         WARNING_MSG("Votre registre n'existe pas");
         return -1;
     }
-    else {
-        valeur=*((rm+num)->pointeur);
+    else 
+    {
+        valeur=rm[num]->valeur;
         return valeur;
     }
 }
 
-void modif_reg_num (int num, map_reg rm, int contenu) {
-	int i;
-    if ( (num <0) | (num > 32) ) {
+
+// Fonction qui modifie la valeur stockée dans un registre à partir du numero du registre
+void modif_reg_num (int num, map_reg * rm, int contenu) {
+    int i;
+    printf("NUM=%d\n", num);
+    if ( (num <0) | (num > 31) ) {
         WARNING_MSG("Votre registre source n'existe pas");
+        return;
     }
-    else {
-        if (num==( rm + i )->numero) {
-            if ( (i=0) || (i=26) || (i=27) || (i=28) || (i=30) ) {
-                WARNING_MSG("Vous ne pouvez modifier ce registre");
-                return;
-            }
-            else {
-                (*(rm+i)->pointeur)=contenu;
-                return;
-            }
+    if ( (num==0) || (num==26) || (num==27) || (num==28) || (num==30) ) 
+    {
+        WARNING_MSG("Vous ne pouvez modifier ce registre : Les registres 0 26 27 28 30 ne peuvent pas être modifié !!!");
+        return;
+    }
+    for(i=0; i<31; i++)
+    {
+        if (num==rm[i]->numero) 
+        {
+            rm[i]->valeur=contenu;
+            return;
         }
     }
+    WARNING_MSG("Problème non prévu");
 }
 
 
 
-*/
+
 /* Fonction massociée au dollar_numero du registre*/
+
 /*
 int convert_dollarnum_num(map_reg rm, char* dollarnum) {
     int result;
-    sscanf(dollarnum, "%d", &result);
+    sscanf(dollarnum, "%d", result);
     return result;
 }
 
@@ -193,8 +196,8 @@ void modif_reg_dollarnum (char* dollarnum, map_reg rm, int contenu) {
     return;
 }
 
-int renvoi_reg_dollarnum (map_reg rm, char* dollarnum) {
-	int result;
+uint32_t renvoi_reg_dollarnum (map_reg rm, char* dollarnum) {
+    uint32_t result;
     int num_assoc=convert_dollarnum_num(rm, dollarnum);
     result=renvoi_reg_num(rm, num_assoc);
     return result;
@@ -212,12 +215,12 @@ void copier_reg_reg_via_dollarnum (map_reg rm, char* dollarnum_src, char* dollar
 /* Fonctions associées au mnemonique*/
 /*
 int convert_mnemo_num(map_reg rm, char* mnemo) {
-	int i;
+    int i;
     int num_cspd;
-    for (i=0; i<32; i++) {
-        if (mnemo==(rm+i)->mnemonique) {
+    for (i=0; i<31; i++) {
+        if (strncmp(mnemo,(rm+i)->mnemonique, 3)==0) {
             num_cspd=(rm+i)->numero;
-			return(num_cspd);
+            return(num_cspd);
         }
     }
     WARNING_MSG("Votre mnemonique ne correspond à aucun registre");
@@ -227,11 +230,13 @@ int convert_mnemo_num(map_reg rm, char* mnemo) {
 void modif_reg_mnemo (char* mnemo, map_reg rm, int contenu) {
     int num_assoc=convert_mnemo_num(rm, mnemo);
     modif_reg_num(num_assoc, rm, contenu);
+    printf("Contenu théorique : %d \n", contenu);
+    printf("Contenu du pointeur : %d \n", *((rm+num_assoc)->pointeur));
     return;
 }
 
-int renvoi_reg_mnemo (map_reg rm, char* mnemo) {
-	int resultat;
+uint32_t renvoi_reg_mnemo (map_reg rm, char* mnemo) {
+    uint32_t resultat;
     int num_assoc=convert_mnemo_num(rm, mnemo);
     renvoi_reg_num(rm, num_assoc);
     return resultat;
@@ -240,25 +245,29 @@ int renvoi_reg_mnemo (map_reg rm, char* mnemo) {
 void copier_reg_reg_via_mnemo (map_reg rm, char* mnemo_src, char* mnemo_dest) {
     int num_assoc_src=convert_mnemo_num(rm, mnemo_src);
     int num_assoc_dest=convert_mnemo_num(rm, mnemo_dest);
+    printf("num_assoc_src : %d \n", num_assoc_src);
+    printf("num_assoc_dest : %d \n", num_assoc_dest);
     copier_reg_reg_via_num (rm, num_assoc_src, num_assoc_dest);
     return;
 }
 */
 char * convert_num_mnemonique(map_reg rm, int num)  
 {
-	int i;
-	char * mnemo=calloc(64,sizeof(*mnemo));
-	for (i=0; i<32; i++)
+    int i;
+    char * mnemo=calloc(64,sizeof(*mnemo));
+    for (i=0; i<32; i++)
     {
-		if(num==rm[i].numero) 
+        if(num==rm[i].numero) 
         { 
             mnemo=strdup(rm[i].mnemonique);
-			return mnemo;					
-		}
-	}
-	WARNING_MSG("Votre numero ne correspond pas à un mnemonique connu.");
-	mnemo[0]=0;
-	return mnemo;
+            return mnemo;                   
+        }
+    }
+    WARNING_MSG("Votre numero ne correspond pas à un mnemonique connu.");
+    mnemo[0]=0;
+    return mnemo;
 }
+
+
 
 

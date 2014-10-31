@@ -101,11 +101,13 @@ void affiche_reg (int indic, int numero, map_reg * rm) {
         }
     }
 
-    if (indic==AFFICHE_TOUT) {
+    else if (indic==AFFICHE_TOUT) {
+        printf("\n-------------------------------------------------------------------------------\n");
         for(i=0; i<31; i++) {
-            printf(" %s : %08x \t",rm[i]->mnemonique, (rm[i]->valeur));
+            printf(" %s : %u \t",rm[i]->mnemonique, (rm[i]->valeur));
             if(i%4==0) {printf("\n");}
         }
+        printf("\n-------------------------------------------------------------------------------\n");
     }
     else {
         WARNING_MSG("L'indicateur n'est pas reconnu.");
@@ -123,8 +125,7 @@ printf("\n");}
     > num_src : numero du registre source
     > num_dest : numero du registre de destination
  */
-/*
-void copier_reg_reg_via_num (map_reg rm, int num_src, int num_dest) {
+void copier_reg_reg_via_num (map_reg * rm, int num_src, int num_dest) {
     if ( (num_src <0) || (num_src > 31) ) {
         WARNING_MSG("Votre registre source n'existe pas");
     }
@@ -132,51 +133,57 @@ void copier_reg_reg_via_num (map_reg rm, int num_src, int num_dest) {
         WARNING_MSG("Votre registre destination n'existe pas");
     }
     else {
-      int valeur=*((rm+num_src)->valeur);
-      *((rm+num_dest)->valeur)=valeur;
-	printf("Valeur dans registre : %d\n", *((rm+num_dest)->valeur));
+      int valeur=rm[num_src]->valeur;
+      rm[num_dest]->valeur=valeur;
+	printf("Valeur dans registre %s : %d\n",rm[num_dest]->mnemonique,rm[num_dest]->valeur);
       return;
     }
 }
 
+
 // Fonction qui renvoi la valeur stockée dans un registre à partir du numero du registre
-uint32_t renvoi_reg_num (map_reg rm, int num) {
+uint32_t renvoi_reg_num (map_reg * rm, int num) {
     uint32_t valeur;
-    if ( (num <0) || (num > 31) ) {
+    if ( (num <0) || (num > 31) ) 
+    {
         WARNING_MSG("Votre registre n'existe pas");
         return -1;
     }
-    else {
-        valeur=*((rm+num)->valeur);
+    else 
+    {
+        valeur=rm[num]->valeur;
         return valeur;
     }
 }
 
+
 // Fonction qui modifie la valeur stockée dans un registre à partir du numero du registre
-void modif_reg_num (int num, map_reg rm, int contenu) {
+void modif_reg_num (int num, map_reg * rm, int contenu) {
 	int i;
 	printf("NUM=%d\n", num);
 	if ( (num <0) | (num > 31) ) {
         WARNING_MSG("Votre registre source n'existe pas");
 		return;
     }
-	if ( (num==0) || (num==26) || (num==27) || (num==28) || (num==30) ) {
-    	WARNING_MSG("Vous ne pouvez modifier ce registre");
+	if ( (num==0) || (num==26) || (num==27) || (num==28) || (num==30) ) 
+    {
+    	WARNING_MSG("Vous ne pouvez modifier ce registre : Les registres 0 26 27 28 30 ne peuvent pas être modifié !!!");
     	return;
     }
-	for(i=0; i<31; i++){
-		if (num==( rm + i )->numero) {
-			(*(rm+i)->valeur)=contenu;
+	for(i=0; i<31; i++)
+    {
+		if (num==rm[i]->numero) 
+        {
+			rm[i]->valeur=contenu;
 			return;
 		}
 	}
     WARNING_MSG("Problème non prévu");
-	return;
 }
 
 
 
-*/
+
 /* Fonction massociée au dollar_numero du registre*/
 
 /*
@@ -274,7 +281,43 @@ int main(){
     mrg=creer_map_reg();
     printf("INITIALISATION TERMINEE\n");
 
+    // On affiche le tableau de tout les registres
+
     affiche_reg(AFFICHE_TOUT,0,mrg);
+
+    //On modifie la valeur des registres 0 4 2 9 12 89
+    
+    printf(" ON MET dans $0 la valeur 8\n");
+    modif_reg_num(0,mrg,8);
+    printf(" ON MET dans $4 la valeur 18\n");
+    modif_reg_num(4,mrg,18);
+    printf(" ON MET dans $2 la valeur 80\n");
+    modif_reg_num(2,mrg,80);
+    printf(" ON MET dans $9 la valeur 23\n");
+    modif_reg_num(9,mrg,23);
+    printf(" ON MET dans $12 la valeur 6\n");
+    modif_reg_num(12,mrg,6);
+    printf(" ON MET dans $89 la valeur 37\n");
+    modif_reg_num(89,mrg,37);
+
+
+    printf("--------------------------------------------------------------------------------\n");
+    affiche_reg(AFFICHE_1,0,mrg);
+    affiche_reg(AFFICHE_1,4,mrg);
+    affiche_reg(AFFICHE_1,2,mrg);
+    affiche_reg(AFFICHE_1,9,mrg);
+    affiche_reg(AFFICHE_1,12,mrg);
+    printf("\n----------------------------------------------------------------------------------\n");
+
+    // On copie la valeur du registre 2 dans celui du registre 12
+
+    copier_reg_reg_via_num (mrg,2,12);
+
+
+    printf("--------------------------------------------------------------------------------\n");
+    affiche_reg(AFFICHE_TOUT,0,mrg);
+    printf("--------------------------------------------------------------------------------\n");
+
 
     // Test via num
 //    modif_reg_num(2, mrg, 42);

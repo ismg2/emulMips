@@ -179,7 +179,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg)
         return testcmd(inter);
     }
     else if (strcmp(token,"disp")== 0) {
-        return cmd_disp(inter,*vmemoire,*symtab);
+        return cmd_disp(inter,*vmemoire,*symtab,mrg);
     }
     else if(strcmp(token,"assert")==0)
     {
@@ -192,7 +192,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg)
     }
     else if(strcmp(token,"disasm")==0)
     {    
-        return cmd_disasm(inter,*vmemoire,*mrg);
+        return cmd_disasm(inter,*vmemoire,mrg);
     }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;

@@ -35,31 +35,28 @@ return compteur;
 
 // Fonction qui affiche tout les registres demandé , une fois qu'aucune erreur n'a été detecté
 
-void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification)
+void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,map_reg * mrg)
 {int i ;
   switch(verification)
   {
-  case CMD_DISP_REG_OK : DEBUG_MSG("AFFICHAGE d'une liste de registre");
-                            INFO_MSG("VOICI LES REGISTRES QUE L'ON VA AFFICHER :");
-                            for (i = 0; i < 70; i++)
+  case CMD_DISP_REG_OK : //DEBUG_MSG("AFFICHAGE d'une liste de registre");
+                         //DEBUG_MSG("VOICI LES REGISTRES QUE L'ON VA AFFICHER :");
+                            for (i = 0; i < 32; i++)
                             {
                                if(strcmp(tab_reg_demm[i],"")!=0) 
                                 {
                                     int numero;
                                     sscanf(tab_reg_demm[i]+1,"%d",&numero);
-                                    INFO_MSG(" %s , %d ",tab_reg_demm[i],numero);
+                                    //DEBUG_MSG(" %s , ' %d ' ",tab_reg_demm[i],numero);
+                                    affiche_reg (AFFICHE_1,numero,mrg);
                                 }
                             }
                              break;
 
-  case CMD_DISP_REG_ALL_OK : INFO_MSG("ON AFFICHE TOUT "); break;
+  case CMD_DISP_REG_ALL_OK : INFO_MSG("ON AFFICHE TOUT ");
+                             affiche_reg (AFFICHE_TOUT,0,mrg); break;
 
-  case CMD_DISP_REG_PLAGE_OK : INFO_MSG("VOICI LA PLAGE QUE L'ON VA AFFICHER :");
-                            for (i = 0; i < 70; i++)
-                            {
-                                INFO_MSG(" %s ",tab_reg_demm[i]);
-                            }
-                            break;
+  
     default : WARNING_MSG("POSITION IMPOSSIBLE");
     }
 
@@ -239,7 +236,7 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
    char * two_point;
    
    int i=0;
-        INFO_MSG("INPUT test_cmd_dispreg : %s",token);
+        //INFO_MSG("INPUT test_cmd_dispreg : %s",token);
         //INFO_MSG("TWO POINTS  : %s",two_point);
 
 
@@ -263,11 +260,11 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
 */
 
    else if(reg_exist(token,tab_tout_reg)==0)  
-    {   DEBUG_MSG("TOKEN : '%s' ",token);
+    {   //DEBUG_MSG("TOKEN : '%s' ",token);
         while(token != NULL && !reg_exist(token,tab_tout_reg))
        { 
             
-            DEBUG_MSG("TOKEN BOUCLE : %s",token);
+            //DEBUG_MSG("TOKEN BOUCLE : %s",token);
             if (reg_exist(token, tab_tout_reg)==0)
             {
                 tab_reg_commander[i]=strdup(token);
@@ -278,7 +275,7 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
             }
 
             token = get_next_token(inter);
-            printf("%p\n", &token); // l'adresse du prochain token est NULL, ce n'est pas normal !!!!!
+            //printf("%p\n", &token); // l'adresse du prochain token est NULL, ce n'est pas normal !!!!!
             i++;
         }
         
@@ -291,7 +288,7 @@ return ERROR;
 }
 
 
-int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB) 
+int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg) 
 {
     DEBUG_MSG("Chaine : %s", inter->input);
     int verif;
@@ -330,9 +327,8 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB)
                 verif = test_cmd_dispreg(inter,tab_all_reg,tab_reg_dem);
                 switch(verif)
                 {
-                case CMD_DISP_REG_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_OK);break;
-                case CMD_DISP_REG_ALL_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_ALL_OK);break;
-                case CMD_DISP_REG_PLAGE_OK :execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_PLAGE_OK);break;
+                case CMD_DISP_REG_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_OK,mrg);break;
+                case CMD_DISP_REG_ALL_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_ALL_OK,mrg);break;
                    
                 default : erreur_cmd_disp(verif);break;
                 }
