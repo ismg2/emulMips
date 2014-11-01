@@ -41,6 +41,7 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,m
   {
   case CMD_DISP_REG_OK : //DEBUG_MSG("AFFICHAGE d'une liste de registre");
                          //DEBUG_MSG("VOICI LES REGISTRES QUE L'ON VA AFFICHER :");
+                         printf("----------------------------------------\n");
                             for (i = 0; i < 32; i++)
                             {
                                if(strcmp(tab_reg_demm[i],"")!=0) 
@@ -48,9 +49,12 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,m
                                     int numero;
                                     sscanf(tab_reg_demm[i]+1,"%d",&numero);
                                     //DEBUG_MSG(" %s , ' %d ' ",tab_reg_demm[i],numero);
+                                    
                                     affiche_reg (AFFICHE_1,numero,mrg);
+                                   
                                 }
                             }
+                            printf("----------------------------------------\n");
                              break;
 
   case CMD_DISP_REG_ALL_OK : INFO_MSG("ON AFFICHE TOUT ");
@@ -64,11 +68,15 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,m
 
 // Retourne 0 si les registres existent 1 sinon
 
-int reg_exist(char * reg1,char ** tab_tout_reg)
+int reg_exist(char * reg1,char ** tab_tout_reg,int * classement)
 { int j=0;int erreur=1;
     while(j<69&&erreur!=0)
     {
-    if(strcmp(reg1,tab_tout_reg[j])==0)  erreur=0;
+    if(strcmp(reg1,tab_tout_reg[j])==0)  
+    {
+        erreur=0;
+        *classement=j;
+    }
     else j++;   
     }
 return erreur;
@@ -230,12 +238,14 @@ void erreur_cmd_disp(verif)
 
 
 
-int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_commander)
+int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_commander,map_reg * mrg)
 { 
    char * token=get_next_token(inter);
    char * two_point;
-   
+   int indicateur;
    int i=0;
+   int numero;
+   
         //INFO_MSG("INPUT test_cmd_dispreg : %s",token);
         //INFO_MSG("TWO POINTS  : %s",two_point);
 
@@ -257,17 +267,30 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
                 return CMD_DISP_REG_PLAGE_OK;
             }
    }
-*/
+*/              // Nous avons choisi d'afficher un message d'erreur lorsque un des registres entré n'est pas bon !!!
 
-   else if(reg_exist(token,tab_tout_reg)==0)  
+   else if(reg_exist(token,tab_tout_reg,&indicateur)==0)  
     {   //DEBUG_MSG("TOKEN : '%s' ",token);
-        while(token != NULL && !reg_exist(token,tab_tout_reg))
+        while(token != NULL) //&& !reg_exist(token,tab_tout_reg))
        { 
             
             //DEBUG_MSG("TOKEN BOUCLE : %s",token);
-            if (reg_exist(token, tab_tout_reg)==0)
+            if (reg_exist(token, tab_tout_reg,&indicateur)==0)
             {
+                if ( indicateur >= 35) 
+                {
+                    //DEBUG_MSG("INDICATEUR enclecnhé : convertie mnemo en nombre");
+                    char dollar[32] = "$";
+                    numero = convert_mnemo_num(mrg,token);
+                    DEBUG_MSG("Le registre %s correspond au numero : %d",token,numero);
+                    sprintf(token,"%d",numero);
+                    DEBUG_MSG("RETOUR A LA CHAINE DE CARACTERE : %s",token);
+                    strcat(dollar,token);
+                    strcpy(token,dollar);
+                    DEBUG_MSG("RETOUR A LA CHAINE DE CARACTERE AVEC DOLLAR : %s",token);
+                }
                 tab_reg_commander[i]=strdup(token);
+                
             }
             else 
             {
@@ -324,7 +347,7 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg)
         {   DEBUG_MSG("Debut du traitement de la demande d'affichage des registres"); 
             tab_all_reg=init_tab_registre();
             tab_reg_dem=init_matrice();
-                verif = test_cmd_dispreg(inter,tab_all_reg,tab_reg_dem);
+                verif = test_cmd_dispreg(inter,tab_all_reg,tab_reg_dem,mrg);
                 switch(verif)
                 {
                 case CMD_DISP_REG_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_OK,mrg);break;

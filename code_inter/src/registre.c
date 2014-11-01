@@ -90,7 +90,7 @@ void affiche_reg (int indic, int numero, map_reg * rm) {
     {
         if ( (numero <0) || (numero > 32) ) 
         {
-            ERROR_MSG("Votre registre n'existe pas.");
+            WARNING_MSG("Votre registre n'existe pas.");
         }
         else 
         {
@@ -213,20 +213,21 @@ void copier_reg_reg_via_dollarnum (map_reg rm, char* dollarnum_src, char* dollar
 
 */
 /* Fonctions associées au mnemonique*/
-/*
-int convert_mnemo_num(map_reg rm, char* mnemo) {
+
+int convert_mnemo_num(map_reg * rm, char* mnemo) {
     int i;
     int num_cspd;
     for (i=0; i<31; i++) {
-        if (strncmp(mnemo,(rm+i)->mnemonique, 3)==0) {
-            num_cspd=(rm+i)->numero;
-            return(num_cspd);
+        if (strcmp(mnemo,rm[i]->mnemonique)==0) 
+        {
+            num_cspd=rm[i]->numero;
+            return num_cspd;
         }
     }
     WARNING_MSG("Votre mnemonique ne correspond à aucun registre");
     return 42;
 }
-
+/*
 void modif_reg_mnemo (char* mnemo, map_reg rm, int contenu) {
     int num_assoc=convert_mnemo_num(rm, mnemo);
     modif_reg_num(num_assoc, rm, contenu);

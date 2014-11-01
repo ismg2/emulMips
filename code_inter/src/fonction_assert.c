@@ -111,11 +111,12 @@ void erreur_cmd_assert(verif)
 int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1,char ** value)
 { 
 //   int i=0;
+int a;
         INFO_MSG("INPUT test_cmd_ASSERT_reg : %s",reg1);
 
     if(reg1==NULL) return NO_VALUE_REG;
         
-   else if(reg_exist(reg1,tab_tout_reg)==0)  
+   else if(reg_exist(reg1,tab_tout_reg,&a)==0)  
     {  
         *value = get_next_token(inter);
         DEBUG_MSG("Valeur à tester : %s",*value);

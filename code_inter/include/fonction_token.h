@@ -11,12 +11,12 @@ enum {CMD_DISP_MEM_PLAGE_OK,  CMD_DISP_MEM_MAP_OK   ,CMD_DISP_REG_OK,CMD_DISP_RE
 
 int taille(char* chaine);
 int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg *  mrg);
-int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_commander);
+int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_commander,map_reg * mrg);
 void erreur_cmd_disp(int verif);
 int test_cmd_disp_mem(interpreteur inter,char * adr1,char * adr2,mem memoires);
 char** init_tab_registre();
 void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,map_reg * mrg);
-int reg_exist(char * reg1,char ** tab_tout_reg);
+int reg_exist(char * reg1,char ** tab_tout_reg,int * classement);
 void aff(char **m, int b);
 int execute_fonction_load(char * file_name,mem * memoire, stab * symtab);
 int cmd_load(char * file_name,mem * memoire,stab * symtab);
