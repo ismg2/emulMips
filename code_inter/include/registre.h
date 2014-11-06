@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <string.h>
 #include "common/notify.h"
 
 enum {AFFICHE_TOUT,AFFICHE_1};
@@ -32,7 +33,7 @@ int convert_mnemo_num(map_reg * rm, char* mnemo);
 void modif_reg_mnemo (char* mnemo, map_reg * rm, int contenu);
 uint32_t renvoi_reg_mnemo (map_reg * rm, char* mnemo);
 void copier_reg_reg_via_mnemo (map_reg * rm, char* mnemo_src, char* mnemo_dest);
-char * convert_num_mnemonique(map_reg  rm, int num);
+char * convert_num_mnemonique(map_reg *  rm, int num);
 //int test();
 
 #ifdef __cplusplus

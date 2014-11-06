@@ -1,42 +1,49 @@
 #include "liste.h"
 
 
-Liste_A creer_liste(void)
+liste creer_liste(void)
 { return NULL;  } /* la liste vide est representée par NULL */
 
-int est_vide(Liste_A L)
+int est_vide(liste L)
 { return !L; }
 
 
-void visualiser_liste(Liste_A L) //visualiser_liste
+void visualiser_liste(liste L) //visualiser_liste
 
-{ Liste_A p;
+{ printf("\n");
+    liste p;
+    int i=0;
+    if(L==NULL) 
+        {
+            printf("Il n'y a pas de Break Point !! \n");
+        }
+
     for (p=L;!est_vide(p); p=p->suiv)
- {
- printf("\n \n");
+    {
+        printf("#%d : %04x \n",i,p->val.adresse_BP);
+        i++;
+    }
  
-}
- 
-}
+printf("\n");}
 
 
-Liste_A ajout_tete(int C, Liste_A L)
-{ Liste_A p=calloc(1,sizeof(*p));
+liste ajout_tete(BP C, liste L)
+{ liste p=calloc(1,sizeof(*p));
     if (p==NULL) return NULL;
     else {p->val=C;
         p->suiv=L;}
     
     return p;}
 
-Liste_A supprimer_tete(Liste_A L)
-{   Liste_A p;
+liste supprimer_tete(liste L)
+{   liste p;
     
     p=L->suiv;
     free(L);
     return p;}
 
-Liste_A ajout_queue(int C, Liste_A L)
-{ Liste_A p; Liste_A k;
+liste ajout_queue(BP C, liste L)
+{ liste p; liste k;
     p=calloc(1,sizeof(*p));
     p->val=C;
     if(!est_vide(L))
@@ -48,16 +55,19 @@ Liste_A ajout_queue(int C, Liste_A L)
     }
     else p->suiv=NULL;
     
+    return p;
+}
+
+liste supprimen(int n, liste L)
+{ liste p=L;int i=0;liste k;
+/**
+ * 
+ */
+
     return p;}
 
-Liste_A supprimen(int n, Liste_A L)
-{ Liste_A p; Liste_A k;int i=1;
-    
-    puts("je sais pas comment faire essaye le reste !!!");
-    return 0;}
-
-Liste_A concat(Liste_A l1, Liste_A l2)
-{Liste_A q=NULL;
+liste concat(liste l1, liste l2)
+{liste q=NULL;
     
     if(l1==NULL) { return l2; }
     
@@ -69,8 +79,8 @@ Liste_A concat(Liste_A l1, Liste_A l2)
 }                                         //Il n'arrivent rien a l2 par contre l1 est rallongé //
 
 
-Liste_A copie(Liste_A l)
-{ Liste_A p; Liste_A copie;
+liste copie(liste l)
+{ liste p; liste copie=NULL;
     
     for(p=l;p->suiv!=NULL;p=p->suiv)
     {

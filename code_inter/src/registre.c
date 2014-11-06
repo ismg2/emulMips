@@ -252,15 +252,15 @@ void copier_reg_reg_via_mnemo (map_reg rm, char* mnemo_src, char* mnemo_dest) {
     return;
 }
 */
-char * convert_num_mnemonique(map_reg rm, int num)  
+char * convert_num_mnemonique(map_reg * rm, int num)  
 {
     int i;
     char * mnemo=calloc(64,sizeof(*mnemo));
     for (i=0; i<32; i++)
     {
-        if(num==rm[i].numero) 
+        if(num==rm[i]->numero) 
         { 
-            mnemo=strdup(rm[i].mnemonique);
+            mnemo=strdup(rm[i]->mnemonique);
             return mnemo;                   
         }
     }
