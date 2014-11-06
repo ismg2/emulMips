@@ -178,6 +178,28 @@ int bp_already_here(BP break_p,liste lBP)
 return retour;}
 
 
+liste ranger_ordre_croissant(liste l)
+{
+	liste p;
+	BP petite=l->val;
+	liste liste_ordonne=creer_liste();
+	i=0;
+
+	while(l!=NULL)
+	{
+		for(p=l;!est_vide(p);p=p->suiv)
+		{
+			if(petite->adresse_BP > p->val->adresse_BP) 
+			{
+				liste_ordonne = ajout_tete(petite,liste_ordonne);
+				l=supprimen(i,l);
+			}
+			i++;
+		}
+	}
+return liste_ordonne;}
+
+
 
 
 

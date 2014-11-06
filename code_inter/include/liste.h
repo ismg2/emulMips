@@ -28,5 +28,6 @@ liste ajout_queue(BP C, liste L);
 liste supprimen(int n, liste L);
 liste concat(liste l1, liste l2);
 liste copie(liste l);
+liste ranger_ordre_croissant(liste l);
 
 #endif
