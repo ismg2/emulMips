@@ -1,0 +1,41 @@
+ADD R 0x00000020 0xfc0007ff 3 rd rs rt 1
+ADDU R 0x00000021 0xfc0007ff 3 rd rs rt 2
+ADDI I 0x20000000 0xfc000000 3 rt rs immediate 3
+ADDIU I 0x24000000 0xfc000000 3 rt rs immediate 4
+SUB R 0x00000022 0xfc0007ff 3 rd rs rt 5
+SUBU I 0x00000023 0xfc0007ff 3 rd rs rt 6
+MULT R 0x00000018 0xfc00ffff 2 rs rt 7
+DIV R 0x00000018 0xfc00ffff 2 rs rt 8
+AND R 0x00000024 0xfc0007ff 3 rd rs rt 9
+ANDI R 0x30000000 0xfc000000 3 rt rs immediate 10
+OR R 0x00000025 0xfc0007ff 3 rd rs rt 11
+ORI I 0x34000000 0xfc000000 3 rt rs immediate 12
+XOR R 0x00000026 0xfc0007ff 3 rd rs rt 13
+SLL R 0x00000000 0xffe0003f 3 rd rs sa 14
+SRL R 0x00000002 0xffe0003f 3 rd rt sa 15
+SRA R 0x00000003 0xfc0007ff 3 rd rt sa 16
+SEB R 0x7c000420 0xffe007ff 2 rd rt 17
+SLT R 0x0000002a 0xfc0007ff 3 rd rs rt 18
+SLTU R 0x0000002b 0xfc0007ff 3 rd rs rt 19
+SLTI I 0x28000000 0xfc000000 3 rt rs immediate 20
+SLTIU I 0x2c000000 0xfc000000 3 rt rs immediate 21
+LW I 0x8c000000 0xfc000000 3 rt offset base 22
+SW I 0xac000000 0xfc000000 3 rt offset base 23
+LB I 0x80000000 0xfc000000 3 rt offset base 24
+LBU I 0x90000000 0xfc000000 3 rt offset base 25
+SB I 0xa0000000 0xfc000000 3 rt offset base 26
+LUI I 0x3c000000 0xffe00000 2 rt immediate 27
+MFHI R 0x00000010 0xffff07ff 1 rd 28
+MFLO R 0x00000012 0xffff07ff 1 rd 29
+BEQ I 0x10000000 0xfc000000 3 rs rt offset 30
+NOP R 0x00000000 0xffffffff 0 31
+BNE R 0x14000000 0xfc000000 3 rs rt offset 32
+BGEZ I 0x04010000 0xfc1f0000 2 rs offset 33
+BGTZ I 0x1c000000 0x1c1f0000 2 rs offset 34
+BLEZ I 0x18000000 0x1c1f0000 2 rs offset 35
+BLTZ I 0x04000000 0x1c1f0000 2 rs offset 36
+J J 0x8000000 0xfc000000 1 target 37
+JAL J 0xc000000 0xfc000000 1 target 38
+JR R 0x0000008 0xfc1ff83f 1 rs 39
+BREAK R 0x000000d 0xfc00003f 1 code 40
+SYSCALL R 0x0000000c 0xfc00003f 1 code 41
