@@ -163,7 +163,6 @@ int test_cmd_dispmem(interpreteur inter,char * adr1,char * adr2)
     char * two_point=get_next_token(inter);
     adr2=get_next_token(inter);
     int deux_point=1;
-    int verif=0;
     DEBUG_MSG("adresse analysed test_cmd_dispmem function  '%s'   '%s' ",adr1,adr2);
     DEBUG_MSG("LES FAMEUX DEUX POINT '%s' ",two_point);
     if(two_point!=NULL) {deux_point=cherche_deux_point(two_point);}
@@ -241,7 +240,6 @@ void erreur_cmd_disp(verif)
 int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_commander,map_reg * mrg)
 { 
    char * token=get_next_token(inter);
-   char * two_point;
    int indicateur;
    int i=0;
    int numero;
@@ -391,7 +389,7 @@ int cmd_load(char * file_name,mem * memoire,stab * symtab)
     FILE * pf_elf;
 
     if ((pf_elf = fopen(file_name,"r")) == NULL) {
-        DEBUG_MSG("cannot open file %s", file_name);
+        WARNING_MSG("cannot open file %s", file_name);
         return 1;
     }
 

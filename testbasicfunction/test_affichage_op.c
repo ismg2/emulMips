@@ -116,7 +116,7 @@ else {int j=0;
 int main(void)
 {
 I b;
-    uint32_t a=0x2009000c;
+    uint32_t a=0x1549fffe;
     printf("On affiche d'abord le mot a : %08x \n",a);
     uint32_t masque_rs =0x3E00000;
     uint32_t masque_rt = 0x1F0000;
@@ -125,10 +125,10 @@ I b;
     int masque_immediate =0xffff ; //
      b.rs = (a & masque_rs) >> 21;
      b.rt = (a & masque_rt) >> 16;
-     b.rd = (a & masque_rd) >> 11;
-     b.sa = (a & masque_sa) >> 6 ;
+     //b.rd = (a & masque_rd) >> 11;
+     //b.sa = (a & masque_sa) >> 6 ;
      b.immediate =(int) (a & masque_immediate); //
-     printf("On recupere immediate : %08x -- %d --- %d \n",b.immediate,b.immediate,temp_signed);
+     //printf("On recupere immediate : %08x -- %d --- %d \n",b.immediate,b.immediate,temp_signed);
     printf (" rs : %u \t rt : %u \t immediate : %d \n",b.rs,b.rt,b.immediate);
 
 

@@ -1,41 +1,41 @@
-ADD R 0x00000020 0xfc0007ff 3 rs rt rd
-ADDU R 0x00000021 0xfc0007ff 3 rs rt rd
-ADDI I 0x20000000 0xfc000000 3 rs rt immediate
-ADDIU I 0x24000000 0xfc000000 3 rs rt immediate
-SUB R 0x00000022 0xfc0007ff 3 rs rt rd
-SUBU I 0x00000023 0xfc0007ff 3 rs rt rd
-MULT R 0x00000018 0xfc00ffff 2 rs rt
-DIV R 0x00000018 0xfc00ffff 2 rs rt
-AND R 0x00000024 0xfc0007ff 3 rs rt rd
-ANDI R 0x30000000 0xfc000000 3 rs rt immediate
-OR R 0x00000025 0xfc0007ff 3 rd rt rd
-ORI I 0x34000000 0xfc000000 3 rs rt immediate
-XOR R 0x00000026 0xfc0007ff 3 rs rt rd
-SLL R 0x00000000 0xffe0003f 3 rs rd sa
-SRL R 0x00000002 0xffe0003f 3 rd rt sa	
-SRA R 0x00000003 0xfc0007ff 3 rt rd sa
-SEB R 0x7c000420 0xffe007ff 2 rt rd
-SLT R 0x0000002a 0xfc0007ff 3 rs rt rd
-SLTU R 0x0000002b 0xfc0007ff 3 rs rt rd
-SLTI I 0x28000000 0xfc000000 3 rs rt immediate
-SLTIU I 0x2c000000 0xfc000000 3 rs rt immediate
-LW I 0x8c000000 0xfc000000 3 base rt offset
-SW I 0xac000000 0xfc000000 3 base rt offset
-LB I 0x80000000 0xfc000000 3 base rt offset
-LBU I 0x90000000 0xfc000000 3 base rt offset
-SB I 0xa0000000 0xfc000000 3 base rt offset
-LUI I 0x3c000000 0xffe00000 2 rt immediate
-MFHI R 0x00000010 0xffff07ff 1 rd
-MFLO R 0x00000012 0xffff07ff 1 rd
-BEQ I 0x10000000 0xfc000000 3 rs rt immediate
-NOP R 0x00000000 0xffffffff 0
-BNE R 0x14000000 0xfc000000 3 rs rt offset
-BGEZ I 0x04010000 0xfc1f0000 2 rs offset
-BGTZ I 0x1c000000 0x1c1f0000 2 rs offset
-BLEZ I 0x18000000 0x1c1f0000 2 rs offset
-BLTZ I 0x04000000 0x1c1f0000 2 rs offset
-J J 0x8000000 0xfc000000 1 inst_index
-JAL J 0xc000000 0xfc000000 1 inst_index
-JR R 0x0000008 0xfc1ff83f 2 rs hint
-BREAK R 0x000000d 0xfc00003f 1 code
-SYSCALL R 0x0000000c 0xfc00003f 1 code
+ADD R 0x00000020 0xfc0007ff 3 rs rt rd 1
+ADDU R 0x00000021 0xfc0007ff 3 rs rt rd 2
+ADDI I 0x20000000 0xfc000000 3 rs rt immediate 3
+ADDIU I 0x24000000 0xfc000000 3 rs rt immediate 4
+SUB R 0x00000022 0xfc0007ff 3 rs rt rd 5
+SUBU I 0x00000023 0xfc0007ff 3 rs rt rd 6
+MULT R 0x00000018 0xfc00ffff 2 rs rt 7
+DIV R 0x00000018 0xfc00ffff 2 rs rt 8
+AND R 0x00000024 0xfc0007ff 3 rs rt rd 9
+ANDI R 0x30000000 0xfc000000 3 rs rt immediate 10
+OR R 0x00000025 0xfc0007ff 3 rd rt rd 11
+ORI I 0x34000000 0xfc000000 3 rs rt immediate 12
+XOR R 0x00000026 0xfc0007ff 3 rs rt rd 13
+SLL R 0x00000000 0xffe0003f 3 rs rd sa 14
+SRL R 0x00000002 0xffe0003f 3 rd rt sa 15
+SRA R 0x00000003 0xfc0007ff 3 rt rd sa 16
+SEB R 0x7c000420 0xffe007ff 2 rt rd 17
+SLT R 0x0000002a 0xfc0007ff 3 rs rt rd 18
+SLTU R 0x0000002b 0xfc0007ff 3 rs rt rd 19
+SLTI I 0x28000000 0xfc000000 3 rs rt immediate 20
+SLTIU I 0x2c000000 0xfc000000 3 rs rt immediate 21
+LW I 0x8c000000 0xfc000000 3 base rt offset 22
+SW I 0xac000000 0xfc000000 3 base rt offset 23
+LB I 0x80000000 0xfc000000 3 base rt offset 24
+LBU I 0x90000000 0xfc000000 3 base rt offset 25
+SB I 0xa0000000 0xfc000000 3 base rt offset 26
+LUI I 0x3c000000 0xffe00000 2 rt immediate 27
+MFHI R 0x00000010 0xffff07ff 1 rd 28
+MFLO R 0x00000012 0xffff07ff 1 rd 29
+BEQ I 0x10000000 0xfc000000 3 rs rt immediate 30
+NOP R 0x00000000 0xffffffff 0 31
+BNE R 0x14000000 0xfc000000 3 rs rt offset 32
+BGEZ I 0x04010000 0xfc1f0000 2 rs offset 33
+BGTZ I 0x1c000000 0x1c1f0000 2 rs offset 34
+BLEZ I 0x18000000 0x1c1f0000 2 rs offset 35
+BLTZ I 0x04000000 0x1c1f0000 2 rs offset 36
+J J 0x8000000 0xfc000000 1 inst_index 37
+JAL J 0xc000000 0xfc000000 1 inst_index 38
+JR R 0x0000008 0xfc1ff83f 2 rs hint 39
+BREAK R 0x000000d 0xfc00003f 1 code 40
+SYSCALL R 0x0000000c 0xfc00003f 1 code 41

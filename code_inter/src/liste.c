@@ -48,23 +48,60 @@ liste ajout_queue(BP C, liste L)
     p->val=C;
     if(!est_vide(L))
     {
-        for (k=L; !est_vide(k); k=k->suiv);
-        L->suiv=p;
+        for (k=L; k->suiv!=NULL; k=k->suiv);
+        k->suiv=p;
         
         return L;
     }
-    else p->suiv=NULL;
-    
-    return p;
+    else
+    {
+        p->suiv=NULL;
+        return p;
+    } 
 }
 
-liste supprimen(int n, liste L)
-{ liste p=L;int i=0;liste k;
-/**
- * 
- */
+liste supprimen(uint32_t adr, liste L)
+{ liste p;liste k;
+    int i=0;
+    int taille=0;
 
-    return p;}
+    for(k=L;!est_vide(k);k=k->suiv) taille++;
+
+    if(est_vide(L))
+    {
+        WARNING_MSG("Il n'y a pas de Break Point");
+        return L;
+    } 
+    p=creer_liste();
+    p=calloc(1,sizeof(*p));
+    p=L;
+
+    if(L->val.adresse_BP==adr)
+    {
+        if(L->suiv!=NULL) return L->suiv;
+        else return NULL;
+    }
+
+    while(L->suiv!=NULL)
+    {
+        if(L->suiv->val.adresse_BP==adr) 
+        {
+            if (L->suiv->suiv != NULL) // cas où l'élément n'est pas le dernier de la liste
+            {
+            L->suiv=L->suiv->suiv;
+            } 
+            else L->suiv=NULL;   // cas où l'élément est le dernier de la liste
+        }
+        else
+        {
+            L=L->suiv;
+            i++;
+        }
+    }
+    if(i==taille-1) WARNING_MSG("Il n'y a pas de break point à l'adresse que vous cherchez");
+    else DEBUG_MSG("BREAK Point : 0x%08x supprimer ",adr);
+return p;
+}
 
 liste concat(liste l1, liste l2)
 {liste q=NULL;

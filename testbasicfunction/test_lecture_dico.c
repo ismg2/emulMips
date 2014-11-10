@@ -12,13 +12,14 @@ typedef struct {
   char  type;
   char * op_mapping[MAX_NOM];
   int nmbr_oper;
+  int num_function;
 } *definition;
 
 /**
  * Lecture du fichier texte regroupant toutes les commandes et affiche le tableau memmoire allooué pour
  * @param file_name : nom du dictionnaire de toutes les commandes
  */
-void lecture_cmd(char * file_name)
+void lecture_dictionnaire(char * file_name)
 {
     
 FILE * fp;
@@ -29,15 +30,21 @@ definition temp = NULL;
 def = calloc(1028,sizeof(*def));
 temp = calloc(2,sizeof(*def));
 ligne = calloc (2054,sizeof(*ligne));
+
  
-if(fp==NULL) { printf("\nImpoosible d'ouvrir le fichier test ");}
-else {int j=0;
+if(fp==NULL)  
+  {
+    printf("Impoosible d'ouvrir le fichier de Dictionnaire ");
+  }
+else 
+{
+  int j=0;
 
   while(fgets(ligne,2054,fp)!=NULL)
   { 
     printf("---------------------------------------------------\n");
     printf("---------------------------------------------------\n");
-    //printf("\n LIGNE : %s \n",ligne);
+    printf("\n LIGNE : %s \n",ligne);
       char * token=strtok(ligne,"   ");
       sscanf(token,"%s",(def[j].nom));
       printf("\n NOM : %s",(def[j].nom));
@@ -71,21 +78,29 @@ else {int j=0;
             printf("\t OPERANDE numero %d : %s\n",i+1,def[j].op_mapping[i]);
           }
       }
-      printf("\n\n\n");
+
+      token=strtok(NULL,"   ");
+      sscanf(token,"%d",&(temp->num_function));
+      def[j].num_function = temp->num_function;
+      printf("Numero de la fonction : %d\n",def[j].num_function);
+      //printf("\n\n\n");
       j++;
     }
 }
+fclose(fp);
+//return def;
+}
 
 //return 1;
-}
+
 
 //On lit toutes les commandes du dictionnaire et on affiche toutes les caracteristiques
 
 int main() { 
 
-  char fichier_nom[64]="dico_definitif.txt";
+  char fichier_nom[64]="dico_definitif_2.txt";
   printf(" %s \n",fichier_nom);
-  lecture_cmd(fichier_nom);
+  lecture_dictionnaire(fichier_nom);
 
 
 }

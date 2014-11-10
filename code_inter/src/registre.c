@@ -51,6 +51,9 @@ map_reg * creer_map_reg()
     rm[29]= remplir_registre("$sp", 29, 0);
     rm[30]= remplir_registre("$fp", 30, 0);
     rm[31]= remplir_registre("$ra", 31, 0);
+    rm[32]=remplir_registre("$pc",32,0);
+    rm[33]=remplir_registre("$HI",32,0);
+    rm[34]=remplir_registre("$LO",32,0);
 return rm;
 }
 
@@ -88,7 +91,7 @@ void affiche_reg (int indic, int numero, map_reg * rm) {
     int i;
     if (indic==AFFICHE_1) 
     {
-        if ( (numero <0) || (numero > 32) ) 
+        if ( (numero <0) || (numero > NBRE_REGISTRE) ) 
         {
             WARNING_MSG("Votre registre n'existe pas.");
         }
@@ -100,7 +103,7 @@ void affiche_reg (int indic, int numero, map_reg * rm) {
 
     else if (indic==AFFICHE_TOUT) {
         printf("\n-------------------------------------------------------------------------------\n");
-        for(i=0; i<31; i++) {
+        for(i=0; i<NBRE_REGISTRE; i++) {
             printf(" %s : %u \t",rm[i]->mnemonique, (rm[i]->valeur));
             if(i%4==0) {printf("\n");}
         }
@@ -123,10 +126,10 @@ printf("\n");}
     > num_dest : numero du registre de destination
  */
 void copier_reg_reg_via_num (map_reg * rm, int num_src, int num_dest) {
-    if ( (num_src <0) || (num_src > 31) ) {
+    if ( (num_src <0) || (num_src > NBRE_REGISTRE) ) {
         WARNING_MSG("Votre registre source n'existe pas");
     }
-    else if( (num_dest <0) || (num_dest > 31) ) {
+    else if( (num_dest <0) || (num_dest > NBRE_REGISTRE) ) {
         WARNING_MSG("Votre registre destination n'existe pas");
     }
     else {
@@ -141,7 +144,7 @@ void copier_reg_reg_via_num (map_reg * rm, int num_src, int num_dest) {
 // Fonction qui renvoi la valeur stockée dans un registre à partir du numero du registre
 uint32_t renvoi_reg_num (map_reg * rm, int num) {
     uint32_t valeur;
-    if ( (num <0) || (num > 31) ) 
+    if ( (num <0) || (num > NBRE_REGISTRE) ) 
     {
         WARNING_MSG("Votre registre n'existe pas");
         return -1;
@@ -158,7 +161,7 @@ uint32_t renvoi_reg_num (map_reg * rm, int num) {
 void modif_reg_num (int num, map_reg * rm, int contenu) {
     int i;
     printf("NUM=%d\n", num);
-    if ( (num <0) | (num > 31) ) {
+    if ( (num <0) | (num > NBRE_REGISTRE) ) {
         WARNING_MSG("Votre registre source n'existe pas");
         return;
     }
@@ -167,7 +170,7 @@ void modif_reg_num (int num, map_reg * rm, int contenu) {
         WARNING_MSG("Vous ne pouvez modifier ce registre : Les registres 0 26 27 28 30 ne peuvent pas être modifié !!!");
         return;
     }
-    for(i=0; i<31; i++)
+    for(i=0; i<NBRE_REGISTRE; i++)
     {
         if (num==rm[i]->numero) 
         {
@@ -217,7 +220,7 @@ void copier_reg_reg_via_dollarnum (map_reg rm, char* dollarnum_src, char* dollar
 int convert_mnemo_num(map_reg * rm, char* mnemo) {
     int i;
     int num_cspd;
-    for (i=0; i<31; i++) {
+    for (i=0; i<NBRE_REGISTRE; i++) {
         if (strcmp(mnemo,rm[i]->mnemonique)==0) 
         {
             num_cspd=rm[i]->numero;
@@ -256,7 +259,7 @@ char * convert_num_mnemonique(map_reg * rm, int num)
 {
     int i;
     char * mnemo=calloc(64,sizeof(*mnemo));
-    for (i=0; i<32; i++)
+    for (i=0; i<NBRE_REGISTRE; i++)
     {
         if(num==rm[i]->numero) 
         { 

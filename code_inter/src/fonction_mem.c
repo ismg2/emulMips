@@ -30,10 +30,12 @@ void affiche_mot (mem virtualm, uint32_t vaddr1) {
 
 uint32_t renvoi_mot (mem virtualm, uint32_t vaddr1)
 {
-    //uint32_t nbre_seg = virtualm->nseg;
+    int nbre_seg = (int) virtualm->nseg;
+    //DEBUG_MSG("NOMBRE DE SEG : %d",nbre_seg);
     uint32_t mot;
     int i, j;
-    for(i=0; i < virtualm->nseg; i++) {
+    for(i=0; i < nbre_seg; i++) 
+    {
         uint32_t adr_depart_seg1=  (virtualm)->seg[i].start._32;
         uint32_t adr_depart_seg2=  (virtualm)->seg[i+1].start._32;
         if ( vaddr1 >= adr_depart_seg1 &&  vaddr1 < adr_depart_seg2 )

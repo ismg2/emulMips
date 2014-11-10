@@ -1,6 +1,8 @@
 #include "break_point.h"
 
-
+/**
+ * 
+ */
 
 int erreur_fonction_break_point( int verification)
 {
@@ -22,7 +24,7 @@ int erreur_fonction_break_point( int verification)
 
 		case BP_EXISTANT : WARNING_MSG("ERROR [25] : Break point existant !!");break;
 
-		case POSITION_IMPOSSIBLE : WARNING_MSG("POSITION IMPOSSIBLE");break;
+		case POSITION_IMPOS : WARNING_MSG("POSITION IMPOSSIBLE");break;
 
 		case BP_NON_EXIST : WARNING_MSG("Le break point que vous voulez supprimez n'existe pas !");break;
 
@@ -34,7 +36,13 @@ int erreur_fonction_break_point( int verification)
 	}
 return 0;}
 
-
+/**
+ * execute la commande d'ajout ou de suppression ou d'affichage d'un break point ou renvoie vers la fonction d'erreur si problème
+ * @param  memoire  Memoire du microprocesseur
+ * @param  inter    interpreteur
+ * @param  l_breakP liste de Break POint
+ * @return          1 si la commande est executer avec succes, 0 si erreur
+ */
 int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 {
 	char * token = get_next_token(inter);
@@ -43,6 +51,8 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 	DEBUG_MSG("INPUT cmd_break : %s",token);
 
 	if (token == NULL) return erreur_fonction_break_point(NO_ARGS);
+
+	if(memoire==NULL) return erreur_fonction_break_point(PAS_LOAD);
 
 	else if(strcmp(token,"add")==0)
 	{	
@@ -53,7 +63,7 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 			retour = execute_add_BP(adr,l_breakP,memoire);
 			adr = get_next_token(inter);
 		}
-
+		*l_breakP=ranger_ordre_croissant(*l_breakP);
 	}
 
 	else if(strcmp(token,"del")==0)
@@ -84,7 +94,13 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 
 return retour;}
 
-
+/**
+ * Ajout d'un break point à la liste de break point
+ * @param adresse adresse ou l'on doit rajouter le break point
+ * @param l_breakP liste des break point
+ * @param memoire Memoire du microprocesseur
+ * @return 0 si il y a une erreur 1 si succes
+ */
 
 
 
@@ -123,12 +139,22 @@ int execute_add_BP(char * adresse,liste * l_breakP,mem memoire)
 			{
 				return erreur_fonction_break_point(BP_EXISTANT);
 			}
-			else return erreur_fonction_break_point(POSITION_IMPOSSIBLE);
+			else return erreur_fonction_break_point(POSITION_IMPOS);
 		}
 
 	} 
 return 1;
 }
+
+/**
+ * Suppression d'un break point à la liste de break point
+ * @param adresse adresse ou l'on doit rajouter le break point
+ * @param l_breakP liste des break point
+ * @param ToR indicateur qui peut valoir DEL_ALL dans ce cas on supprime tout les BP ou DELL_1 et on supprime qu'un seul BP
+ * @return 0 si il y a une erreur 1 si succes
+ */
+
+
 
 int execute_del_BP(char * adresse,liste * l_breakP,int ToR)
 {
@@ -151,18 +177,26 @@ int execute_del_BP(char * adresse,liste * l_breakP,int ToR)
 	else if (ToR == DEL_1)
 	{
 		p=*l_breakP;
-		int i=0;
-		while(p!=NULL && p->val.adresse_BP!=adr) {p=p->suiv;i++;}
+		//int i=0;
+		//while(p!=NULL && p->val.adresse_BP!=adr) {p=p->suiv;i++;}
 		if(p!=NULL) 
 			{
-				*l_breakP=supprimen(i,*l_breakP);
-				DEBUG_MSG("BP SUPPRIMER");
+				*l_breakP=supprimen(adr,*l_breakP);
+				//DEBUG_MSG("BP SUPPRIMER");
+				return 1;
 			}
 		else return erreur_fonction_break_point(BP_NON_EXIST);
 	}
-return erreur_fonction_break_point(POSITION_IMPOSSIBLE);
+return erreur_fonction_break_point(POSITION_IMPOS);
 }
 
+
+/**
+ * Verifie si à l'adresse entré il n'y a pas deja de BP
+ * @param break_p structure contenant l'adresse du BP à tester
+ * @param l_breakP liste des break point
+ * @return BP_EXISTE_PAS si le BP n'existe pas ou BP_EXISTANT si BP existe
+ */
 
 int bp_already_here(BP break_p,liste lBP)
 {
@@ -178,26 +212,61 @@ int bp_already_here(BP break_p,liste lBP)
 return retour;}
 
 
+/**
+ * Renvoie l'adresse la plus petite de la liste
+ * @param l liste de BP
+ * @return le BP dont l'adresse est la plus petite
+ */
+
+BP cherche_plus_petit(liste l)
+{
+	BP petit;
+	petit.adresse_BP=0x4000;
+	liste p=l;
+
+	while(p!=NULL) 
+	{
+		if(petit.adresse_BP > p->val.adresse_BP )
+		{
+			petit.adresse_BP = p->val.adresse_BP;
+		}
+		else p=p->suiv;
+	}
+return petit;	
+}
+
+
+
+
+
+
+/**
+ * Range la liste des BP dans l'ordre croissant de leur adresse
+ * @param l liste de break point non ordonné
+ * @return liste de break point ordonné
+ */
+
 liste ranger_ordre_croissant(liste l)
 {
-	liste p;
-	BP petite=l->val;
+	BP petite;
 	liste liste_ordonne=creer_liste();
-	i=0;
 
-	while(l!=NULL)
+	if(l==NULL) return NULL;
+
+	else if(l->suiv == NULL) return l;
+
+	else
 	{
-		for(p=l;!est_vide(p);p=p->suiv)
+		while(l!=NULL)
 		{
-			if(petite->adresse_BP > p->val->adresse_BP) 
-			{
-				liste_ordonne = ajout_tete(petite,liste_ordonne);
-				l=supprimen(i,l);
-			}
-			i++;
+
+			petite = cherche_plus_petit(l);
+			liste_ordonne = ajout_queue(petite,liste_ordonne);
+			l=supprimen(petite.adresse_BP,l);
 		}
 	}
-return liste_ordonne;}
+return liste_ordonne;
+}
 
 
 

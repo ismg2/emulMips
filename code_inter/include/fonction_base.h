@@ -10,7 +10,6 @@
 #include "registre.h"
 #include "liste.h"
 
-
 /* la librairie readline */
 #include <readline/readline.h>
 #include <readline/history.h>

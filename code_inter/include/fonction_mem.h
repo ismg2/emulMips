@@ -5,7 +5,7 @@
 
 
 void affiche_mot (mem virtualm, uint32_t vaddr1);
-//byte * renvoi_mot (mem virtualm, int vaddr1) ;
+uint32_t renvoi_mot (mem virtualm, uint32_t vaddr1);
 
 
 #endif

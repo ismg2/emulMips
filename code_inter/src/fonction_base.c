@@ -198,6 +198,10 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
     {
         return cmd_break(*vmemoire,inter,li_BP);
     }
+    else if(strcmp(token,"run")==0)
+    {
+        return cmd_run(mrg,*vmemoire,inter,*li_BP);
+    }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;
 }

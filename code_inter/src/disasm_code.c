@@ -60,9 +60,14 @@ else
             char * tempo = calloc(2,sizeof(*tempo));
             sscanf(token,"%s",tempo);
             def[j].op_mapping[i]=strdup(tempo);
-            //printf("\t OPERANDE numero %d : %s\n",i+1,def[j].op_mapping[i]);
+           // printf("\t OPERANDE numero %d : %s\n",i+1,def[j].op_mapping[i]);
           }
       }
+
+      token=strtok(NULL,"   ");
+      sscanf(token,"%d",&(temp->num_function));
+      def[j].num_function = temp->num_function;
+      //printf("Numero de la fonction : %d \n",def[j].num_function);
       //printf("\n\n\n");
       j++;
     }
@@ -77,7 +82,7 @@ return def;
  * @return       vers les differentes fonction utile
  */
 
-int cmd_disasm(interpreteur inter,mem  memoire,map_reg  mrg)
+int cmd_disasm(interpreteur inter,mem  memoire,map_reg * mrg)
 {
   int verif;
   uint32_t adresse1;
@@ -185,17 +190,13 @@ void erreur_fonction_disasm(int verification)
   }
 }
 
-int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire,map_reg  mrg)
+int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire,map_reg *  mrg)
 { definition dictionnaire;
   char f_name[64] = "dico_definitif.txt";
   dictionnaire = lecture_dictionnaire(f_name);
   uint32_t adr;
   uint32_t adr_2bis;
   union_RIJ union_struct;
-
-
-
-
 
   switch(decalage_plage)
   {
@@ -217,10 +218,11 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
   char * reg3=NULL;
   //DEBUG_MSG("ADR : %08x",adr);
   //affiche_mot(memoire,adr);
-  uint32_t word = renvoi_mot (memoire,adr);
+  uint32_t word;
+  word = renvoi_mot (memoire,adr);
   //DEBUG_MSG("WORD : %u ",word);
   int k=0;
-    while(k<40&&sortie==0)
+    while(k<42&&sortie==0)
     {
       if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
         {
@@ -233,24 +235,24 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
                         {
                           case 3 : if( strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"rd") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.r.rd);reg2 = convert_num_mnemonique(&mrg,union_struct.r.rs);reg3 = convert_num_mnemonique(&mrg,union_struct.r.rt);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.r.rd);reg2 = convert_num_mnemonique(mrg,union_struct.r.rs);reg3 = convert_num_mnemonique(mrg,union_struct.r.rt);
                                       printf(" %s,%s,%s \n",reg1,reg2,reg3);sortie = 1;
                                     }
                                     else if ( strcmp(dictionnaire[k].op_mapping[0],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rd") == 0 && strcmp(dictionnaire[k].op_mapping[2],"sa") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.r.rd);reg2 = convert_num_mnemonique(&mrg,union_struct.r.rt);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.r.rd);reg2 = convert_num_mnemonique(mrg,union_struct.r.rt);
                                       printf(" %s,%s,%u \n",reg1,reg2,union_struct.r.sa);sortie = 1;
                                     }
                                     break;
                           case 2 : if (strcmp(dictionnaire[k].op_mapping[0],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rd") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.r.rd);reg2 = convert_num_mnemonique(&mrg,union_struct.r.rs);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.r.rd);reg2 = convert_num_mnemonique(mrg,union_struct.r.rs);
                                       printf(" %s,%s \n",reg1,reg2);sortie = 1;
                                     }
                                     else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.r.rs);reg2 = convert_num_mnemonique(&mrg,union_struct.r.rt);
-                                      printf(" %s,%s \n",reg1,reg2);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.r.rs);reg2 = convert_num_mnemonique(mrg,union_struct.r.rt);
+                                      printf(" %s,%s \n",reg1,reg2);sortie = 1;
                                     }
                                     else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"hint") == 0)
                                     {
@@ -259,7 +261,7 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
                                     break;
                           case 1 : if (strcmp(dictionnaire[k].op_mapping[0],"rd") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.r.rd);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.r.rd);
                                       printf(" %s \n",reg1);sortie = 1;
                                     }
                                     else if (strcmp(dictionnaire[k].op_mapping[0],"code") == 0)
@@ -277,28 +279,28 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
                         {
                           case 3 : if( strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"immediate") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.i.rt);reg2 = convert_num_mnemonique(&mrg,union_struct.i.rs);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rt);reg2 = convert_num_mnemonique(mrg,union_struct.i.rs);
                                       printf(" %s,%s,%d \n",reg1,reg2,union_struct.i.immediate);sortie = 1;
                                     }
                                     else if ( strcmp(dictionnaire[k].op_mapping[0],"base") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.i.rt);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rt);
                                       printf(" %s,%u(%d) \n",reg1,union_struct.i.immediate,union_struct.i.rs);sortie = 1;
                                     }
                                     else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.i.rs);reg2 = convert_num_mnemonique(&mrg,union_struct.i.rt);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rs);reg2 = convert_num_mnemonique(mrg,union_struct.i.rt);
                                       printf(" %s,%s,%d \n",reg1,reg2,union_struct.i.immediate);sortie = 1;
                                     }
                                     break;
                           case 2 : if (strcmp(dictionnaire[k].op_mapping[0],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[1],"immediate") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.i.rt);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rt);
                                       printf(" %s,%u \n",reg1,union_struct.i.immediate);sortie = 1;
                                     }
                                     else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"offset") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(&mrg,union_struct.i.rs);
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rs);
                                       printf(" %s,%u \n",reg1,union_struct.i.immediate);sortie = 1;
                                     }
                                     break;
@@ -344,7 +346,6 @@ union_RIJ return_operande(char type_struct,uint32_t mot)
     switch(type_struct)
     {
       case 'R' : 
-
       uni.r.rs = (mot & masque_rs) >> 21;
       uni.r.rt = (mot & masque_rt) >> 16;
       uni.r.rd = (mot & masque_rd) >> 11;
