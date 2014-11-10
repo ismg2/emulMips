@@ -160,7 +160,7 @@ uint32_t renvoi_reg_num (map_reg * rm, int num) {
 // Fonction qui modifie la valeur stockée dans un registre à partir du numero du registre
 void modif_reg_num (int num, map_reg * rm, int contenu) {
     int i;
-    printf("NUM=%d\n", num);
+    //printf("NUM=%d\n", num);
     if ( (num <0) | (num > NBRE_REGISTRE) ) {
         WARNING_MSG("Votre registre source n'existe pas");
         return;

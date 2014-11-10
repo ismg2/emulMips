@@ -31,9 +31,9 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
   		dictionnaire_commande = lecture_dictionnaire(f_name);
   		DEBUG_MSG("Lecture du dictionnaire c'est fini");
 			retour = execute_cmd_run(mrg,memoire,PC,lpb,dictionnaire_commande);
-				if(retour!=OK) return erreur_fonction_run(PB);
+				if(retour==OK) return OK;
 				else if (retour == DEHORS) return 0;
-				else return 1;
+				else return erreur_fonction_run(PB);
 	}
 return 0;}
 
@@ -129,7 +129,7 @@ while(1)
 				case TERM : DEBUG_MSG("\nTERM\n"); return OK;
 				break;
 			
-				case ERREUR :
+				case ERREUR : return ERREUR;
 				break;
 			
 				case EXIT : return DEHORS;break;
