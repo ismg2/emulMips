@@ -324,12 +324,19 @@ int NOP(map_reg * mrg,mem memoire,union_RIJ  union_struct) {
 int BREAK(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {
 	DEBUG_MSG("ON rentre dans BREAK");
-	return 1;
+	return 2;
 }
 int DIV(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {
 	DEBUG_MSG("ON rentre dans DIV");
-	return 1;
+    unsigned int rs = mrg[union_struct.r.rs]->valeur;
+    unsigned int rt = mrg[union_struct.r.rt]->valeur;
+    int q,r;
+    q = rs/rt;
+    modif_reg_num(34,mrg,q);
+    r = rs % rt;
+    modif_reg_num(33,mrg,r);
+    return 1;
 }
 int j(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {

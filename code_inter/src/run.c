@@ -108,6 +108,7 @@ uint32_t fin_code = memoire->seg->start._32 + memoire->seg->size._32 ;
 int BP_search;
 //	int res;
 int etat;
+int pause;
 uint32_t PC = renvoi_reg_num(mrg,32);
 uint32_t PC_r;
 BP_search = rechercheBP(l_BP,PC);
@@ -155,6 +156,8 @@ while(1)
 					erreur = execut_instruction(mrg,memoire,inst);
 					DEBUG_MSG("EXEXUTION TERMINEE");
 					if(erreur != OK ) etat = EXIT;
+					else if(erreur == PAUSE) etat = PAUSE;
+					else if(pause==1) etat = PAUSE;
 					else etat = NOT;
 
 				}
@@ -167,13 +170,14 @@ while(1)
 					else if(strcmp(token2,"run")==0) {etat = RUN;}
 					else if(PC==fin_code) etat = TERM;
 					else if(strcmp(token2,"exit")==0) etat = EXIT ;
+					else if(strcmp(token2,"step")==0) {etat = RUN;pause = 1;}
 					else etat = ERREUR;
 				break;
 
 				case TERM : DEBUG_MSG("\nTERM\n"); return OK;
 				break;
 			
-				case ERREUR : return ERREUR;
+				case ERREUR : WARNING_MSG("MAUVAISE COMMANDE");//return ERREUR;
 				break;
 			
 				case EXIT : exit( EXIT_SUCCESS );//return DEHORS;
@@ -265,6 +269,7 @@ int execut_instruction(map_reg * mrg,mem memoire,instruction inst)
 	fonction_MIPS = choix_fonction(inst.def->num_function - 1); // A remplacer
 	retour = (*fonction_MIPS)(mrg,memoire,inst.operande);
 	if(retour == 1) return OK;
+	if(retour == 2) return PAUSE;
 	else return 0;
 
 return OK;}
