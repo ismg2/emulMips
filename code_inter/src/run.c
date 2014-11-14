@@ -177,7 +177,7 @@ while(1)
 				case TERM : DEBUG_MSG("\nTERM\n"); return OK;
 				break;
 			
-				case ERREUR : WARNING_MSG("MAUVAISE COMMANDE");//return ERREUR;
+				case ERREUR : WARNING_MSG("MAUVAISE COMMANDE");etat = PAUSE;//return ERREUR;
 				break;
 			
 				case EXIT : exit( EXIT_SUCCESS );//return DEHORS;
