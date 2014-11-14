@@ -42,7 +42,7 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,m
   case CMD_DISP_REG_OK : //DEBUG_MSG("AFFICHAGE d'une liste de registre");
                          //DEBUG_MSG("VOICI LES REGISTRES QUE L'ON VA AFFICHER :");
                          printf("----------------------------------------\n");
-                            for (i = 0; i < 32; i++)
+                            for (i = 0; i < NBRE_REGISTRE; i++)
                             {
                                if(strcmp(tab_reg_demm[i],"")!=0) 
                                 {

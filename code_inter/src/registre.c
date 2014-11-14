@@ -97,14 +97,14 @@ void affiche_reg (int indic, int numero, map_reg * rm) {
         }
         else 
         {
-            printf(" %s : %u \t",rm[numero]->mnemonique, (rm[numero]->valeur));
+            printf(" %s : %04x \t",rm[numero]->mnemonique, (rm[numero]->valeur));
         }
     }
 
     else if (indic==AFFICHE_TOUT) {
         printf("\n-------------------------------------------------------------------------------\n");
         for(i=0; i<NBRE_REGISTRE; i++) {
-            printf(" %s : %u \t",rm[i]->mnemonique, (rm[i]->valeur));
+            printf(" %s : %08x \t",rm[i]->mnemonique, (rm[i]->valeur));
             if(i%4==0) {printf("\n");}
         }
         printf("\n-------------------------------------------------------------------------------\n");
@@ -165,16 +165,17 @@ void modif_reg_num (int num, map_reg * rm, int contenu) {
         WARNING_MSG("Votre registre source n'existe pas");
         return;
     }
-    if ( (num==0) || (num==26) || (num==27) || (num==28) || (num==30) ) 
-    {
-        WARNING_MSG("Vous ne pouvez modifier ce registre : Les registres 0 26 27 28 30 ne peuvent pas être modifié !!!");
-        return;
-    }
+    //if ( (num==0) || (num==26) || (num==27) || (num==28) || (num==30) ) 
+    //{
+    //    WARNING_MSG("Vous ne pouvez modifier ce registre : Les registres 0 26 27 28 30 ne peuvent pas être modifié !!!");
+    //    return;
+    //}
     for(i=0; i<NBRE_REGISTRE; i++)
     {
         if (num==rm[i]->numero) 
         {
             rm[i]->valeur=contenu;
+            DEBUG_MSG("Registre %s changé vaut maintenant = %08x",rm[i]->mnemonique,rm[i]->valeur);
             return;
         }
     }
