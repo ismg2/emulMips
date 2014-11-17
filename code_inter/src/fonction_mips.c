@@ -612,6 +612,7 @@ int SUBU(map_reg * mrg,mem memoire,union_RIJ  union_struct)
     modif_reg_num(rd, mrg, temp);
 	return 1;
 }
+
 int SW(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {
 	DEBUG_MSG("ON rentre dans SW");
@@ -622,7 +623,7 @@ int SW(map_reg * mrg,mem memoire,union_RIJ  union_struct)
     uint8_t byte_3 = (rt & byte3) >> 16;
     uint8_t byte_4 = (rt & byte4) >> 24;
     int res;
-
+    // On ecrit toujours dans l'adresse la plus faible puis on decale Donc il faut ecrire les bit de poid faible d'abord puis les translaté
     if(union_struct.i.rs == 29)
     {
         res = set_byte(memoire,vaddr,byte_1,mrg);
@@ -635,15 +636,16 @@ int SW(map_reg * mrg,mem memoire,union_RIJ  union_struct)
         if(res == 0) return 0;
         return 1;
     }
+    //ici on ecrit dans le sens big endian cad les bit de poid fort (pex bit4) au adresse les plus basses 
     else 
     {
-        res = set_byte(memoire,vaddr,byte_1,mrg);
+        res = set_byte(memoire,vaddr,byte_4,mrg);
         if(res == 0) return 0;
-        res = set_byte(memoire,vaddr+1,byte_2,mrg);
+        res = set_byte(memoire,vaddr+1,byte_3,mrg);
         if(res == 0) return 0;
-        res = set_byte(memoire,vaddr+2,byte_3,mrg);
+        res = set_byte(memoire,vaddr+2,byte_2,mrg);
         if(res == 0) return 0;
-        res = set_byte(memoire,vaddr+3,byte_4,mrg);
+        res = set_byte(memoire,vaddr+3,byte_1,mrg);
         if(res == 0) return 0;
         return 1;
     }

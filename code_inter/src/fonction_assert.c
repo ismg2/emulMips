@@ -43,12 +43,12 @@ int execute_assert_reg(char * reg1,char ** value)
 return 0;}
 
 /**
- * 
- * @param  inter
- * @param  wb
- * @param  value
- * @param  adr 
- * @return 
+ * Test si les argument entré dans l'interpreteur sont bon
+ * @param  inter sturcture d'interpreteur
+ * @param  wb indique si test un mot de 32 bit ou un byte de 8 bits
+ * @param  value valleur à tester
+ * @param  adr adresse du mot/byte a tester
+ * @return un entier indiquant une erreur ou un entier indiquant que les parametres entrés dans l'interpreteur sont bon 
  */
 
 
@@ -78,8 +78,11 @@ int test_cmd_assert(interpreteur inter,char * wb,char ** value,char ** adr)
 return 1;
 }
 
-
-// Gere les messages d'erreur ppour la fonction 
+/**
+ * Gestion des erreurs
+ * @param verif entier indiquant quels erreurs s'est produites
+ * @return Retour le message d'erreur
+ */
 
 
 void erreur_cmd_assert(verif)
@@ -106,7 +109,13 @@ void erreur_cmd_assert(verif)
 
 }
 
-
+/**
+ * Test si les commande pour tester les valeurs d'un registre sont bonnes
+ * @param inter interpreteur
+ * @param tab_tout_reg tableau contenant tout les registres
+ * @param reg1 registre a tester
+ * @param value valeur a tester
+ */
 
 int test_cmd_assert_reg(interpreteur inter,char ** tab_tout_reg,char * reg1,char ** value)
 { 
@@ -137,6 +146,9 @@ int a;
 return ERROR;
 }
 
+/**
+ * Programme principale gerant l'appel a la fonction assert 
+ */
 
 int cmd_assert(interpreteur inter) 
 {

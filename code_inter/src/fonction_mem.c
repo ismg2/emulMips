@@ -1,6 +1,13 @@
 #include "fonction_mem.h"
 
 
+/**
+ * Affichage d'un mot (32 bits)
+ * @param virtualm memoire virtuelle
+ * @param vaddr1 adresse virtuelle du mot a afficher
+ * @return affichage du mot
+ */
+
 void affiche_mot (mem virtualm, uint32_t vaddr1) {
     //uint32_t nbre_seg = virtualm->nseg;
     int i, j;
@@ -27,6 +34,13 @@ void affiche_mot (mem virtualm, uint32_t vaddr1) {
     WARNING_MSG("L'adresse demandée n'a pas été retrouvée !");
 }
 
+/**
+ * renvoie un mot (32 bits)
+ * @param virtualm memoire virtuelle
+ * @param vaddr1 adresse virtuelle du mot a afficher
+ * @param mrg map de tout les registres
+ * @return mot de 32 bits du fichier elf ou 1 en cas d'erreur
+ */
 
 uint32_t renvoi_mot (mem virtualm, uint32_t vaddr1,map_reg * mrg)
 {
@@ -45,22 +59,23 @@ uint32_t renvoi_mot (mem virtualm, uint32_t vaddr1,map_reg * mrg)
             uint32_t difference = vaddr1 - adr_depart_seg1;
             for(j=0; j<4; j++)
             {
-                 //On lit un Byte = 8 bits
-                if(vaddr1 > adr_d_stack && vaddr1 < adr_f_stack)
-                {
-                    //uint32_t sp = renvoi_reg_num(mrg,29);
-                    //modif_reg_num(29,mrg,sp-4);
-                    mot = ( mot << 8 ) + (virtualm)->seg[i].content[difference+j];
-                }
-                else mot = ( mot << 8 ) + (virtualm)->seg[i].content[difference+j];
-
+            mot = ( mot << 8 ) + (virtualm)->seg[i].content[difference+j];
             }
-        return mot;
+            return mot;
         }
     }
     WARNING_MSG("L'adresse demandée n'a pas été retrouvée !");
     return 1;
 }
+
+
+/**
+ * renvoie un byte (8 bits)
+ * @param virtualm memoire virtuelle
+ * @param vaddr1 adresse virtuelle du mot a afficher
+ * @param mrg map de tout les registres
+ * @return byte de 8 bits du fichier elf ou 1 en cas d'erreur
+ */
 
 uint8_t renvoi_byte (mem virtualm, uint32_t vaddr1,map_reg * mrg)
 {
@@ -79,11 +94,6 @@ uint8_t renvoi_byte (mem virtualm, uint32_t vaddr1,map_reg * mrg)
             uint32_t difference = vaddr1 - adr_depart_seg1;
             {
                 mot = ( mot << 8 ) + (virtualm)->seg[i].content[difference]; //On lit un Byte = 8 bits
-                if(vaddr1 > adr_d_stack && vaddr1 < adr_f_stack)
-                {
-                    uint32_t sp = renvoi_reg_num(mrg,29);
-                    modif_reg_num(29,mrg,sp-1);
-                }
             }
         return mot;
         }
@@ -91,6 +101,16 @@ uint8_t renvoi_byte (mem virtualm, uint32_t vaddr1,map_reg * mrg)
     WARNING_MSG("L'adresse demandée n'a pas été retrouvée !");
     return 1;
 }
+
+/**
+ * On modifie un  byte de la memoire virtuelle
+ * Il y a ici un cas a differencier cad cas ou on modifie dans le stack
+ * @param virtualm memoire virtuelle
+ * @param vaddr1 adresse virtuelle ou il faut modifier un byte
+ * @param byte byte a introduire
+ * @param mrg map registre
+ * @return 1 si succes 0 sinon 
+ */
 
 int set_byte (mem virtualm, uint32_t vaddr1,uint8_t byte,map_reg * mrg)
 {

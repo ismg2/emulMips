@@ -1,6 +1,13 @@
 #include "run.h"
 
-
+/**
+ * Algorithme general de l'excution du code entré dans la zone .text
+ * @param  mrg     map reggistre
+ * @param  memoire memoire virtuelle
+ * @param  inter   interpreteur
+ * @param  lpb     liste des Break Point
+ * @return         1 si succes 0 sinon
+ */
 int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 {
 	if(memoire==NULL) return erreur_fonction_run(PAS_MEM);
@@ -67,7 +74,11 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 	}
 return 0;}
 
-
+/**
+ * Gestion des erreurs
+ * @param verif entier indiquant l'erreur
+ * @return retourn le message d'erreur puis 0
+ */
 
 
 int erreur_fonction_run(int verif)
@@ -92,7 +103,14 @@ int erreur_fonction_run(int verif)
 	}
 return 0;}
 
-
+/**
+ * Machine a état lors de l'execution
+ * @param  mrg     map reggistre
+ * @param  memoire memoire virtuelle
+ * @param  inter   interpreteur
+ * @param  lpb     liste des Break Point
+ * @param dictionnaire_commande dictionnaire contenant tout les commandes du Mips
+ */
 
 
 int execute_cmd_run(map_reg * mrg,mem memoire,liste l_BP,definition dictionnaire_commande)
@@ -211,6 +229,15 @@ int rechercheBP(liste lbp,uint32_t PC)
 return b;
 }
 
+/**
+ * Desassamblage de l'instruction a executer (ou afficher)
+ * @param  mrg     map reggistre
+ * @param  memoire memoire virtuelle
+ * @param  inter   interpreteur
+ * @param  lpb     liste des Break Point
+ * @param dictionnaire_commande dictionnaire contenant tout les commandes du Mips
+ */
+
 instruction desassamble(map_reg * mrg,mem memoire,interpreteur inter,uint32_t PC,definition dictionnaire_commande)
 {
 	instruction inst;
@@ -222,6 +249,13 @@ instruction desassamble(map_reg * mrg,mem memoire,interpreteur inter,uint32_t PC
 	return inst;
 }
 
+/**
+ * Recherche dans le dico l'instruction à retourne
+ * @param  mrg     map reggistre
+ * @param word mot extrait du fichier elf à l'adresse PC
+ * @param dictionnaire_commande dictionnaire contenant tout les commandes du Mips
+ * @return les differentes elements d'une instruction
+ */
 
 definition recherche_dictionnaire(definition dictionnaire_commande,uint32_t word)
 {
@@ -242,6 +276,13 @@ definition recherche_dictionnaire(definition dictionnaire_commande,uint32_t word
 return NULL;
 }
 
+/**
+ * Recherche dans le dico l'instruction à retourne
+ * @param word mot extrait du fichier elf à l'adresse PC
+ * @param dictionnaire_commande dictionnaire contenant tout les commandes du Mips
+ * @return les operandes de l'instruction
+ */
+
 
 union_RIJ recherche_operande(definition dictionnaire, uint32_t word)
 {
@@ -259,7 +300,9 @@ union_RIJ recherche_operande(definition dictionnaire, uint32_t word)
 return union_struct;
 }
 
-
+/**
+ * Execut l'instruction par l'appel au pointeur de fontion de l'instruction
+ */
 
 int execut_instruction(map_reg * mrg,mem memoire,instruction inst)
 {
@@ -275,9 +318,10 @@ int execut_instruction(map_reg * mrg,mem memoire,instruction inst)
 
 return OK;}
 
-//int (*listeFonctions[41])(map_reg *,mem,union_RIJ) = {ADD,ADDU,ADDI,ADDIU,SUB,SUBU,MULT,DIV,AND,ANDI,OR,ORI,XOR,SLL,SRL,SRA,SEB,SLT,SLTU,SLTI,SLTIU,LW,SW,LB,LBU,SB,LUI,MFHI,MFLO,BEQ,NOP,BNE,BGEZ,BGTZ,BLEZ,BLTZ,j,JAL,JR,BREAK,SYSCALL};
+// Declaration du tableau de pointeur
 int (*listeFonctions[41])(map_reg *,mem,union_RIJ) = {NOP,ADD,ADDU,SUB,AND,OR,XOR,SLT,SLTU,SRL,SRA,SEB,MULT,DIV,JR,MFHI,MFLO,BREAK,SYSCALL,SLL,ADDI,ADDIU,ORI,SLTI,SLTIU,BEQ,ANDI,LW,SW,LB,LBU,SB,BNE,LUI,BGEZ,BGTZ,BLEZ,BLTZ,j,JAL};
 
+// On entre le numero de l'instruction tiré du desassamblage et on retourne le pointeurs de cette fonctions
 int(* choix_fonction(int a))(map_reg *,mem,union_RIJ)
 {
 	return listeFonctions[a];

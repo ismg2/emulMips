@@ -1,7 +1,9 @@
 #include "break_point.h"
 
 /**
- * 
+ * Fonction de gestion d'erreur liés au break point
+ * @param verification entier donnant le type d'erreur
+ * @return On affiche le message d'erreur et on retourne 0
  */
 
 int erreur_fonction_break_point( int verification)

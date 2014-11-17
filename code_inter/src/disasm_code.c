@@ -190,6 +190,14 @@ void erreur_fonction_disasm(int verification)
   }
 }
 
+/**
+ * Fonction d'execution du desassamblage
+ * @param adr1, adr2 ,decalage adresse des instructions a desassambler
+ * @param mem memoire virtuelle
+ * @param mrg tableau des registres
+ * @param decalage_plage entier permettant de savoir si on a entré 2 adresses ou une adresse et un decalage
+ */
+
 int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire,map_reg *  mrg)
 { definition dictionnaire;
   char f_name[64] = "dico_definitif.txt";
@@ -327,7 +335,12 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
 return 0;
 }
 
-
+/**
+ * Retourne les valeurs des operandes du mot extrait du fichier elf,
+ * @param type_struct indique le type d'instruction entré 
+ * @param mot 32 bits extrait du fichier elf
+ * @return le numero des registres ou les valeurs des immediate ou offset
+ */
 
 union_RIJ return_operande(char type_struct,uint32_t mot)
 {   
