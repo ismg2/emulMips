@@ -15,7 +15,7 @@ definition temp = NULL;
 def = calloc(1028,sizeof(*def));
 temp = calloc(2,sizeof(*def));
 ligne = calloc (2054,sizeof(*ligne));
-
+int i;
  
 if(fp==NULL)  
   {
@@ -55,7 +55,7 @@ else
       //printf("\n NBR OPERANDE : %d\n",def[j].nmbr_oper);
       if(def[j].nmbr_oper!=0)
       {
-        for (int i = 0; i < def[j].nmbr_oper ; i++)
+        for (i = 0; i < def[j].nmbr_oper ; i++)
           { token=strtok(NULL,"   ");
             char * tempo = calloc(2,sizeof(*tempo));
             sscanf(token,"%s",tempo);
@@ -197,6 +197,7 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
   uint32_t adr;
   uint32_t adr_2bis;
   union_RIJ union_struct;
+  uint32_t target;
 
   switch(decalage_plage)
   {
@@ -219,9 +220,10 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
   //DEBUG_MSG("ADR : %08x",adr);
   //affiche_mot(memoire,adr);
   uint32_t word;
-  word = renvoi_mot (memoire,adr);
+  word = renvoi_mot (memoire,adr,mrg);
   //DEBUG_MSG("WORD : %u ",word);
   int k=0;
+  int imm;
     while(k<42&&sortie==0)
     {
       if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
@@ -284,13 +286,13 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
                                     }
                                     else if ( strcmp(dictionnaire[k].op_mapping[0],"base") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rt);
-                                      printf(" %s,%u(%d) \n",reg1,union_struct.i.immediate,union_struct.i.rs);sortie = 1;
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rt);reg2 = convert_num_mnemonique(mrg,union_struct.i.rs);
+                                      printf(" %s,%u(%s) \n",reg1,union_struct.i.immediate,reg2);sortie = 1;
                                     }
                                     else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
                                     {
-                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rs);reg2 = convert_num_mnemonique(mrg,union_struct.i.rt);
-                                      printf(" %s,%s,%d \n",reg1,reg2,union_struct.i.immediate);sortie = 1;
+                                      reg1 = convert_num_mnemonique(mrg,union_struct.i.rs);reg2 = convert_num_mnemonique(mrg,union_struct.i.rt);imm = union_struct.i.immediate*4;
+                                      printf(" %s,%s,%d \n",reg1,reg2,imm);sortie = 1;
                                     }
                                     break;
                           case 2 : if (strcmp(dictionnaire[k].op_mapping[0],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[1],"immediate") == 0)
@@ -309,7 +311,8 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
               k++;
               break;
               case 'J' :
-              printf(" %u \n",union_struct.j.target);sortie = 1;
+              target = union_struct.j.target*4;
+              printf(" 0x%08x \n",target);sortie = 1;
               k++;
               break;
               default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");

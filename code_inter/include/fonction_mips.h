@@ -4,8 +4,19 @@
 #include "registre.h"
 #include "mem.h"
 #include "disasm_code.h"
+#include "fonction_mem.h"
+#include "string.h"
 
-#define MOF 0x80000000
+#define MOF 0x800000000
+#define masque_8b 0x80
+#define masque_16b 0x8000
+#define masque_32b 0x80000000
+
+
+#define byte1 0xFF
+#define byte2 0xFF00
+#define byte3 0xFF0000
+#define byte4 0xFF000000
 
 
 int appartenance_gpr(int rd, map_reg * map);

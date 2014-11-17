@@ -12,15 +12,20 @@
 
 // On fixe ici une adresse basse dans la mémoire virtuelle. Le premier segment
 // ira se loger à cette adresse.
-#define START_MEM 0x3000
+#define START_MEM 0x5000
 // nombre max de sections que l'on extraira du fichier ELF
-#define NB_SECTIONS 4
+#define NB_SECTIONS 8
 
 // nom de chaque section
 #define TEXT_SECTION_STR ".text"
 #define RODATA_SECTION_STR ".rodata"
 #define DATA_SECTION_STR ".data"
 #define BSS_SECTION_STR ".bss"
+#define HEAP_SECTION_STR "[heap]"
+#define LIB_SECTION_STR "[lib]"
+#define STACK_SECTION_STR "[stack]"
+#define VSYSCALL_SECTION_STR "[vsyscall]"
+
 
 int is_in_symbols(char* name, stab symtab);
 unsigned int get_nsegments(stab symtab,char* section_names[],int nb_sections);

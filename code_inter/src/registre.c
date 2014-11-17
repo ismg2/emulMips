@@ -48,12 +48,12 @@ map_reg * creer_map_reg()
     rm[26]= remplir_registre("$k0", 26, 0);
     rm[27]= remplir_registre("$k1", 27, 0);
     rm[28]= remplir_registre("$gp", 28, 0);
-    rm[29]= remplir_registre("$sp", 29, 0);
+    rm[29]= remplir_registre("$sp", 29, 0xff7ff000);
     rm[30]= remplir_registre("$fp", 30, 0);
     rm[31]= remplir_registre("$ra", 31, 0);
     rm[32]=remplir_registre("$pc",32,0);
-    rm[33]=remplir_registre("$HI",32,0);
-    rm[34]=remplir_registre("$LO",32,0);
+    rm[33]=remplir_registre("$HI",33,0);
+    rm[34]=remplir_registre("$LO",34,0);
 return rm;
 }
 
@@ -104,7 +104,7 @@ void affiche_reg (int indic, int numero, map_reg * rm) {
     else if (indic==AFFICHE_TOUT) {
         printf("\n-------------------------------------------------------------------------------\n");
         for(i=0; i<NBRE_REGISTRE; i++) {
-            printf(" %s : %08x \t",rm[i]->mnemonique, (rm[i]->valeur));
+            printf(" %s : 0x%08x \t",rm[i]->mnemonique, (rm[i]->valeur));
             if(i%4==0) {printf("\n");}
         }
         printf("\n-------------------------------------------------------------------------------\n");

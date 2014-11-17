@@ -411,8 +411,8 @@ int cmd_load(char * file_name,mem * memoire,stab * symtab)
 int execute_fonction_load(char * file_name,mem * memoire, stab * symtab) 
 {
 
-    char* section_names[NB_SECTIONS]= {TEXT_SECTION_STR,RODATA_SECTION_STR,DATA_SECTION_STR,BSS_SECTION_STR};
-    unsigned int segment_permissions[NB_SECTIONS]= {R_X,R__,RW_,RW_};
+    char* section_names[NB_SECTIONS]= {TEXT_SECTION_STR,RODATA_SECTION_STR,DATA_SECTION_STR,BSS_SECTION_STR,HEAP_SECTION_STR,LIB_SECTION_STR,STACK_SECTION_STR,VSYSCALL_SECTION_STR};
+    unsigned int segment_permissions[NB_SECTIONS]= {R_X,R__,RW_,RW_,RW_,R__,RW_,R__};
     unsigned int nsegments;
     int i=0,j=0;
     unsigned int type_machine;
@@ -434,10 +434,12 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
     // recuperation des info de l'architecture
     elf_get_arch_info(pf_elf, &type_machine, &endianness, &bus_width);
     // et des symboles
-    elf_load_symtab(pf_elf, bus_width, endianness,symtab);//
+    elf_load_symtab(pf_elf, bus_width, endianness,symtab);
 
 
-    nsegments = get_nsegments(*symtab,section_names,NB_SECTIONS);
+    nsegments = get_nsegments(*symtab,section_names,NB_SECTIONS)+4;
+    //nsegments = NB_SECTIONS;
+    DEBUG_MSG("NOMBRE DE SEGMENT : %u",nsegments);
 
     // allouer la memoire virtuelle
     *memoire=init_mem(nsegments);
@@ -448,18 +450,47 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
         if (is_in_symbols(section_names[i],*symtab)) {
             elf_load_section_in_memory(pf_elf,*memoire, section_names[i],segment_permissions[i],next_segment_start);
             next_segment_start+= (((*memoire)->seg[j].size._32+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
-//            print_segment_raw_content(&memory->seg[j]);
+         // print_segment_raw_content(&(*memoire)->seg[j]);
             j++;
         }
     }
 
     //TO DO allouer la pile (et donc modifier le nb de segments)
+    /* alloue le segment [heap] */
+    (*memoire)->seg[j].name          = strdup("[heap]");     
+    (*memoire)->seg[j].size._32      = 0xff7f8000;    // le segment est initialement vide
+    (*memoire)->seg[j].start._32     = (*memoire)->seg[j-1].start._32 + 0x1000;      
+    (*memoire)->seg[j].attr          = SCN_ATTR(1, R__);       
+    (*memoire)->seg[j].content       = calloc((*memoire)->seg[j].size._32, sizeof(char)); 
+
+// alloue le segment [lib] 
+    (*memoire)->seg[j+1].name          = strdup("[lib]");   
+    (*memoire)->seg[j+1].size._32      = (*memoire)->seg[j].start._32;   
+    (*memoire)->seg[j+1].start._32     = 0xff7fd000;     
+    (*memoire)->seg[j+1].attr          = SCN_ATTR(1, R__);       
+    (*memoire)->seg[j+1].content       = calloc((*memoire)->seg[j+1].size._32, sizeof(char));    
+
+// alloue le stack 
+    (*memoire)->seg[j+2].name        = strdup("[stack]");   
+    (*memoire)->seg[j+2].size._32    = 0x800000;    
+    (*memoire)->seg[j+2].start._32   = 0xff7ff000;
+    (*memoire)->seg[j+2].attr        = SCN_ATTR(1, RW_);
+    (*memoire)->seg[j+2].content     = calloc((*memoire)->seg[j+2].size._32, sizeof(char));
+    //print_segment_raw_content(&(*memoire)->seg[j+2]); 
+
+// alloue le segment [vsyscall] 
+    (*memoire)->seg[j+3].name        = strdup("[vsyscall]");
+    (*memoire)->seg[j+3].size._32    = 0xfff;  
+    (*memoire)->seg[j+3].start._32   = 0xfffff000;  
+    (*memoire)->seg[j+3].attr        = SCN_ATTR(1, R_X);
+    (*memoire)->seg[j+3].content     = calloc((*memoire)->seg[j+3].size._32, sizeof(char));
 
     //printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", file_name) ;
-    //print_mem(memoire);
-    DEBUG_MSG("Programme Charge en memoire");
+    //print_mem(*memoire);
+    //stab32_print(*symtab);    
+    INFO_MSG("Programme Charge en memoire");
     printf("-----------------------------------------------------------------------------");
-    //stab32_print( symtab);
+
 
     // on fait le ménage avant de partir
     //del_mem(memory);

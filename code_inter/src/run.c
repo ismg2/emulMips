@@ -42,9 +42,9 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 
 	if(is_hexa_v2(token)==0) {return erreur_fonction_run(NOT_HEXA);}
 
-	else if (adr < 12288) return erreur_fonction_run(DEHORS_CODE);
+	else if (adr < START_MEM) return erreur_fonction_run(DEHORS_CODE);
 
-	else if (adr > 16384) return erreur_fonction_run(DEHORS_CODE);
+	else if (adr > START_MEM + 0x1000) return erreur_fonction_run(DEHORS_CODE);
 
 	else if (adr%4!=0) return erreur_fonction_run(DEBUT_INST);
 
@@ -180,7 +180,8 @@ while(1)
 				case ERREUR : WARNING_MSG("MAUVAISE COMMANDE");etat = PAUSE;//return ERREUR;
 				break;
 			
-				case EXIT : exit( EXIT_SUCCESS );//return DEHORS;
+				case EXIT : //exit( EXIT_SUCCESS );
+				return DEHORS;
 				break;
 			}
 		}
@@ -214,7 +215,7 @@ instruction desassamble(map_reg * mrg,mem memoire,interpreteur inter,uint32_t PC
 {
 	instruction inst;
 	uint32_t word;
-	word = renvoi_mot(memoire,PC);
+	word = renvoi_mot(memoire,PC,mrg);
 	inst.def = recherche_dictionnaire(dictionnaire_commande,word);
 	inst.operande = recherche_operande(dictionnaire_commande,word);
 

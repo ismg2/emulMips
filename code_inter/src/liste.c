@@ -20,7 +20,7 @@ void visualiser_liste(liste L) //visualiser_liste
 
     for (p=L;!est_vide(p); p=p->suiv)
     {
-        printf("#%d : %04x \n",i,p->val.adresse_BP);
+        printf("#%d : 0x%04x \n",i,p->val.adresse_BP);
         i++;
     }
  

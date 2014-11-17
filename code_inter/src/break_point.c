@@ -116,11 +116,11 @@ int execute_add_BP(char * adresse,liste * l_breakP,mem memoire)
 	{
 		uint32_t fin_code = memoire->seg->start._32 + memoire->seg->size._32 ;
 		sscanf(adresse,"%08x",&adr);
-		DEBUG_MSG("Lim inf : 12288 -- adresse : %u -- Lim ext : 16384",adr);
+		DEBUG_MSG("Lim inf : %u -- adresse : %u -- Lim ext : %u",START_MEM,adr,START_MEM + 0x1000);
 
-		if(adr < 12288) return erreur_fonction_break_point(HORS_CODE);
+		if(adr < START_MEM) return erreur_fonction_break_point(HORS_CODE);
 
-		else if(adr >= 16384) return erreur_fonction_break_point(HORS_CODE);
+		else if(adr >= START_MEM + 0x1000) return erreur_fonction_break_point(HORS_CODE);
 
 		else if (adr%4!=0) return erreur_fonction_break_point(PAS_INST);
 
@@ -221,7 +221,7 @@ return retour;}
 BP cherche_plus_petit(liste l)
 {
 	BP petit;
-	petit.adresse_BP=0x4000;
+	petit.adresse_BP=0x90000000;
 	liste p=l;
 
 	while(p!=NULL) 

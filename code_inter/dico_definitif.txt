@@ -23,7 +23,7 @@ ADDIU I 0x24000000 0xfc000000 3 rs rt immediate 22
 ORI I 0x34000000 0xfc000000 3 rs rt immediate 23
 SLTI I 0x28000000 0xfc000000 3 rs rt immediate 24
 SLTIU I 0x2c000000 0xfc000000 3 rs rt immediate 25
-BEQ I 0x10000000 0xfc000000 3 rs rt immediate 26
+BEQ I 0x10000000 0xfc000000 3 rs rt offset 26
 ANDI I 0x30000000 0xfc000000 3 rs rt immediate 27
 LW I 0x8c000000 0xfc000000 3 base rt offset 28
 SW I 0xac000000 0xfc000000 3 base rt offset 29

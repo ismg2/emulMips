@@ -5,6 +5,7 @@
 #include "get_type_token.h"
 #include <ctype.h>
 #include "registre.h"
+#include "mipself_test.h"
 enum {CMD_DISP_MEM_PLAGE_OK,  CMD_DISP_MEM_MAP_OK   ,CMD_DISP_REG_OK,CMD_DISP_REG_ALL_OK,ADRS_NON_HEXA,REG_NON_EXISTANT,ERROR,CMD_DISP_REG_PLAGE_OK,PAS_DADRESSE_ENTREE,DEUX_POINT_MANQUANT,NO_VALUE_REG};
 
 
