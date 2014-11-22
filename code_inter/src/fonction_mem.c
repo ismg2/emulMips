@@ -21,7 +21,7 @@ void affiche_mot (mem virtualm, uint32_t vaddr1) {
             //DEBUG_MSG("DIFFERENCE : %08x",difference);
             for(j=0; j<4; j++) 
                 {
-                printf("\n");
+                printf("\t");
                 printf("%02x", (virtualm)->seg[i].content[difference+j]);
 
                 }

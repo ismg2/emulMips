@@ -210,7 +210,7 @@ int BEQ(map_reg * mrg,mem memoire,union_RIJ  union_struct){
     DEBUG_MSG("ON a rs = %08x et rt = %08x",rs,rt);
     int result;
     if(rs==rt){
-        result=mrg[32]->valeur+offset;
+        result=mrg[32]->valeur+offset*4;
         modif_reg_num(32, mrg, result);
         return 1;
     }
@@ -227,7 +227,7 @@ int BGEZ(map_reg * mrg,mem memoire,union_RIJ  union_struct){
     int result;
     DEBUG_MSG("ON rentre dans BGEZ");
     if(rs>=0){
-        result=mrg[32]->valeur+offset;
+        result=mrg[32]->valeur+offset*4;
         modif_reg_num(32, mrg, result);
         return 1;
     }
@@ -244,7 +244,7 @@ int BGTZ(map_reg * mrg,mem memoire,union_RIJ  union_struct){
     DEBUG_MSG("ON rentre dans BGTZ");
     int result;
     if(rs>0){
-        result=mrg[32]->valeur+offset;
+        result=mrg[32]->valeur+offset*4;
         modif_reg_num(32, mrg, result);
         return 1;
     }
@@ -261,7 +261,7 @@ int BLEZ(map_reg * mrg,mem memoire,union_RIJ  union_struct){
     DEBUG_MSG("ON rentre dans BLEZ");
     int result;
     if(rs<=0){
-        result=mrg[32]->valeur+offset;
+        result=mrg[32]->valeur+offset*4;
         modif_reg_num(32, mrg, result);
         return 1;
     }
@@ -278,7 +278,7 @@ int BLTZ(map_reg * mrg,mem memoire,union_RIJ  union_struct){
     DEBUG_MSG("ON rentre dans BLTZ");
     int result;
     if(rs<0){
-        result=mrg[32]->valeur+offset;
+        result=mrg[32]->valeur+offset*4;
         modif_reg_num(32, mrg, result);
         return 1;
     }
@@ -655,7 +655,7 @@ int SYSCALL(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {
 DEBUG_MSG("ON rentre dans SYSCALL");
 uint32_t v0_u = renvoi_reg_num(mrg,2);
-uint64_t a0;
+uint32_t a0;
 uint32_t a0_;
 //int v0 = (int) v0_u;
 switch(v0_u)
@@ -667,10 +667,19 @@ switch(v0_u)
     break; 
 
     case 4 : 
-    a0 = renvoi_reg_num(mrg,4);
-    void * pointeur = (void *) a0;
-    printf("\nOn affiche la chaine contenu à l'adresse %08llx \n",a0);
-    printf("\n %08llx : %s",a0,pointeur);
+    a0 = renvoi_reg_num(mrg,4); // adresse ou se trouve la chaine de caractere
+    char mot[64];
+    uint32_t ascii= renvoi_mot(memoire,a0,mrg);
+    FLIP_ENDIANNESS(ascii);
+    //uint64_t ascii_z = (uint64_t) renvoi_mot(memoire,a0+4,mrg);
+    //FLIP_ENDIANNESS(ascii_z);
+    //ascii = (ascii_z << 32) | ascii;  // On renvoit le code asciiz du mot
+    //FLIP_ENDIANNESS(ascii);
+    //strcpy(mot,&ascii);
+    printf("\nOn affiche la chaine contenu à l'adresse %08x \n",a0);
+    //sscanf(ascii,"%s",mot);
+    //strcpy(mot, (char *) ascii);
+    printf("\n %s \n",mot);
     break;
 
     case 5 : printf("\n Entrez un entier : \n");

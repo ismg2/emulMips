@@ -6,6 +6,7 @@
 #include "disasm_code.h"
 #include "fonction_mem.h"
 #include "string.h"
+#include "common/bits.h"
 
 #define MOF 0x800000000
 #define masque_8b 0x80
