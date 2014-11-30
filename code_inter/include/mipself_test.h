@@ -16,6 +16,9 @@
 // nombre max de sections que l'on extraira du fichier ELF
 #define NB_SECTIONS 8
 
+//nom du prefix ‡ appliquer pour la section
+#define RELOC_PREFIX_STR ".rel"
+
 // nom de chaque section
 #define TEXT_SECTION_STR ".text"
 #define RODATA_SECTION_STR ".rodata"

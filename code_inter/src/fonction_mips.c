@@ -334,7 +334,7 @@ int NOP(map_reg * mrg,mem memoire,union_RIJ  union_struct) {
 int BREAK(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {
 	DEBUG_MSG("ON rentre dans BREAK");
-	return 2;
+	return 7;
 }
 int DIV(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {
@@ -657,6 +657,7 @@ DEBUG_MSG("ON rentre dans SYSCALL");
 uint32_t v0_u = renvoi_reg_num(mrg,2);
 uint32_t a0;
 uint32_t a0_;
+int i;
 //int v0 = (int) v0_u;
 switch(v0_u)
     {
@@ -668,18 +669,13 @@ switch(v0_u)
 
     case 4 : 
     a0 = renvoi_reg_num(mrg,4); // adresse ou se trouve la chaine de caractere
-    char mot[64];
-    uint32_t ascii= renvoi_mot(memoire,a0,mrg);
+    uint64_t ascii= (uint64_t) renvoi_mot(memoire,a0,mrg);
+    uint64_t ascii_z = (uint64_t) renvoi_mot(memoire,a0+4,mrg);
+    ascii = (ascii << 32) | ascii_z;  // On renvoit le code asciiz du mot
     FLIP_ENDIANNESS(ascii);
-    //uint64_t ascii_z = (uint64_t) renvoi_mot(memoire,a0+4,mrg);
-    //FLIP_ENDIANNESS(ascii_z);
-    //ascii = (ascii_z << 32) | ascii;  // On renvoit le code asciiz du mot
-    //FLIP_ENDIANNESS(ascii);
-    //strcpy(mot,&ascii);
+    char * string =  (char *) &ascii;
     printf("\nOn affiche la chaine contenu à l'adresse %08x \n",a0);
-    //sscanf(ascii,"%s",mot);
-    //strcpy(mot, (char *) ascii);
-    printf("\n %s \n",mot);
+    printf("\n STRING : %s \n",string);
     break;
 
     case 5 : printf("\n Entrez un entier : \n");

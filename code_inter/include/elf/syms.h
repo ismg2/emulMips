@@ -7,7 +7,7 @@
  *
  * Binary symbols.
  */
- 
+
 #ifndef _SYMS_H_
 #define _SYMS_H_
 
@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-#include "../common/types.h"
+#include "common/types.h"
 
 
 typedef enum {

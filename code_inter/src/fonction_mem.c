@@ -35,6 +35,29 @@ void affiche_mot (mem virtualm, uint32_t vaddr1) {
 }
 
 /**
+ * Affichage un byte (32 bits)
+ * @param virtualm memoire virtuelle
+ * @param vaddr1 adresse virtuelle du mot a afficher
+ * @return affichage du byte
+ */
+
+void affiche_byte (mem virtualm, uint32_t vaddr1) {
+    //uint32_t nbre_seg = virtualm->nseg;
+    int i, j;
+    for(i=0; i < (virtualm->nseg)-1; i++) 
+    {
+        uint32_t adr_depart_seg1=  (virtualm)->seg[i].start._32;
+        uint32_t adr_depart_seg2=  (virtualm)->seg[i+1].start._32;
+        if ( vaddr1 >= adr_depart_seg1 &&  vaddr1 < adr_depart_seg2 )
+            {
+            uint32_t difference = vaddr1 - adr_depart_seg1;
+            printf("%02x \t", (virtualm)->seg[i].content[difference]);
+            }
+        //else WARNING_MSG("L'adresse demandée n'a pas été retrouvée !");
+    }
+}
+
+/**
  * renvoie un mot (32 bits)
  * @param virtualm memoire virtuelle
  * @param vaddr1 adresse virtuelle du mot a afficher
@@ -45,8 +68,6 @@ void affiche_mot (mem virtualm, uint32_t vaddr1) {
 uint32_t renvoi_mot (mem virtualm, uint32_t vaddr1,map_reg * mrg)
 {
     int nbre_seg = (int) virtualm->nseg;
-    uint32_t adr_d_stack = 0xff7ff000;
-    uint32_t adr_f_stack = 0xfffff000;
     //DEBUG_MSG("NOMBRE DE SEG : %d",nbre_seg);
     uint32_t mot=0;
     int i, j;
@@ -80,8 +101,6 @@ uint32_t renvoi_mot (mem virtualm, uint32_t vaddr1,map_reg * mrg)
 uint8_t renvoi_byte (mem virtualm, uint32_t vaddr1,map_reg * mrg)
 {
     int nbre_seg = (int) virtualm->nseg;
-    uint32_t adr_d_stack = 0xff7ff000;
-    uint32_t adr_f_stack = 0xfffff000;
     //DEBUG_MSG("NOMBRE DE SEG : %d",nbre_seg);
     uint32_t mot=0;
     int i;
@@ -154,7 +173,32 @@ int set_byte (mem virtualm, uint32_t vaddr1,uint8_t byte,map_reg * mrg)
     return 0;
 }
 
+/**
+ * On modifie un  byte de la memoire virtuelle
+ * Il y a ici un cas a differencier cad cas ou on modifie dans le stack
+ * @param virtualm memoire virtuelle
+ * @param vaddr1 adresse virtuelle ou il faut modifier un byte
+ * @param byte byte a introduire
+ * @param mrg map registre
+ * @return 1 si succes 0 sinon 
+ */
 
+int set_word (mem virtualm, uint32_t vaddr1,uint32_t word,map_reg * mrg)
+{
+    int res,res1,res2,res3;
+    uint8_t byte_0 = word & byte1;
+    uint8_t byte_1 = (word & byte2) >> 8;
+    uint8_t byte_2 = (word & byte3) >> 16;
+    uint8_t byte_3 = (word & byte4) >> 24;
+
+    res = set_byte(virtualm,vaddr1,byte_3,mrg);
+    res1 = set_byte(virtualm,vaddr1+1,byte_2,mrg);
+    res2 = set_byte(virtualm,vaddr1+2,byte_1,mrg);
+    res3 = set_byte(virtualm,vaddr1+3,byte_0,mrg);
+    res = res*res1*res2*res3;
+
+return res;
+}
 
 
 

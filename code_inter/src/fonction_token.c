@@ -157,20 +157,20 @@ return tab_compar;
 // ou si on demande d'afficher la map
 
 
-int test_cmd_dispmem(interpreteur inter,char * adr1,char * adr2)
+int test_cmd_dispmem(interpreteur inter,char ** adr1,char ** adr2)
 {
-    adr1=get_next_token(inter);
+    *adr1=get_next_token(inter);
     char * two_point=get_next_token(inter);
-    adr2=get_next_token(inter);
+    *adr2=get_next_token(inter);
     int deux_point=1;
-    DEBUG_MSG("adresse analysed test_cmd_dispmem function  '%s'   '%s' ",adr1,adr2);
+    DEBUG_MSG("adresse analysed test_cmd_dispmem function  '%s'   '%s' ",*adr1,*adr2);
     DEBUG_MSG("LES FAMEUX DEUX POINT '%s' ",two_point);
     if(two_point!=NULL) {deux_point=cherche_deux_point(two_point);}
 
-    if (adr1==NULL||adr2==NULL) {return PAS_DADRESSE_ENTREE;}
-        else if (strcmp(adr1,"map")==0) {return CMD_DISP_MEM_MAP_OK;} 
+    if (*adr1==NULL||*adr2==NULL) {return PAS_DADRESSE_ENTREE;}
+        else if (strcmp(*adr1,"map")==0) {return CMD_DISP_MEM_MAP_OK;} 
 
-            else if (is_hexa_v2(adr1)==0 || is_hexa_v2(adr2)==0) {return  ADRS_NON_HEXA;}
+            else if (is_hexa_v2(*adr1)==0 || is_hexa_v2(*adr2)==0) {return  ADRS_NON_HEXA;}
             else if (deux_point==1) {return DEUX_POINT_MANQUANT;}
             
     else {return CMD_DISP_MEM_PLAGE_OK;}
@@ -185,17 +185,35 @@ int test_cmd_dispmem(interpreteur inter,char * adr1,char * adr2)
 
 void execute_disp_mem(char * adr1,char * adr2,int map,mem memoires,stab symtabs)
 { 
+    DEBUG_MSG("SA RENTRE !!");
+    uint32_t pointeur;
+    uint32_t adresse1;
+    uint32_t adresse2;
 	switch(map)
 	{
 		case CMD_DISP_MEM_PLAGE_OK : 
+
+        sscanf(adr1,"%08x",&adresse1);
+        sscanf(adr2,"%08x",&adresse2);
+        DEBUG_MSG("DISP %08x -- > %08x",adresse1,adresse2);
+
+            for(pointeur=adresse1;pointeur<adresse2;pointeur++)
+            {
+                if(pointeur%4==0) printf("\n 0x%08x : ",pointeur);
+                //DEBUG_MSG("pointeur : 0x%08x",pointeur);
+                affiche_byte(memoires,pointeur);
+                //printf("\n");
+            }
+            printf("\n");
         break;
 		case CMD_DISP_MEM_MAP_OK : 
-                                    if(memoires==NULL) {WARNING_MSG("ERROR [7] : Aucun programme n'a été chargé en memoire");}
-                                    else	{   
-                                                print_mem(memoires);
-                                                stab32_print( symtabs);
-                                            }
-                                        break;
+        if(memoires==NULL) {WARNING_MSG("ERROR [7] : Aucun programme n'a été chargé en memoire");}
+        else
+        {   
+            print_mem(memoires);
+            stab32_print( symtabs);
+        }
+        break;
 		default : WARNING_MSG("POSITION IMPOSSIBLE");
 	}
 }
@@ -325,7 +343,7 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg)
         
         if(strcmp(token,"mem")==0)
         {  
-            verif = test_cmd_dispmem(inter,adresse1,adresse2);
+            verif = test_cmd_dispmem(inter,&adresse1,&adresse2);
             switch(verif)
             {
                 case CMD_DISP_MEM_PLAGE_OK :
@@ -414,6 +432,7 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
     char* section_names[NB_SECTIONS]= {TEXT_SECTION_STR,RODATA_SECTION_STR,DATA_SECTION_STR,BSS_SECTION_STR,HEAP_SECTION_STR,LIB_SECTION_STR,STACK_SECTION_STR,VSYSCALL_SECTION_STR};
     unsigned int segment_permissions[NB_SECTIONS]= {R_X,R__,RW_,RW_,RW_,R__,RW_,R__};
     unsigned int nsegments;
+    unsigned int nsegments_;
     int i=0,j=0;
     unsigned int type_machine;
     unsigned int endianness;   //little ou big endian
@@ -438,7 +457,7 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
 
 
     nsegments = get_nsegments(*symtab,section_names,NB_SECTIONS)+4;
-    //nsegments = NB_SECTIONS;
+    nsegments_ = get_nsegments(*symtab,section_names,NB_SECTIONS);
     DEBUG_MSG("NOMBRE DE SEGMENT : %u",nsegments);
 
     // allouer la memoire virtuelle
@@ -454,7 +473,12 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
             j++;
         }
     }
+    for (i=0; i<nsegments_; i++) {
+        reloc_segment(pf_elf, (*memoire)->seg[i], *memoire,endianness,*symtab,NULL);
 
+    }
+    //print_mem(*memoire);
+    //stab32_print(*symtab); 
     //TO DO allouer la pile (et donc modifier le nb de segments)
     /* alloue le segment [heap] */
     (*memoire)->seg[j].name          = strdup("[heap]");     
@@ -486,8 +510,7 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
     (*memoire)->seg[j+3].content     = calloc((*memoire)->seg[j+3].size._32, sizeof(char));
 
     //printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", file_name) ;
-    //print_mem(*memoire);
-    //stab32_print(*symtab);    
+       
     INFO_MSG("Programme Charge en memoire");
     printf("-----------------------------------------------------------------------------");
 
