@@ -295,7 +295,7 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
                                     else if ( strcmp(dictionnaire[k].op_mapping[0],"base") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
                                     {
                                       reg1 = convert_num_mnemonique(mrg,union_struct.i.rt);reg2 = convert_num_mnemonique(mrg,union_struct.i.rs);
-                                      printf(" %s,%u(%s) \n",reg1,union_struct.i.immediate,reg2);sortie = 1;
+                                      printf(" %s,0x%08x(%s) \n",reg1,union_struct.i.immediate,reg2);sortie = 1;
                                     }
                                     else if (strcmp(dictionnaire[k].op_mapping[0],"rs") == 0 && strcmp(dictionnaire[k].op_mapping[1],"rt") == 0 && strcmp(dictionnaire[k].op_mapping[2],"offset") == 0)
                                     {

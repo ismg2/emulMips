@@ -97,7 +97,7 @@ void affiche_reg (int indic, int numero, map_reg * rm) {
         }
         else 
         {
-            printf(" %s : %04x \t",rm[numero]->mnemonique, (rm[numero]->valeur));
+            printf(" %s : 0x%04x \t",rm[numero]->mnemonique, (rm[numero]->valeur));
         }
     }
 

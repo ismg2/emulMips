@@ -183,7 +183,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
     }
     else if(strcmp(token,"assert")==0)
     {
-        return cmd_assert(inter);
+        return cmd_assert(inter,*vmemoire,mrg);
     }
     else if(strcmp(token,"load")== 0)
     {   token = get_next_token(inter);

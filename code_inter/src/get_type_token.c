@@ -19,15 +19,22 @@ int get_type(char* chaine) {
 //retourne 0 si non BYTE or WORD et le type de variable sinon
 int is_word_byte(char* chaine) {   
   int type=0;
+  unsigned int value;
 	type=get_type(chaine);
 	{ switch(type)
 		{
-		case HEXA : if(strlen(chaine+2)==2) return BYTE;
-					else if(strlen(chaine+2)==4) return WORD;
-						else return 0;break;
+		case HEXA : if(strlen(chaine)==4) return BYTE;
+					else if(strlen(chaine)==10) return WORD;
+					else return 0;
+					break;
 		case BINAIRE : if(strlen(chaine)==8) return BYTE;
-						else if(strlen(chaine)==16) return WORD;
-						else return 0;break;
+					   else if(strlen(chaine)==32) return WORD;
+					   else return 0;break;
+		case DECIMAL : sscanf(chaine,"%u",&value);
+						if(value<255) return BYTE;
+						else if(value<4294967295) return WORD;
+						else return 0;
+						break;
 		default : return 0;
 		}
 	}
@@ -113,7 +120,7 @@ int inf_8(char* chaine)
 return erreur;}
 
 
-// retourne 1 si decimal, 0 si non is_decimal
+// retourne 1 si decimal, 0 si non 
 
 int is_decimal(char* chaine)
 {int i=0;
