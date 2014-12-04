@@ -70,7 +70,7 @@ void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,m
 
 int reg_exist(char * reg1,char ** tab_tout_reg,int * classement)
 { int j=0;int erreur=1;
-    while(j<69&&erreur!=0)
+    while(j<70&&erreur!=0)
     {
     if(strcmp(reg1,tab_tout_reg[j])==0)  
     {
@@ -147,7 +147,7 @@ char ** init_tab_registre()
     strcpy(tab_compar[31],"$31");                    strcpy(tab_compar[66],"$ra");
     strcpy(tab_compar[32],"$32");                    strcpy(tab_compar[67],"$HI");
     strcpy(tab_compar[33],"$33");                    strcpy(tab_compar[68],"$LO");
-    strcpy(tab_compar[34],"$33");                    strcpy(tab_compar[69],"$PC");
+    strcpy(tab_compar[34],"$33");                    strcpy(tab_compar[69],"$pc");
 //aff(tab_compar,70);
 return tab_compar;
 }

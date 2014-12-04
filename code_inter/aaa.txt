@@ -1,1 +1,3 @@
-load res/boucle.o break add 0x3000 0x3004 run 0x3000
+load res/boucle.o 
+break add 0x3000 0x3004 
+run 0x3000

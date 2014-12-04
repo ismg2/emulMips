@@ -1,4 +1,3 @@
-
 #include "fonction_assert.h"
 
 
@@ -80,30 +79,36 @@ return 0;}
 
 
 
-int execute_assert_reg(char * reg1,char ** value, map_reg * mrg,int position_reg)
+int execute_assert_reg(char * reg1,char * value, map_reg * mrg,int position_reg)
 {
-    INFO_MSG("ASSERT REG = %s VALEUR = %s ",reg1,*value);
+    INFO_MSG("ASSERT REG = %s VALEUR = %s ",reg1,value);
     int numero;
     uint32_t valeur_reg;
-    int type = get_type(*value);
+    char * numero_registre;
+    int type = get_type(value);
 
-    switch(type)
-    {
-        case HEXA : sscanf(*value,"%08x",&valeur_reg);break;
+   // switch(type)
+   // {
+        //case HEXA : 
+        sscanf(value+2,"%08x",&valeur_reg);
+       // break;
 
-        case DECIMAL : sscanf(*value,"%u",&valeur_reg);break;
+     //   case DECIMAL : sscanf(*value,"%u",&valeur_reg);break;
 
-        default : WARNING_MSG("TYPE VARIABLE INDEFINI");return 1;
-    }
+     //   default : WARNING_MSG("TYPE VARIABLE INDEFINI");return 1;
+   // }
 
-    
+    DEBUG_MSG("position_reg : %d",position_reg);
     if(position_reg >=35)
     {
         numero = convert_mnemo_num(mrg,reg1);
     }
-    else sscanf(reg1+1,"%d",&numero);
+    else 
+    {
+        sscanf(reg1+1,"%d",&numero);
+    }
 
-    DEBUG_MSG("VALEUR REG : %08x",valeur_reg);
+    DEBUG_MSG("NUMERO REGISTRE : %d VALEUR REG : %08x",numero,valeur_reg);
 
     if(mrg[numero]->valeur==valeur_reg)
     {
@@ -204,7 +209,7 @@ int a;
    else if(reg_exist(reg1,tab_tout_reg,&a)==0)  
     {  
         *value = get_next_token(inter);
-        position = &a;
+        *position = a;
         DEBUG_MSG("Valeur à tester : %s",*value);
         if(*value==NULL)
         {
@@ -255,7 +260,7 @@ int cmd_assert(interpreteur inter,mem memoire,map_reg * mrg)
 		    token=get_next_token(inter);
 		    DEBUG_MSG("REGISTRE ENTREE : %s",token);
                 verif = test_cmd_assert_reg(inter,tab_all_reg,token,&valeur,&positon_registre);
-                if(verif==CMD_ASSERT_REG_OK) return execute_assert_reg(token,&valeur,mrg,positon_registre);
+                if(verif==CMD_ASSERT_REG_OK) return execute_assert_reg(token,valeur,mrg,positon_registre);
                 else erreur_cmd_assert(verif);
                 
         }

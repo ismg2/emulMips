@@ -12,6 +12,7 @@
 #include "mem.h"
 #include "mipself_test.h" 
 #include "registre.h"
+#include "fonction_mem.h"
 
 void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,stab symtab,map_reg * mrg);
 

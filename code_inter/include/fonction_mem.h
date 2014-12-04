@@ -4,6 +4,7 @@
 #include "fonction_base.h"
 #include "registre.h"
 
+
 #define byte1 0xFF
 #define byte2 0xFF00
 #define byte3 0xFF0000
