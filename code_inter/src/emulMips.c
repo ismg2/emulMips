@@ -26,6 +26,7 @@ int main ( int argc, char *argv[] ) {
     FILE *fp = NULL; /* le flux dans lequel les commande seront lues : stdin (mode shell) ou un fichier */
     mem memoire_virtuelle=NULL;
     stab tableau_symboles;// table des symboles;
+    stab sym_tab_libc;
     map_reg * mrg; //MAP DE TOUT LES REGISTRES
     liste  l_BP;
 
@@ -64,7 +65,7 @@ int main ( int argc, char *argv[] ) {
         if (acquire_line( fp,  inter)  == 0 ) {
             /* Une nouvelle ligne a ete acquise dans le flux fp*/
 
-            int res = execute_cmd(inter,&memoire_virtuelle,&tableau_symboles,mrg,&l_BP); /* execution de la commande */
+            int res = execute_cmd(inter,&memoire_virtuelle,&tableau_symboles,mrg,&l_BP,&sym_tab_libc); /* execution de la commande */
 
             // traitement des erreurs
             switch(res) {

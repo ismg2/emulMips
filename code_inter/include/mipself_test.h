@@ -12,12 +12,16 @@
 
 // On fixe ici une adresse basse dans la mémoire virtuelle. Le premier segment
 // ira se loger à cette adresse.
-#define START_MEM 0x5000
+#define START_MEM 0x1000
 // nombre max de sections que l'on extraira du fichier ELF
 #define NB_SECTIONS 8
 
 //nom du prefix ‡ appliquer pour la section
 #define RELOC_PREFIX_STR ".rel"
+
+#define LIBC_MEM_END 0xff7ff000u
+
+#define PATH_TO_LIBC "./libc/libc.so"
 
 // nom de chaque section
 #define TEXT_SECTION_STR ".text"

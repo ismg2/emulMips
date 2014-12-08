@@ -401,7 +401,7 @@ void aff(char **m, int b)
 
 
 
-int cmd_load(char * file_name,mem * memoire,stab * symtab)
+int cmd_load(char * file_name,mem * memoire,stab * symtab,stab * symtab_libc)
 {
     //int verif;
     FILE * pf_elf;
@@ -416,7 +416,7 @@ int cmd_load(char * file_name,mem * memoire,stab * symtab)
         return 1;}
 
     else {
-        fclose(pf_elf);return execute_fonction_load(file_name,memoire,symtab);
+        fclose(pf_elf);return execute_fonction_load(file_name,memoire,symtab,symtab_libc);
             }
 }
 
@@ -426,7 +426,7 @@ int cmd_load(char * file_name,mem * memoire,stab * symtab)
 // le main charge un fichier elf en entrée en utilisant
 // les arguments du prototype de la fonction main (cf. fiches infos)
 //
-int execute_fonction_load(char * file_name,mem * memoire, stab * symtab) 
+int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * symtab_libc) 
 {
 
     char* section_names[NB_SECTIONS]= {TEXT_SECTION_STR,RODATA_SECTION_STR,DATA_SECTION_STR,BSS_SECTION_STR,HEAP_SECTION_STR,LIB_SECTION_STR,STACK_SECTION_STR,VSYSCALL_SECTION_STR};
@@ -440,7 +440,8 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
     unsigned int next_segment_start = START_MEM; // compteur pour designer le début de la prochaine section
 
     *symtab= new_stab(0); // table des symboles
-    FILE * pf_elf;
+    *symtab_libc= new_stab(0); // table des symboles de la libc
+    FILE * pf_elf, *pf_libc;
 
     if ((pf_elf = fopen(file_name,"r")) == NULL) {
         DEBUG_MSG("cannot open file %s", file_name);
@@ -449,22 +450,59 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
     if (!assert_elf_file(pf_elf))
         DEBUG_MSG("file %s is not an ELF file", file_name);
 
+    if ((pf_libc = fopen(PATH_TO_LIBC,"r")) == NULL) 
+    {
+        ERROR_MSG("cannot open file %s", PATH_TO_LIBC);
+    }
+
+    if (!assert_elf_file(pf_libc))
+        ERROR_MSG("file %s is not an ELF file", PATH_TO_LIBC);
+
+
 
     // recuperation des info de l'architecture
     elf_get_arch_info(pf_elf, &type_machine, &endianness, &bus_width);
     // et des symboles
     elf_load_symtab(pf_elf, bus_width, endianness,symtab);
+    elf_load_symtab(pf_libc, bus_width, endianness, symtab_libc);
 
 
-    nsegments = get_nsegments(*symtab,section_names,NB_SECTIONS)+4;
-    nsegments_ = get_nsegments(*symtab,section_names,NB_SECTIONS);
+    nsegments = get_nsegments(*symtab,section_names,NB_SECTIONS);
+    nsegments += get_nsegments(*symtab_libc,section_names,NB_SECTIONS);
+    nsegments_ = get_nsegments(*symtab,section_names,NB_SECTIONS)+4;
     DEBUG_MSG("NOMBRE DE SEGMENT : %u",nsegments);
 
     // allouer la memoire virtuelle
     *memoire=init_mem(nsegments);
+//-------------------------------------------------------------------------
+        // on alloue libc
+    for (i=0; i<NB_SECTIONS; i++) {
+        if (is_in_symbols(section_names[i],*symtab_libc)) {
+            elf_load_section_in_memory(pf_libc,(*memoire), section_names[i],segment_permissions[i],next_segment_start);
+            next_segment_start-= (((*memoire)->seg[j].size._32+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
+            (*memoire)->seg[j].start._32 = next_segment_start;
+//            print_segment_raw_content(&memoire->seg[j]);
+            j++;
+        }
+    }
 
+    // on reloge libc
+    for (i=0; i<j; i++) {
+        reloc_segment(pf_libc, (*memoire)->seg[i], *memoire,endianness,symtab_libc,NULL,NULL);
+    }
+
+    // on change le nom des differents segments de libc
+    for (i=0; i<j; i++) {
+        char seg_name [256]= {0};
+        strcpy(seg_name,"libc");
+        strcat(seg_name,(*memoire)->seg[i].name);
+        free((*memoire)->seg[i].name);
+        (*memoire)->seg[i].name=strdup(seg_name);
+    }
+//----------------------------------------------------------------------------
     // Ne pas oublier d'allouer les differentes sections
-    j=0;
+    int k =j;
+    next_segment_start = START_MEM;
     for (i=0; i<NB_SECTIONS; i++) {
         if (is_in_symbols(section_names[i],*symtab)) {
             elf_load_section_in_memory(pf_elf,*memoire, section_names[i],segment_permissions[i],next_segment_start);
@@ -473,8 +511,8 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
             j++;
         }
     }
-    for (i=0; i<nsegments_; i++) {
-        reloc_segment(pf_elf, (*memoire)->seg[i], *memoire,endianness,*symtab,NULL);
+    for (i=k; i<j; i++) {
+        reloc_segment(pf_elf, (*memoire)->seg[i], *memoire,endianness,symtab,symtab_libc,pf_libc);
 
     }
     //print_mem(*memoire);

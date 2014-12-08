@@ -377,7 +377,7 @@ union_RIJ return_operande(char type_struct,uint32_t mot)
       case 'J' :
       uni.j.target = (mot & masque_target);
       return uni;
-      default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
+      default : WARNING_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
     }
 
 

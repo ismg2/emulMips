@@ -17,12 +17,21 @@ int cmd_set(interpreteur inter,mem memoire,map_reg * mrg)
         if(strcmp(token,"mem")==0)
         {
         	token=get_next_token(inter);
+            if(memoire==NULL) 
+                {
+                    WARNING_MSG("Pas de Programme chargé en memoire");
+                    return 0;
+                }
         	if(strcmp(token,"word")==0)
         		{
         			DEBUG_MSG("TEST DES ARGUMENTS DE LA FONCTION SET WORD");
         			verif=test_cmd_set(inter,word,&valeur,&adresse);  
         			if(verif==CMD_SET_WORD_OK) return execute_set_word(adresse,valeur,memoire,mrg);
-        			else  erreur_cmd_set(verif);
+        			else  
+                    {
+                        erreur_cmd_set(verif);
+                        return 0;
+                    }
         		}
         	else if(strcmp(token,"byte")==0)
         		{
@@ -120,11 +129,11 @@ int execute_set_word(char * adr,char * val, mem memoire,map_reg * mrg)
         uint32_t val_mem;
         sscanf(adr,"%08x",&adresse);
         sscanf(val,"%08x",&valeur); // Valeur est modifié pas sscanf ! pkoi ?
-        set_byte (memoire,adresse,valeur,mrg);
+        set_word (memoire,adresse,valeur,mrg);
     }
 
 	else WARNING_MSG("ERROR [30] : VALEUR DONNEE NON WORD");
-return 1;}
+return 0;}
 
 
 
@@ -165,7 +174,7 @@ int execute_set_reg(char * reg1,char * value, map_reg * mrg,int position_reg)
 
     DEBUG_MSG("NUMERO REGISTRE : %d VALEUR REG : %08x",numero,valeur_reg);
 	modif_reg_num(numero,mrg,valeur_reg);
-}
+return 0;}
 
 void erreur_cmd_set(verif)
 { switch(verif)

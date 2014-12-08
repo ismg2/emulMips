@@ -9,14 +9,26 @@
  */
 int execute_assert_word(char * adr,char * val, mem memoire)
 { DEBUG_MSG("VALEUR A tester : %s à l'adresse %s ",val,adr);
-    if(is_word_byte(val)==WORD)
+    int type = get_type(val);
+    if(is_word_byte(val)==WORD || is_word_byte(val)==BYTE)
     {
         INFO_MSG("ASSERT WORLD à l'adresse %s par la valeur %s",adr,val);
         uint32_t adresse;
         uint32_t valeur;
         uint32_t val_mem;
+        switch(type)
+        {
+            case HEXA : sscanf(val,"%08x",&valeur);break;
+
+            case DECIMAL : sscanf(val,"%d",&valeur);break;
+
+            case BINAIRE : sscanf(val,"%x",&valeur);break;
+
+            default : WARNING_MSG("Il y a un problème dans le type de donnée a tester");
+                        return 1;
+        }
+
         sscanf(adr,"%08x",&adresse);
-        sscanf(val,"%08x",&valeur); // Valeur est modifié pas sscanf ! pkoi ?
         val_mem = renvoi_mot(memoire,adresse,NULL);
         DEBUG_MSG("VAL_MEMOIRE : %08x ; VALEUR DONNEE PAR L'UTILISATEUR : %08x ",val_mem,valeur);
         if(val_mem == valeur) 

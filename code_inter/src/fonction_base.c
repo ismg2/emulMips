@@ -154,7 +154,7 @@ int exitcmd(interpreteur inter) {
 * @return CMD_UNKOWN_RETURN_VALUE si la commande n'est pas reconnue. (-2)
 * @return tout autre nombre (eg tout nombre positif) si erreur d'execution de la commande
 */
-int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,liste * li_BP)
+int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,liste * li_BP,stab * symtab_libc)
 {
     DEBUG_MSG("input '%s'", inter->input);
     char cmdStr[MAX_STR];
@@ -187,7 +187,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
     }
     else if(strcmp(token,"load")== 0)
     {   token = get_next_token(inter);
-        return cmd_load(token,vmemoire,symtab);
+        return cmd_load(token,vmemoire,symtab,symtab_libc);
 
     }
     else if(strcmp(token,"disasm")==0)
@@ -217,6 +217,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
         return cmd_set(inter,*vmemoire,mrg);
     }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
+        INFO_MSG("Voici les commandes que je connais : [DISP] [DISASM] [RUN] [SET] [RESUME] [BREAK] [ASSERT] [EXIT]");
     return CMD_UNKOWN_RETURN_VALUE;
 }
 

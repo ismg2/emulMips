@@ -1,6 +1,6 @@
 load res/boucle.o
-break add 0x5004
-break list
+set mem word 0x5000 0x1234
+disp mem 0x5000:0x5004
 debug
-break add 0x5004
-debug
+set mem byte 0x5010 0x12
+set mem byte 0x5020 0x123 

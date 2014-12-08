@@ -14,7 +14,7 @@
 #include "registre.h"
 #include "fonction_mem.h"
 
-void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,stab symtab,map_reg * mrg);
+void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,stab* symtab,stab* symtab_libc,FILE* fp_libc);
 
 
 #endif

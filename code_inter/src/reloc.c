@@ -1,17 +1,22 @@
 #include "reloc.h"
 
+
 /*--------------------------------------------------------------------------  */
 /**
  * @param fp le fichier elf original
- * @param seg le segment ‡ reloger
+ * @param seg le segment à reloger
  * @param mem l'ensemble des segments
+ * @param endianness le boutisme du programme
+ * @param symtab la table des symbole du programme 
+ * @param symtab_libc la table des symbole de la libc (NULL si inutile)
+ * @param fp_libc le fichier elf de la libc (NULL si inutile)
  *
- * @brief Cette fonction effectue la relocation du segment passÈ en parametres
- * @brief l'ensemble des segments doit dÈj‡ avoir ÈtÈ chargÈ en memoire.
+ * @brief Cette fonction effectue la relocation du segment passé en parametres
+ * @brief l'ensemble des segments doit déjà avoir été chargé en memoire.
  *
  * VOUS DEVEZ COMPLETER CETTE FONCTION POUR METTRE EN OEUVRE LA RELOCATION !!
  */
-void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,stab symtab,map_reg * mrg) 
+void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,stab* symtab,stab* symtab_libc,FILE* fp_libc) 
 {
     byte *ehdr    = __elf_get_ehdr( fp );
     uint32_t  scnsz  = 0;
@@ -28,6 +33,7 @@ void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,sta
     int i;
     char* reloc_name = malloc(strlen(seg.name)+strlen(RELOC_PREFIX_STR)+1);
     scntab section_tab;
+    scntab section_tab_libc;
 
     // on recompose le nom de la section
     memcpy(reloc_name,RELOC_PREFIX_STR,strlen(RELOC_PREFIX_STR)+1);
@@ -37,9 +43,12 @@ void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,sta
     rel = (Elf32_Rel *)elf_extract_scn_by_name( ehdr, fp, reloc_name, &scnsz, NULL );
     elf_load_scntab(fp ,32, &section_tab);
 
+    if (symtab_libc!=NULL && fp_libc!=NULL)
+        elf_load_scntab(fp_libc ,32, &section_tab_libc);
 
 
-    if (rel != NULL &&seg.content!=NULL && seg.size._32!=0) {
+    if (rel != NULL &&seg.content!=NULL && seg.size._32!=0) 
+    {
 
         INFO_MSG("--------------Relocation de %s-------------------\n",seg.name) ;
         INFO_MSG("Nombre de symboles a reloger: %ld\n",scnsz/sizeof(*rel)) ;
@@ -57,6 +66,7 @@ void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,sta
             DEBUG_MSG("type de reloc : %08x",type_reloc);
             DEBUG_MSG("ADRESSE DE START : seg.start._32 : %08x",seg.start._32);
             word = renvoi_mot(memory,seg.start._32+offset,NULL);
+            //printf(" bip \n");
             word2 = renvoi_mot(memory,seg.start._32+offset+4,NULL);
             DEBUG_MSG(" WORD : %08x",word);
 
@@ -124,5 +134,6 @@ void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,sta
         }
     }
 }
+
 
 

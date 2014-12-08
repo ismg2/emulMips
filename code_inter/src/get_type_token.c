@@ -23,8 +23,8 @@ int is_word_byte(char* chaine) {
 	type=get_type(chaine);
 	{ switch(type)
 		{
-		case HEXA : if(strlen(chaine)==4) return BYTE;
-					else if(strlen(chaine)==10) return WORD;
+		case HEXA : if(strlen(chaine)<=4) return BYTE;
+					else if(strlen(chaine)<=10) return WORD;
 					else return 0;
 					break;
 		case BINAIRE : if(strlen(chaine)==8) return BYTE;
