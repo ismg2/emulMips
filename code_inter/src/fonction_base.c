@@ -202,6 +202,20 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
     {
         return cmd_run(mrg,*vmemoire,inter,*li_BP);
     }
+    else if(strcmp(token,"debug")==0)
+    {
+        INFO_MSG("A toi de jouer");
+        return CMD_PAUSE;
+    }
+    else if(strcmp(token,"resume")==0)
+    {
+        INFO_MSG("Merci de me rendre la main");
+        return CMD_RESUME;
+    }
+        else if(strcmp(token,"set")==0)
+    {
+        return cmd_set(inter,*vmemoire,mrg);
+    }
 		WARNING_MSG("Unknown Command : '%s'\n", cmdStr);
     return CMD_UNKOWN_RETURN_VALUE;
 }

@@ -85,19 +85,8 @@ int execute_assert_reg(char * reg1,char * value, map_reg * mrg,int position_reg)
     int numero;
     uint32_t valeur_reg;
     char * numero_registre;
-    int type = get_type(value);
-
-   // switch(type)
-   // {
-        //case HEXA : 
-        sscanf(value+2,"%08x",&valeur_reg);
-       // break;
-
-     //   case DECIMAL : sscanf(*value,"%u",&valeur_reg);break;
-
-     //   default : WARNING_MSG("TYPE VARIABLE INDEFINI");return 1;
-   // }
-
+    int type = get_type(value); 
+    sscanf(value,"%x",&valeur_reg);
     DEBUG_MSG("position_reg : %d",position_reg);
     if(position_reg >=35)
     {
@@ -286,7 +275,7 @@ int cmd_assert(interpreteur inter,mem memoire,map_reg * mrg)
         return 1;
     }
 
-return 400;}
+return CMD_OK_RETURN_VALUE;}
 
 
 

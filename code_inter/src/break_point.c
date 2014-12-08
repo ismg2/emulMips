@@ -94,7 +94,8 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 	}
 	else return erreur_fonction_break_point(CARAC_U);
 
-return retour;}
+//return retour;
+return CMD_OK_RETURN_VALUE;}
 
 /**
  * Ajout d'un break point à la liste de break point
@@ -145,7 +146,7 @@ int execute_add_BP(char * adresse,liste * l_breakP,mem memoire)
 		}
 
 	} 
-return 1;
+return CMD_OK_RETURN_VALUE;
 }
 
 /**

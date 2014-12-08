@@ -78,6 +78,10 @@ int main ( int argc, char *argv[] ) {
                 del_inter(inter);
                 exit(EXIT_SUCCESS);
                 break;
+            case CMD_PAUSE : inter->mode=INTERACTIF;
+            break;
+            case CMD_RESUME : inter->mode=SCRIPT;
+            break;
             default:
                 /* erreur durant l'execution de la commande */
                 /* En mode "fichier" toute erreur implique la fin du programme ! */

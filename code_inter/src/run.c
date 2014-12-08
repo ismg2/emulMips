@@ -72,7 +72,8 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 				else if (retour == DEHORS) return 0;
 				else return erreur_fonction_run(PB);
 	}
-return 0;}
+//return 0;
+return CMD_OK_RETURN_VALUE;}
 
 /**
  * Gestion des erreurs

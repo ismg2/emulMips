@@ -387,7 +387,7 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg)
             return 1;
     }
 
-return 400;}
+return CMD_OK_RETURN_VALUE;}
 
 
 
@@ -520,7 +520,7 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab)
     //del_stab(symtab);
     fclose(pf_elf);
     puts("");
-return 1;}
+ return CMD_OK_RETURN_VALUE;}
 
 
 

@@ -1,3 +1,6 @@
-load res/boucle.o 
-break add 0x3000 0x3004 
-run 0x3000
+load res/boucle.o
+break add 0x5004
+break list
+debug
+break add 0x5004
+debug

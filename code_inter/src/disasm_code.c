@@ -107,8 +107,8 @@ int cmd_disasm(interpreteur inter,mem  memoire,map_reg * mrg)
     default : erreur_fonction_disasm(verif);
   }
 
-return 1;
-}
+//return 1;
+return CMD_OK_RETURN_VALUE;}
 
 
 
