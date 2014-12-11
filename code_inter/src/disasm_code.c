@@ -218,7 +218,7 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
   uint32_t adr;
   int p;
   int m=0;
-  int non_trouvé=1;
+  int non_trouve=1;
   uint32_t adr_2bis;
   union_RIJ union_struct;
   uint32_t target;
@@ -345,10 +345,10 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
               break;
               case 'J' :
               target = union_struct.j.target*4;
-              m=0;non_trouvé=1;
-              while( m < symtab.size && non_trouvé == 1)
+              m=0;non_trouve=1;
+              while( m < symtab.size && non_trouve == 1)
               {
-                if(target == symtab.sym[m].addr._32+START_MEM && symtab.sym[m].type == notype && symtab.sym[m].scnidx == 1 ) {printf("\t %s \n",symtab.sym[m].name);non_trouvé=0;sortie = 1;}
+                if(target == symtab.sym[m].addr._32+START_MEM && symtab.sym[m].type == notype && symtab.sym[m].scnidx == 1 ) {printf("\t %s \n",symtab.sym[m].name);non_trouve=0;sortie = 1;}
                 else m++;
               }
               k++;

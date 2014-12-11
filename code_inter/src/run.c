@@ -170,7 +170,7 @@ while(1)
 					else if(PC==fin_code) {etat = TERM;}
 					else if(erreur == PAUSE) {etat = PAUSE;}
 					else if(pause_step==1) {etat = PAUSE;}
-					else if(pause_step == 2) // On continue a executer tout le sous programme
+					/*else if(pause_step == 2) // On continue a executer tout le sous programme
 					{
 						DEBUG_MSG("Execution de l'ensemble du sous programme");
 						ra = renvoi_reg_num(mrg,31);
@@ -191,9 +191,11 @@ while(1)
 						else if(erreur == 0) etat=EXIT;
 
 						else etat = NOT;
-					}
+					}*/
 
 					else if(erreur == OK) etat = NOT;
+
+					else etat=NOT;
 
 				}
 				break;
@@ -207,7 +209,8 @@ while(1)
 					else if(strcmp(token2,"exit")==0) etat = EXIT ;
 					else if(strcmp(token2,"step")==0) 
 					{
-						char * token3 = get_next_token(inter2);
+						etat = RUN; pause_step = 1;
+						/*char * token3 = get_next_token(inter2);
 						inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande,symtab);
 						if(token3 == NULL)
 						{
@@ -220,7 +223,7 @@ while(1)
 							etat = RUN;
 							pause_step = 1;	
 						}
-							/*pause=1;
+							pause_step=1;
 							etat = RUN;*/
 					}
 					else etat = ERREUR;

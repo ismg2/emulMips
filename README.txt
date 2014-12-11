@@ -8,7 +8,7 @@ Directory testbasicfunction :
 
 dico_def.txt : Petit dictionnaire qui nous a servi pour les premiers test 
 
-dico_definitif.txt : Dictionnaire finale contenant toutes les commandes
+dictionnaire.txt : Dictionnaire finale contenant toutes les commandes
 
 test_affichage_op.c :Premier essai pour afficher les différentes opérandes d'un mot pris du fichier ELF.On affiche les numero des registres pour le moment ! Pas de mnemonique !
 
