@@ -35,8 +35,8 @@ BGEZ I 0x04010000 0xfc1f0000 2 rs offset 35
 BGTZ I 0x1c000000 0x1c1f0000 2 rs offset 36
 BLEZ I 0x18000000 0x1c1f0000 2 rs offset 37
 BLTZ I 0x04000000 0x1c1f0000 2 rs offset 38
-JAL J 0xc000000 0xfc000000 1 inst_index 39
-J J 0x8000000 0xfc000000 1 inst_index 40
+J J 0x8000000 0xfc000000 1 inst_index 39
+JAL J 0xc000000 0xfc000000 1 inst_index 40
 JALR R 0x9 0xfc1f003f 2 rs hint 41
 SUBU R 0x00000023 0xfc0007ff 3 rs rt rd 42
 SLL R 0x00000000 0xffe0003f 3 rt rd sa 43

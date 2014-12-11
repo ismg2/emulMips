@@ -257,7 +257,7 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
     if(adr == symtab.sym[p].addr._32+START_MEM && symtab.sym[p].type == notype && symtab.sym[p].scnidx == 1 ) {printf("\n %s : \n",symtab.sym[p].name);}
   }
   
-    while(k<44&&sortie==0)
+    while(k<43&&sortie==0)
     {
       if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
         {
@@ -347,15 +347,17 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
               target = union_struct.j.target*4;
               //DEBUG_MSG("TARGET : %08x",target);
               //for(p=0;p<symtab.size;p++)
+              m=0;non_trouvé=1;
               while( m < symtab.size && non_trouvé == 1)
               {
                 //DEBUG_MSG("symtab.sym[%d].addr._32+START_MEM : %08x ",m,symtab.sym[m].addr._32+START_MEM);
                 if(target == symtab.sym[m].addr._32+START_MEM && symtab.sym[m].type == notype && symtab.sym[m].scnidx == 1 ) {printf("\t %s \n",symtab.sym[m].name);non_trouvé=0;sortie = 1;}
                 else m++;
               }
+              //DEBUG_MSG("On incremente");
               k++;
               break;
-              default : WARNING_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
+              default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
             } 
         //printf("\n");   
             
@@ -410,7 +412,7 @@ union_RIJ return_operande(char type_struct,uint32_t mot)
       uni.j.target = (mot & masque_target);
       return uni;
       break;
-      default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
+      default : WARNING_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
     }
 
 

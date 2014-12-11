@@ -353,7 +353,7 @@ int execut_instruction(map_reg * mrg,mem memoire,instruction inst)
 return OK;}
 
 // Declaration du tableau de pointeur
-int (*listeFonctions[43])(map_reg *,mem,union_RIJ) = {NOP,ADD,ADDU,SUB,AND,OR,XOR,SLT,SLTU,SRL,SRA,SEB,MULT,DIV,JR,MFHI,MFLO,BREAK,SYSCALL,ADDI,ADDIU,ORI,SLTI,SLTIU,BEQ,ANDI,LW,SW,LB,LBU,SB,BNE,LUI,BGEZ,BGTZ,BLEZ,BLTZ,j,JAL,JALR,SUBU,SLL};
+int (*listeFonctions[43])(map_reg *,mem,union_RIJ) = {NOP,ADD,ADDU,SUB,AND,OR,XOR,SLT,SLTU,SRL,SRA,SEB,MULT,DIV,JR,MFHI,MFLO,BREAK,SYSCALL,ADDI,ADDIU,ORI,SLTI,SLTIU,BEQ,ANDI,LW,SW,LB,LBU,SB,BNE,LUI,BGEZ,BGTZ,BLEZ,BLTZ,JAL,j,JALR,SUBU,SLL};
 
 // On entre le numero de l'instruction tiré du desassamblage et on retourne le pointeurs de cette fonctions
 int(* choix_fonction(int a))(map_reg *,mem,union_RIJ)
