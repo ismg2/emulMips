@@ -8,7 +8,7 @@
  * @param  lpb     liste des Break Point
  * @return         1 si succes 0 sinon
  */
-int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
+int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb,stab symtab)
 {
 	if(memoire==NULL) return erreur_fonction_run(PAS_MEM);
 	int retour;
@@ -38,7 +38,7 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 			DEBUG_MSG("Lecture du dictionnaire c'est parti");
 			dictionnaire_commande = lecture_dictionnaire(f_name);
 			DEBUG_MSG("Lecture du dictionnaire c'est fini");
-			retour = execute_cmd_run(mrg,memoire,lpb,dictionnaire_commande);
+			retour = execute_cmd_run(mrg,memoire,lpb,dictionnaire_commande,symtab);
 				if(retour==OK) return OK;
 				else if (retour == DEHORS) return 0;
 				else return erreur_fonction_run(PB);
@@ -69,7 +69,7 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 		DEBUG_MSG("Lecture du dictionnaire c'est parti");
   		dictionnaire_commande = lecture_dictionnaire(f_name);
   		DEBUG_MSG("Lecture du dictionnaire c'est fini");
-			retour = execute_cmd_run(mrg,memoire,lpb,dictionnaire_commande);
+			retour = execute_cmd_run(mrg,memoire,lpb,dictionnaire_commande,symtab);
 				if(retour==OK) return 0;
 				else if (retour == DEHORS) return 0;
 				else return erreur_fonction_run(PB);
@@ -116,7 +116,7 @@ return 0;}
  */
 
 
-int execute_cmd_run(map_reg * mrg,mem memoire,liste l_BP,definition dictionnaire_commande)
+int execute_cmd_run(map_reg * mrg,mem memoire,liste l_BP,definition dictionnaire_commande,stab symtab)
 { 
 
 //char *token;
@@ -148,22 +148,22 @@ while(1)
 				case NOT : 
 				DEBUG_MSG("\nNOT\n");
             	BP_search = rechercheBP(l_BP,PC);
-				if(BP_search == 0) {etat = PAUSE;break;}
+				if(BP_search == 0) {etat = PAUSE;}
 				else if(PC==fin_code) {etat = TERM;}
 				else {etat = RUN;break;}
+				break;
 
 				case RUN :
 				DEBUG_MSG("\nRUN\n");
-				if(PC==fin_code) {etat = TERM;}
-				else
 				{
 					DEBUG_MSG("RUN : On commence :");
-					inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande);
+					inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande,symtab);
 					DEBUG_MSG("DESASSAMBLAGE TERMINEE");
 					PC_r = renvoi_reg_num(mrg,32);
 					if(PC==PC_r) PC = PC + 4;
 					else PC = PC_r;
 					modif_reg_num(32,mrg,PC);
+
 					erreur = execut_instruction(mrg,memoire,inst);
 					DEBUG_MSG("EXEXUTION TERMINEE");
 					if(erreur == 400 ) etat = EXIT;
@@ -176,7 +176,7 @@ while(1)
 						ra = renvoi_reg_num(mrg,31);
 						while(PC != fin_code && PC!=ra && erreur ==0)
 						{
-							inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande);
+							inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande,symtab);
 							DEBUG_MSG("DESASSAMBLAGE TERMINEE");
 							PC_r = renvoi_reg_num(mrg,32);
 							if(PC==PC_r) PC = PC + 4;
@@ -208,12 +208,12 @@ while(1)
 					else if(strcmp(token2,"step")==0) 
 					{
 						char * token3 = get_next_token(inter2);
-						inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande);
+						inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande,symtab);
 						if(token3 == NULL)
 						{
-							etat = RUN;
-							if(inst.def->type == 'J') pause_step = 2;
-							else pause_step = 1;
+							
+							if(inst.def->type == 'J') {pause_step = 2;etat = RUN;}
+							else {etat = RUN;pause_step = 1;}
 						}
 						else if(strcmp(token3,"into")==0)
 						{
@@ -272,13 +272,14 @@ return b;
  * @param dictionnaire_commande dictionnaire contenant tout les commandes du Mips
  */
 
-instruction desassamble(map_reg * mrg,mem memoire,interpreteur inter,uint32_t PC,definition dictionnaire_commande)
+instruction desassamble(map_reg * mrg,mem memoire,interpreteur inter,uint32_t PC,definition dictionnaire_commande,stab symtab)
 {
 	instruction inst;
 	uint32_t word;
 	word = renvoi_mot(memoire,PC,mrg);
 	inst.def = recherche_dictionnaire(dictionnaire_commande,word);
 	inst.operande = recherche_operande(dictionnaire_commande,word);
+	int resu = execute_cmd_disasm(PC,PC+4,0,0,memoire,mrg,symtab);
 
 	return inst;
 }
@@ -353,12 +354,21 @@ int execut_instruction(map_reg * mrg,mem memoire,instruction inst)
 return OK;}
 
 // Declaration du tableau de pointeur
-int (*listeFonctions[43])(map_reg *,mem,union_RIJ) = {NOP,ADD,ADDU,SUB,AND,OR,XOR,SLT,SLTU,SRL,SRA,SEB,MULT,DIV,JR,MFHI,MFLO,BREAK,SYSCALL,ADDI,ADDIU,ORI,SLTI,SLTIU,BEQ,ANDI,LW,SW,LB,LBU,SB,BNE,LUI,BGEZ,BGTZ,BLEZ,BLTZ,JAL,j,JALR,SUBU,SLL};
+int (*listeFonctions[43])(map_reg *,mem,union_RIJ) = {NOP,ADD,ADDU,SUB,AND,OR,XOR,SLT,SLTU,SRL,SRA,SEB,MULT,DIV,JR,MFHI,MFLO,BREAK,SYSCALL,ADDI,ADDIU,ORI,SLTI,SLTIU,BEQ,ANDI,LW,SW,LB,LBU,SB,BNE,LUI,BGEZ,BGTZ,BLEZ,BLTZ,j,JAL,JALR,SUBU,SLL};
 
 // On entre le numero de l'instruction tiré du desassamblage et on retourne le pointeurs de cette fonctions
 int(* choix_fonction(int a))(map_reg *,mem,union_RIJ)
 {
 	return listeFonctions[a];
 }
+
+
+//Desassamble une instruction et une seul 
+
+
+
+
+
+
 
 

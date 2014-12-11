@@ -206,7 +206,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
     }
     else if(strcmp(token,"run")==0)
     {
-        return cmd_run(mrg,*vmemoire,inter,*li_BP);
+        return cmd_run(mrg,*vmemoire,inter,*li_BP,*symtab);
     }
     else if(strcmp(token,"debug")==0)
     {

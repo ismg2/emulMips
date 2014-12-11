@@ -345,22 +345,16 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
               break;
               case 'J' :
               target = union_struct.j.target*4;
-              //DEBUG_MSG("TARGET : %08x",target);
-              //for(p=0;p<symtab.size;p++)
               m=0;non_trouvé=1;
               while( m < symtab.size && non_trouvé == 1)
               {
-                //DEBUG_MSG("symtab.sym[%d].addr._32+START_MEM : %08x ",m,symtab.sym[m].addr._32+START_MEM);
                 if(target == symtab.sym[m].addr._32+START_MEM && symtab.sym[m].type == notype && symtab.sym[m].scnidx == 1 ) {printf("\t %s \n",symtab.sym[m].name);non_trouvé=0;sortie = 1;}
                 else m++;
               }
-              //DEBUG_MSG("On incremente");
               k++;
               break;
               default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
-            } 
-        //printf("\n");   
-            
+            }             
         }    
       else k++;
     }

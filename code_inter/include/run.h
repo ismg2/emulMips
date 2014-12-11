@@ -19,11 +19,11 @@ typedef struct {
 
 
 
-int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb);
+int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb,stab symtab);
 int erreur_fonction_run(int verif);
-int execute_cmd_run(map_reg * mrg,mem memoire,liste l_BP,definition dictionnaire_commande);
+int execute_cmd_run(map_reg * mrg,mem memoire,liste l_BP,definition dictionnaire_commande,stab symtab);
 int rechercheBP(liste lbp,uint32_t PC);
-instruction desassamble(map_reg * mrg,mem memoire,interpreteur inter,uint32_t PC,definition dictionnaire_commande);
+instruction desassamble(map_reg * mrg,mem memoire,interpreteur inter,uint32_t PC,definition dictionnaire_commande,stab symtab);
 definition recherche_dictionnaire(definition dictionnaire_commande,uint32_t word);
 union_RIJ recherche_operande(definition dictionnaire, uint32_t word);
 int execut_instruction(map_reg * mrg,mem memoire,instruction inst);
