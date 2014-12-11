@@ -377,10 +377,10 @@ int JALR(map_reg * mrg,mem memoire,union_RIJ  union_struct)
 {
 	DEBUG_MSG("ON rentre dans JALR");
     uint32_t rs = mrg[union_struct.r.rs]->valeur;
-    uint32_t rd;
+    uint32_t num_rd;
     uint32_t PC;
-    if(union_struct.r.rd != 0) rd = mrg[union_struct.r.rd]->valeur;
-    else rd = 0;
+    //if(union_struct.r.rd != 0) num_rd = union_struct.r.rd;
+    //else num_rd = 31;
     PC = renvoi_reg_num(mrg,32);
     modif_reg_num(32,mrg,rs);
     if(union_struct.r.rd != 0) modif_reg_num(union_struct.r.rd,mrg,PC+8);
