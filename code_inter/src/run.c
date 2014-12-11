@@ -15,6 +15,8 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 	char * token;
 	uint32_t PC;
 	token = get_next_token(inter);
+	char * token2 = get_next_token(inter);
+	if(token2!=NULL) {WARNING_MSG("Too much Argument");return 1;}
 	DEBUG_MSG("input cmd_run : %s",token);
 	uint32_t adr;
 	uint32_t fin_code = memoire->seg->start._32 + memoire->seg->size._32;

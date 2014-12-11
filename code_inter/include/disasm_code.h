@@ -49,7 +49,7 @@ typedef struct {
 	 J j;
 }union_RIJ;
 
-enum{CMD_DISASM_OK_PLAGE,CMD_DISASM_OK_DECALAGE,ADRS_NON_HEXA3,MAUVAIS_DECALAGE,ERREUR_SYNTAXE,POSITION_IMPOSSIBLE,PAS_ADRESSE,HORS_ZONE_TEXTE};
+enum{CMD_DISASM_OK_PLAGE,CMD_DISASM_OK_DECALAGE,ADRS_NON_HEXA3,MAUVAIS_DECALAGE,ERREUR_SYNTAXE,POSITION_IMPOSSIBLE,PAS_ADRESSE,HORS_ZONE_TEXTE,TOO_MUCH};
 
 int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * decalage);
 int cmd_disasm(interpreteur inter,mem  memoire,map_reg * mrg,stab  symtab);

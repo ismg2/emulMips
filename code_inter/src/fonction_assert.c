@@ -142,12 +142,15 @@ int test_cmd_assert(interpreteur inter,char * wb,char ** value,char ** adr)
     if(token==NULL) return PAS_DADRESSE_ENTREE;
 	
 	else if(is_hexa_v2(token)!=0) 
-    	{*adr=strdup(token);
+    {
+        *adr=strdup(token);
         token=get_next_token(inter);
-	           DEBUG_MSG("ADRS RECONNUE PASSONS A LA VALEUR : %s",token);
+        char * token2 = get_next_token(inter);
+	    DEBUG_MSG("ADRS RECONNUE PASSONS A LA VALEUR : %s",token);
 		if(token==NULL) return PAS_VALEUR_A_TESTER;
+        else if(token2!=NULL) return TOO_MUCH_ARGS;
         else *value=strdup(token);
-        }
+    }
       
 	else return ADRS_NON_HEXA2;
 
@@ -176,15 +179,15 @@ void erreur_cmd_assert(verif)
 
     case ERROR_i : WARNING_MSG(" ERROR [3] : La fonction assert se trouve dans un emplacement impossible, une erreur a été oublié");break;
 
-    case PAS_DADRESSE_ENTREE : WARNING_MSG("ERROR [4] : Vous n'avez pas entré d'adresse !!!!"); break;
-
-    case DEUX_POINT_MANQUANT : WARNING_MSG("ERROR [5] : Verifiez si vous n'avez pas oublier les deux points ou que certaines adresses sont manquantes, ILS SONT ESSENTIEL");break;
+    case PAS_DADRESSE_ENTREE2 : WARNING_MSG("ERROR [4] : Vous n'avez pas entré d'adresse !!!!"); break;
 
     case NO_VALUE_REG : WARNING_MSG("ERROR [6] : PAS DE REGISTRE ENTREE");break;
 
     case NO_TYPE_VALUE : WARNING_MSG("ERROR [7] : Valeur entrer non reconnue");break;
 
     case PAS_VALEUR_A_TESTER : WARNING_MSG("ERROR[8] : IL n'y a pas de valeur a tester !!!!");break;
+
+    case TOO_MUCH_ARGS : WARNING_MSG("ERROR [9] : Too much argument");break;
 
     default: WARNING_MSG("ERREUR NON REFERENCE");
 }
@@ -212,14 +215,18 @@ int a;
         *value = get_next_token(inter);
         *position = a;
         DEBUG_MSG("Valeur à tester : %s",*value);
+        char * token2 = get_next_token(inter);
         if(*value==NULL)
         {
         return PAS_VALEUR_A_TESTER;
         }
+        else if(token2!=NULL) return TOO_MUCH_ARGS;
         else 
         {
         return CMD_ASSERT_REG_OK;
         }
+
+
 
     }   
     

@@ -28,11 +28,13 @@ int erreur_fonction_break_point( int verification)
 
 		case POSITION_IMPOS : WARNING_MSG("POSITION IMPOSSIBLE");break;
 
-		case BP_NON_EXIST : WARNING_MSG("Le break point que vous voulez supprimez n'existe pas !");break;
+		case BP_NON_EXIST : WARNING_MSG("ERROR [26] :Le break point que vous voulez supprimez n'existe pas !");break;
 
-		case PAS_BP : WARNING_MSG("Pas de break Point a supprimer");break;
+		case PAS_BP : WARNING_MSG("ERROR [27] :Pas de break Point a supprimer");break;
 
-		case PAS_INST : WARNING_MSG("L'adresse entré ne se trouve pas au debut d'une instruction");break;
+		case PAS_INST : WARNING_MSG("ERROR [28] :L'adresse entré ne se trouve pas au debut d'une instruction");break;
+
+		case TROP : WARNING_MSG("ERROR [2] :Too much argument ");break;
 
 		default : WARNING_MSG("Erreur non réferencé");
 	}
@@ -76,6 +78,8 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 
 		else if(strcmp(adr,"all") == 0 )
 		{
+			char * token2 = get_next_token(inter);
+			if(token2!=NULL) {return erreur_fonction_break_point(TROP);}
 			retour = execute_del_BP("NULL",l_breakP,DEL_ALL);
 			return CMD_OK_RETURN_VALUE;
 		}
@@ -93,6 +97,8 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 
 	else if(strcmp(token,"list")==0)
 	{
+		char * token3 = get_next_token(inter);
+		if(token3!=NULL) {return erreur_fonction_break_point(TROP);}
 		visualiser_liste(*l_breakP);
 		return CMD_OK_RETURN_VALUE;
 	}

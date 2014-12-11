@@ -126,6 +126,7 @@ int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * d
   uint32_t temp_adr1;
 
   char * token=get_next_token(inter);
+  char * token2;
   if(token==NULL) return PAS_ADRESSE;
   
   else if(is_hexa_v2(token)==0) return ADRS_NON_HEXA3;
@@ -144,7 +145,9 @@ int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * d
     else if(strcmp(token,"+")==0)
             {   
                 token=get_next_token(inter);
+                token2=get_next_token(inter);
                 if (token == NULL) return PAS_ADRESSE;
+                if(token2 != NULL) return TOO_MUCH;
                 int temp_decalage;
                 sscanf(token,"%d",&temp_decalage);
                 if(temp_decalage % 4 != 0) return MAUVAIS_DECALAGE;
@@ -155,6 +158,8 @@ int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * d
             }
     else if(strcmp(token,":")==0)
             {   token=get_next_token(inter);
+                token2=get_next_token(inter);
+                if(token2 != NULL) return TOO_MUCH;
                 if ( token == NULL) return PAS_ADRESSE;
                 else if(is_hexa_v2(token)==0) return ADRS_NON_HEXA3;
                 else
@@ -193,6 +198,7 @@ void erreur_fonction_disasm(int verification)
     case PAS_ADRESSE : WARNING_MSG("ERROR [17] : Vous n'avez pas entrez d'adresse !!!");break;
     case POSITION_IMPOSSIBLE : WARNING_MSG("ERREUR INCONNUE ; LE PROGRAMME SE TROUVE DANS UNE POSITION IMPOSSIBLE");break;
     case HORS_ZONE_TEXTE : WARNING_MSG("L'adresse que vous avez entrer n'est pas dans la zone de texte ou se trouve le code à desassambler");break;
+    case TOO_MUCH : WARNING_MSG("Too much argument given");break;
     default : WARNING_MSG("ERREUR NON REFERENCE");
   }
 }

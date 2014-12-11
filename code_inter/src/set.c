@@ -66,6 +66,8 @@ int test_cmd_set(interpreteur inter,char * wb,char ** value,char ** adr)
 {  DEBUG_MSG("DEBUT de la commande de TEST d'SET %s",wb);
     char * token = get_next_token(inter);
 	DEBUG_MSG("TOKEN ENTREE : %s",token);
+    uint32_t adresse;
+
     if(token==NULL) return PAS_DADRESSE_ENTREE2;
 	
 	else if(is_hexa_v2(token)!=0) 
@@ -79,9 +81,13 @@ int test_cmd_set(interpreteur inter,char * wb,char ** value,char ** adr)
       
 	else return ADRS_NON_HEXA2;
 
+    sscanf(*adr,"%08x",&adresse);
+
     if(strcmp(wb,"byte")==0) return CMD_SET_BYTE_OK;
 
     else if(strcmp(wb,"word")==0) return CMD_SET_WORD_OK;
+
+    else if(adresse > START_MEM ) return HORS_MEM;
     
     else return CMD_SET_UK;
     
@@ -96,7 +102,7 @@ int test_cmd_set_reg(interpreteur inter,char ** tab_tout_reg,char * reg1,char **
 int a;
         INFO_MSG("INPUT test_cmd_SET_reg : %s",reg1);
 
-   if(reg1==NULL) return NO_VALUE_REG;
+   if(reg1==NULL) return NO_VALUE_REG2;
         
    else if(reg_exist(reg1,tab_tout_reg,&a)==0)  
     {  
@@ -188,13 +194,15 @@ void erreur_cmd_set(verif)
 
     case PAS_DADRESSE_ENTREE2 : WARNING_MSG("ERROR [4] : Vous n'avez pas entré d'adresse !!!!"); break;
 
-    case NO_VALUE_REG : WARNING_MSG("ERROR [6] : PAS DE REGISTRE ENTREE");break;
+    case NO_VALUE_REG2 : WARNING_MSG("ERROR [6] : PAS DE REGISTRE ENTREE");break;
 
     case NO_TYPE_VALUE : WARNING_MSG("ERROR [7] : Valeur entrer non reconnue");break;
 
     case PAS_VALEUR_A_TESTER : WARNING_MSG("ERROR[8] : IL n'y a pas de valeur a tester !!!!");break;
 
     case CMD_SET_UK : WARNING_MSG("ERROR [9] : Unknow type of identifier");break;
+
+    case HORS_MEM : WARNING_MSG("ERROR [10] : Adresse en dehors de la memoire");break;
 
     default: WARNING_MSG("ERREUR NON REFERENCE");
 }

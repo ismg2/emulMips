@@ -187,6 +187,12 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
     }
     else if(strcmp(token,"load")== 0)
     {   token = get_next_token(inter);
+        char * token2 = get_next_token(inter);
+        if(token2!=NULL) 
+            {
+                WARNING_MSG("ERROR : too much argument");
+                return 1;
+            }
         return cmd_load(token,vmemoire,symtab,symtab_libc);
 
     }

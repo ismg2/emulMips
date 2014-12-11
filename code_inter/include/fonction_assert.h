@@ -6,7 +6,7 @@
 #include "fonction_mem.h"
 #include "registre.h"
 
-enum {CMD_ASSERT_REG_OK,CMD_ASSERT_WORD_OK,CMD_ASSERT_BYTE_OK,NO_TYPE_VALUE,PAS_VALEUR_A_TESTER,ADRS_NON_HEXA2,REGI_NON_EXISTANT,ERROR_i};
+enum {CMD_ASSERT_REG_OK,CMD_ASSERT_WORD_OK,CMD_ASSERT_BYTE_OK,NO_TYPE_VALUE,PAS_VALEUR_A_TESTER,ADRS_NON_HEXA2,REGI_NON_EXISTANT,ERROR_i,TOO_MUCH_ARGS,PAS_DADRESSE_ENTREE2};
 
 int execute_assert_word(char * adr,char * val,mem memoire);
 int execute_assert_byte(char * adr,char * val,mem memoire);
