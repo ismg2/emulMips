@@ -36,7 +36,7 @@ int erreur_fonction_break_point( int verification)
 
 		default : WARNING_MSG("Erreur non réferencé");
 	}
-return 0;}
+return 1;}
 
 /**
  * execute la commande d'ajout ou de suppression ou d'affichage d'un break point ou renvoie vers la fonction d'erreur si problème
@@ -66,6 +66,7 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 			adr = get_next_token(inter);
 		}
 		*l_breakP=ranger_ordre_croissant(*l_breakP);
+		return CMD_OK_RETURN_VALUE;
 	}
 
 	else if(strcmp(token,"del")==0)
@@ -76,6 +77,7 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 		else if(strcmp(adr,"all") == 0 )
 		{
 			retour = execute_del_BP("NULL",l_breakP,DEL_ALL);
+			return CMD_OK_RETURN_VALUE;
 		}
 		else 
 		{
@@ -84,6 +86,7 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 				retour = execute_del_BP(adr,l_breakP,DEL_1);
 				adr = get_next_token(inter);
 			}
+			return CMD_OK_RETURN_VALUE;
 			
 		}  
 	}
@@ -91,11 +94,12 @@ int cmd_break(mem memoire, interpreteur inter, liste * l_breakP)
 	else if(strcmp(token,"list")==0)
 	{
 		visualiser_liste(*l_breakP);
+		return CMD_OK_RETURN_VALUE;
 	}
 	else return erreur_fonction_break_point(CARAC_U);
 
 //return retour;
-return CMD_OK_RETURN_VALUE;}
+return 1;}
 
 /**
  * Ajout d'un break point à la liste de break point

@@ -60,7 +60,7 @@ void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,sta
             FLIP_ENDIANNESS(info);
             printf("Elf32_Rel : \n r_offset : %04x \n r_info : %08x \n",offset,info);
             int type_reloc = info & 0xFF;
-            int indice_seg = (info & 0xF00) >>8;
+            int indice_seg = ((info & 0xF00) >>8)+3;
             DEBUG_MSG("On reloc dans le segment numero : %d",indice_seg);
             int res;
             DEBUG_MSG("type de reloc : %08x",type_reloc);
@@ -75,7 +75,7 @@ void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,sta
                 case 2 : 
                 DEBUG_MSG("TYPE de RELOC : R_MIPS_32");
                 
-                
+                DEBUG_MSG("V = S : %08x + A : %08x  ",memory->seg[indice_seg-1].start._32,word);
                 V = memory->seg[indice_seg-1].start._32 + word;
                 res = set_word(memory,seg.start._32+offset,V,NULL);
                 if(res == 0) 
@@ -89,6 +89,7 @@ void reloc_segment(FILE* fp, segment seg, mem memory,unsigned int endianness,sta
                 A = word & 0x3FFFFFF;
                 P = memory->seg[indice_seg-1].start._32+offset;
                 S = memory->seg[indice_seg-1].start._32;
+                DEBUG_MSG(" S : %08x :: A : %08x :: P : %08x ",S,A,P);
                 V = (((A << 2)|(P & 0xF0000000))+S)>>2;
                 //DEBUG_MSG("V : %08x",V);
                 //DEBUG_MSG("A = %08x",A);

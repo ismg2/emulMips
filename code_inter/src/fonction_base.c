@@ -192,7 +192,7 @@ int execute_cmd(interpreteur inter,mem * vmemoire,stab * symtab,map_reg * mrg,li
     }
     else if(strcmp(token,"disasm")==0)
     {    
-        return cmd_disasm(inter,*vmemoire,mrg);
+        return cmd_disasm(inter,*vmemoire,mrg,*symtab);
     }
     else if(strcmp(token,"break")==0)
     {

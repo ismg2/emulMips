@@ -5,6 +5,7 @@ int cmd_set(interpreteur inter,mem memoire,map_reg * mrg)
     DEBUG_MSG("Chaine : %s", inter->input);
     int verif;
     int positon_registre;
+    int res;
   	char * valeur=NULL;
     char * word=strdup("word");
     char * byte=strdup("byte");
@@ -20,25 +21,25 @@ int cmd_set(interpreteur inter,mem memoire,map_reg * mrg)
             if(memoire==NULL) 
                 {
                     WARNING_MSG("Pas de Programme chargé en memoire");
-                    return 0;
+                    return 1;
                 }
         	if(strcmp(token,"word")==0)
         		{
         			DEBUG_MSG("TEST DES ARGUMENTS DE LA FONCTION SET WORD");
         			verif=test_cmd_set(inter,word,&valeur,&adresse);  
-        			if(verif==CMD_SET_WORD_OK) return execute_set_word(adresse,valeur,memoire,mrg);
+        			if(verif==CMD_SET_WORD_OK) {res = execute_set_word(adresse,valeur,memoire,mrg);return CMD_OK_RETURN_VALUE;}
         			else  
                     {
                         erreur_cmd_set(verif);
-                        return 0;
+                        return 1;
                     }
         		}
         	else if(strcmp(token,"byte")==0)
         		{
         			DEBUG_MSG("TEST DES ARGUMENT DE LA FONCTION SET BYTE"); 
         			verif=test_cmd_set(inter,byte,&valeur,&adresse);
-                		if(verif==CMD_SET_BYTE_OK) return execute_set_byte(adresse,valeur,memoire,mrg);
-                    	else erreur_cmd_set(verif);
+                		if(verif==CMD_SET_BYTE_OK) {res = execute_set_byte(adresse,valeur,memoire,mrg);return CMD_OK_RETURN_VALUE;}
+                    	else {erreur_cmd_set(verif);return 1;}
                 }
             else WARNING_MSG(" Wrong argument given to command %s \n","set mem");
         }
@@ -49,8 +50,8 @@ int cmd_set(interpreteur inter,mem memoire,map_reg * mrg)
 		    token=get_next_token(inter);
 		    DEBUG_MSG("REGISTRE ENTREE : %s",token);
                 verif = test_cmd_set_reg(inter,tab_all_reg,token,&valeur,&positon_registre);
-                if(verif==CMD_SET_REG_OK) return execute_set_reg(token,valeur,mrg,positon_registre);
-                else erreur_cmd_set(verif);
+                if(verif==CMD_SET_REG_OK) {res=execute_set_reg(token,valeur,mrg,positon_registre);return CMD_OK_RETURN_VALUE;}
+                else {erreur_cmd_set(verif);return 1;}
         }
     }
     else
@@ -58,7 +59,7 @@ int cmd_set(interpreteur inter,mem memoire,map_reg * mrg)
         WARNING_MSG("No Argument is given to %s command \n","set");
         return 1;
     }
-return CMD_OK_RETURN_VALUE;}
+return 1;}
 
 
 int test_cmd_set(interpreteur inter,char * wb,char ** value,char ** adr)

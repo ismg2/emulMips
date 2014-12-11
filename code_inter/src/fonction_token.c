@@ -467,9 +467,9 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
     unsigned int next_segment_start = START_MEM; // compteur pour designer le début de la prochaine section
 
 
-    // on fait le ménage avant de partir
-    //del_mem(*memoire);
-    //del_stab(*symtab);
+    // on fait le ménage avant de commencer
+    del_mem(*memoire);
+    del_stab(*symtab);
 
     *symtab= new_stab(0); // table des symboles
     *symtab_libc= new_stab(0); // table des symboles de la libc
@@ -572,6 +572,10 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
        
     INFO_MSG("Programme Charge en memoire");
     printf("-----------------------------------------------------------------------------");
+
+    // ESSAI
+    
+
 
 
     //stab32_print(*symtab_libc);

@@ -82,33 +82,33 @@ return def;
  * @return       vers les differentes fonction utile
  */
 
-int cmd_disasm(interpreteur inter,mem  memoire,map_reg * mrg)
+int cmd_disasm(interpreteur inter,mem  memoire,map_reg * mrg,stab  symtab)
 {
   int verif;
   uint32_t adresse1;
   uint32_t adresse2;
   int deca;
+  int res;
   verif = test_cmd_disasm(inter,&adresse1,&adresse2,&deca);
   switch(verif)
   {
     case CMD_DISASM_OK_PLAGE : 
         DEBUG_MSG("CMD_DISASM_OK_PLAGE");
         DEBUG_MSG(" LA PLAGE A AFFICHER %08x --> %08x ",adresse1,adresse2);  
-        return execute_cmd_disasm(adresse1,adresse2,deca,CMD_DISASM_OK_PLAGE,memoire,mrg);
-        //return 0;
+        res=execute_cmd_disasm(adresse1,adresse2,deca,CMD_DISASM_OK_PLAGE,memoire,mrg,symtab);
+        return CMD_OK_RETURN_VALUE;
     break;
 
     case CMD_DISASM_OK_DECALAGE : 
         DEBUG_MSG("CMD_DISASM_OK_DECALAGE");
         DEBUG_MSG(" LA PLAGE A AFFICHER %08x + %d ",adresse1,deca);
-        return execute_cmd_disasm(adresse1,adresse2,deca,CMD_DISASM_OK_DECALAGE,memoire,mrg);
+        res=execute_cmd_disasm(adresse1,adresse2,deca,CMD_DISASM_OK_DECALAGE,memoire,mrg,symtab);
+        return CMD_OK_RETURN_VALUE;
         break;
     
-    default : erreur_fonction_disasm(verif);
+    default : erreur_fonction_disasm(verif);return 1;
   }
-
-//return 1;
-return CMD_OK_RETURN_VALUE;}
+}
 
 
 
@@ -205,11 +205,12 @@ void erreur_fonction_disasm(int verification)
  * @param decalage_plage entier permettant de savoir si on a entré 2 adresses ou une adresse et un decalage
  */
 
-int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire,map_reg *  mrg)
+int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire,map_reg *  mrg,stab  symtab)
 { definition dictionnaire;
   char f_name[64] = "dico_definitif.txt";
   dictionnaire = lecture_dictionnaire(f_name);
   uint32_t adr;
+  int p;
   uint32_t adr_2bis;
   union_RIJ union_struct;
   uint32_t target;
@@ -243,6 +244,11 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
   //DEBUG_MSG("WORD : %u ",word);
   int k=0;
   int imm;
+  for(p=0;p<symtab.size;p++)
+  {
+    if(adr == symtab.sym[p].addr._32+START_MEM && symtab.sym[p].type == notype && symtab.sym[p].scnidx == 1 ) {printf("\n %s : \n",symtab.sym[p].name);}
+  }
+  
     while(k<42&&sortie==0)
     {
       if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
