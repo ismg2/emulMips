@@ -5,6 +5,7 @@
 #include "fonction_base.h"
 #include "fonction_token.h"
 #include "fonction_mem.h"
+#include "elf/syms.h"
 
 #define MAX_NOM 64
 

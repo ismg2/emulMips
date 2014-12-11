@@ -29,6 +29,7 @@ int main ( int argc, char *argv[] ) {
     stab sym_tab_libc;
     map_reg * mrg; //MAP DE TOUT LES REGISTRES
     liste  l_BP;
+    int pointeur_passage=0;
 
     l_BP = creer_liste();
 
@@ -67,6 +68,8 @@ int main ( int argc, char *argv[] ) {
 
             int res = execute_cmd(inter,&memoire_virtuelle,&tableau_symboles,mrg,&l_BP,&sym_tab_libc); /* execution de la commande */
 
+            if(inter->mode == INTERACTIF) enregistrer_trace(inter);
+            pointeur_passage++;
             // traitement des erreurs
             switch(res) {
             case CMD_OK_RETURN_VALUE:

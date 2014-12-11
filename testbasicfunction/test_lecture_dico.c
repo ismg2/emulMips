@@ -98,7 +98,7 @@ fclose(fp);
 
 int main() { 
 
-  char fichier_nom[64]="dico_definitif_2.txt";
+  char fichier_nom[64]="dictionnaire.txt";
   printf(" %s \n",fichier_nom);
   lecture_dictionnaire(fichier_nom);
 

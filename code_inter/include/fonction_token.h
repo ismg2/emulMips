@@ -22,11 +22,6 @@ int reg_exist(char * reg1,char ** tab_tout_reg,int * classement);
 void aff(char **m, int b);
 int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * symtab_libc) ;
 int cmd_load(char * file_name,mem * memoire,stab * symtab,stab * symtab_libc);
-
+void enregistrer_trace(interpreteur inter);
 
 #endif
-
-
-
-
-

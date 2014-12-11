@@ -34,7 +34,7 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 			PC=PC_N;
 			modif_reg_num(32,mrg,PC);
 			definition dictionnaire_commande;
-			char f_name[64] = "dico_definitif_2.txt";
+			char f_name[64] = "dictionnaire.txt";
 			DEBUG_MSG("Lecture du dictionnaire c'est parti");
 			dictionnaire_commande = lecture_dictionnaire(f_name);
 			DEBUG_MSG("Lecture du dictionnaire c'est fini");
@@ -65,12 +65,12 @@ int cmd_run(map_reg * mrg,mem memoire,interpreteur inter,liste lpb)
 		PC=adr;
 		modif_reg_num(32,mrg,PC);
 		definition dictionnaire_commande;
-		char f_name[64] = "dico_definitif.txt";
+		char f_name[64] = "dictionnaire.txt";
 		DEBUG_MSG("Lecture du dictionnaire c'est parti");
   		dictionnaire_commande = lecture_dictionnaire(f_name);
   		DEBUG_MSG("Lecture du dictionnaire c'est fini");
 			retour = execute_cmd_run(mrg,memoire,lpb,dictionnaire_commande);
-				if(retour==OK) return OK;
+				if(retour==OK) return 0;
 				else if (retour == DEHORS) return 0;
 				else return erreur_fonction_run(PB);
 	}
@@ -125,11 +125,11 @@ fp2 = stdin;
 interpreteur inter2 = init_inter();
 inter2->mode = INTERACTIF;
 int erreur;
-uint32_t fin_code = memoire->seg->start._32 + memoire->seg->size._32 ;
+uint32_t fin_code = memoire->seg[3].start._32 + memoire->seg[3].size._32 ;
 int BP_search;
 instruction inst;
 int etat;
-int pause=0;
+int pause_step=0;
 uint32_t ra;
 uint32_t PC = renvoi_reg_num(mrg,32);
 uint32_t PC_r;
@@ -149,11 +149,12 @@ while(1)
 				DEBUG_MSG("\nNOT\n");
             	BP_search = rechercheBP(l_BP,PC);
 				if(BP_search == 0) {etat = PAUSE;break;}
+				else if(PC==fin_code) {etat = TERM;}
 				else {etat = RUN;break;}
 
 				case RUN :
 				DEBUG_MSG("\nRUN\n");
-				if(PC==fin_code) etat = TERM;
+				if(PC==fin_code) {etat = TERM;}
 				else
 				{
 					DEBUG_MSG("RUN : On commence :");
@@ -165,11 +166,13 @@ while(1)
 					modif_reg_num(32,mrg,PC);
 					erreur = execut_instruction(mrg,memoire,inst);
 					DEBUG_MSG("EXEXUTION TERMINEE");
-					if(erreur != OK ) etat = EXIT;
-					else if(erreur == PAUSE) etat = PAUSE;
-					else if(pause==1) etat = PAUSE;
-					else if(pause == 2) 
+					if(erreur == 400 ) etat = EXIT;
+					else if(PC==fin_code) {etat = TERM;}
+					else if(erreur == PAUSE) {etat = PAUSE;}
+					else if(pause_step==1) {etat = PAUSE;}
+					else if(pause_step == 2) // On continue a executer tout le sous programme
 					{
+						DEBUG_MSG("Execution de l'ensemble du sous programme");
 						ra = renvoi_reg_num(mrg,31);
 						while(PC != fin_code && PC!=ra && erreur ==0)
 						{
@@ -185,11 +188,12 @@ while(1)
 
 						if(PC == ra) etat = PAUSE;
 
-						else if(PC == fin_code) etat = EXIT;
-
 						else if(erreur == 0) etat=EXIT;
+
+						else etat = NOT;
 					}
-					else etat = NOT;
+
+					else if(erreur == OK) etat = NOT;
 
 				}
 				break;
@@ -198,7 +202,7 @@ while(1)
 				DEBUG_MSG("PAUSE");
 				char * token2 = get_next_token(inter2);
 					if(token2==NULL) break;
-					else if(strcmp(token2,"run")==0) {etat = RUN;pause=0;}
+					else if(strcmp(token2,"run")==0) {etat = RUN;pause_step=0;}
 					else if(PC==fin_code) etat = TERM;
 					else if(strcmp(token2,"exit")==0) etat = EXIT ;
 					else if(strcmp(token2,"step")==0) 
@@ -208,13 +212,13 @@ while(1)
 						if(token3 == NULL)
 						{
 							etat = RUN;
-							if(inst.def->type == 'J') pause = 2;
-							else pause = 1;
+							if(inst.def->type == 'J') pause_step = 2;
+							else pause_step = 1;
 						}
 						else if(strcmp(token3,"into")==0)
 						{
 							etat = RUN;
-							pause = 1;	
+							pause_step = 1;	
 						}
 							/*pause=1;
 							etat = RUN;*/
@@ -343,13 +347,13 @@ int execut_instruction(map_reg * mrg,mem memoire,instruction inst)
 	fonction_MIPS = choix_fonction(inst.def->num_function - 1); // A remplacer
 	retour = (*fonction_MIPS)(mrg,memoire,inst.operande);
 	if(retour == 1) return OK;
-	if(retour == 2) return PAUSE;
-	else return 0;
+	else if(retour == 2) return PAUSE;
+	else return 400;
 
 return OK;}
 
 // Declaration du tableau de pointeur
-int (*listeFonctions[41])(map_reg *,mem,union_RIJ) = {NOP,ADD,ADDU,SUB,AND,OR,XOR,SLT,SLTU,SRL,SRA,SEB,MULT,DIV,JR,MFHI,MFLO,BREAK,SYSCALL,SLL,ADDI,ADDIU,ORI,SLTI,SLTIU,BEQ,ANDI,LW,SW,LB,LBU,SB,BNE,LUI,BGEZ,BGTZ,BLEZ,BLTZ,j,JAL};
+int (*listeFonctions[43])(map_reg *,mem,union_RIJ) = {NOP,ADD,ADDU,SUB,AND,OR,XOR,SLT,SLTU,SRL,SRA,SEB,MULT,DIV,JR,MFHI,MFLO,BREAK,SYSCALL,ADDI,ADDIU,ORI,SLTI,SLTIU,BEQ,ANDI,LW,SW,LB,LBU,SB,BNE,LUI,BGEZ,BGTZ,BLEZ,BLTZ,j,JAL,JALR,SUBU,SLL};
 
 // On entre le numero de l'instruction tiré du desassamblage et on retourne le pointeurs de cette fonctions
 int(* choix_fonction(int a))(map_reg *,mem,union_RIJ)

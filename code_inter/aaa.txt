@@ -1,5 +1,9 @@
 load res/boucle.o
-disasm 0x1000+4
-disasm 0x5000:0x5004
-disasm 0x5000:0x5100
+disasm 0x5000+100
+debug
+load res/relocation.o
+disasm 0x5000+100
+debug
+load res/pile.o
+disasm 0x5000+100
 debug

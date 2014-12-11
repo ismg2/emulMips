@@ -291,7 +291,6 @@ void erreur_cmd_disp(verif)
 //test si la commande d'affichge est correct
 //ressort le tableau des registres affichés
 
-//il manque le cas : disp reg $0:$7 ou $at:$pc
 
 
 
@@ -361,6 +360,7 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg)
     {
         if(strcmp(token,"mem")==0)
         {  
+            if(memoire==NULL) {WARNING_MSG("Pas de programme chargé en memoire"); return 1;}
             verif = test_cmd_dispmem(inter,tab_mem_dem);
             switch(verif)
             {
@@ -468,8 +468,12 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
 
 
     // on fait le ménage avant de commencer
-    del_mem(*memoire);
-    del_stab(*symtab);
+    if(*memoire != NULL )
+    {
+        del_mem(*memoire);
+        del_stab(*symtab);
+    }
+    
 
     *symtab= new_stab(0); // table des symboles
     *symtab_libc= new_stab(0); // table des symboles de la libc
@@ -587,6 +591,15 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
 
 
 
+void enregistrer_trace(interpreteur inter)
+{
+    FILE * f_1;
+    f_1 = fopen("trace.txt","w");
+    if(f_1==NULL) WARNING_MSG("Probleme d'ouverture du fichier de script");
+    // fseek(f_1,0,SEEK_END);
+    fputs(inter->input,f_1);
+    fclose(f_1);
+}
 
 
 

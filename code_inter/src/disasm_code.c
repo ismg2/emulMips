@@ -213,10 +213,12 @@ void erreur_fonction_disasm(int verification)
 
 int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decalage_plage, mem memoire,map_reg *  mrg,stab  symtab)
 { definition dictionnaire;
-  char f_name[64] = "dico_definitif.txt";
+  char f_name[64] = "dictionnaire.txt";
   dictionnaire = lecture_dictionnaire(f_name);
   uint32_t adr;
   int p;
+  int m=0;
+  int non_trouvé=1;
   uint32_t adr_2bis;
   union_RIJ union_struct;
   uint32_t target;
@@ -255,7 +257,7 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
     if(adr == symtab.sym[p].addr._32+START_MEM && symtab.sym[p].type == notype && symtab.sym[p].scnidx == 1 ) {printf("\n %s : \n",symtab.sym[p].name);}
   }
   
-    while(k<42&&sortie==0)
+    while(k<44&&sortie==0)
     {
       if( (word&dictionnaire[k].masque) == dictionnaire[k].signature)
         {
@@ -343,10 +345,17 @@ for(adr = adr1;adr<adr_2bis;adr=adr+4)
               break;
               case 'J' :
               target = union_struct.j.target*4;
-              printf(" 0x%08x \n",target);sortie = 1;
+              //DEBUG_MSG("TARGET : %08x",target);
+              //for(p=0;p<symtab.size;p++)
+              while( m < symtab.size && non_trouvé == 1)
+              {
+                //DEBUG_MSG("symtab.sym[%d].addr._32+START_MEM : %08x ",m,symtab.sym[m].addr._32+START_MEM);
+                if(target == symtab.sym[m].addr._32+START_MEM && symtab.sym[m].type == notype && symtab.sym[m].scnidx == 1 ) {printf("\t %s \n",symtab.sym[m].name);non_trouvé=0;sortie = 1;}
+                else m++;
+              }
               k++;
               break;
-              default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
+              default : WARNING_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
             } 
         //printf("\n");   
             
@@ -400,7 +409,8 @@ union_RIJ return_operande(char type_struct,uint32_t mot)
       case 'J' :
       uni.j.target = (mot & masque_target);
       return uni;
-      default : WARNING_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
+      break;
+      default : ERROR_MSG("FATAL ERROR : STRUCTURE DE LA COMMANDE NON TROUVEE");
     }
 
 
