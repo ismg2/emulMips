@@ -1,0 +1,4 @@
+load res/relocation.o
+disp mem map
+debug
+disasm 0x3000+40

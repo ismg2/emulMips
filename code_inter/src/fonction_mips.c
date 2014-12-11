@@ -623,7 +623,7 @@ int SW(map_reg * mrg,mem memoire,union_RIJ  union_struct)
     uint8_t byte_3 = (rt & byte3) >> 16;
     uint8_t byte_4 = (rt & byte4) >> 24;
     int res;
-    // On ecrit toujours dans l'adresse la plus faible puis on decale Donc il faut ecrire les bit de poid faible d'abord puis les translaté
+    // On ecrit toujours dans l'adresse la plus faible puis on decale Donc il faut ecrire les bit de poid faible d'abord puis les translatés
     if(union_struct.i.rs == 29)
     {
         res = set_byte(memoire,vaddr,byte_1,mrg);
@@ -684,12 +684,19 @@ switch(v0_u)
     modif_reg_num(2,mrg,v0);
     break;
 
-    case 8 : printf("Entrez un chaine de caractère");
-    uint64_t a0 = renvoi_reg_num(mrg,4);
-    uint64_t a1 = renvoi_reg_num(mrg,5);
-    char * adresse = (void *) a0;
+    case 8 : printf(" \n Entrez un chaine de caractère \n");
+    uint32_t a0 = renvoi_reg_num(mrg,4);
+    uint32_t a1 = renvoi_reg_num(mrg,5);
+    char * adresse;
     adresse = calloc(a1,sizeof(*adresse));
+
     scanf("%s",adresse);
+    uint32_t string_ascii = (uint32_t) *adresse;
+    set_word (memoire,a0,string_ascii,mrg);
+    //char * adresse = (void *) a0;
+    //adresse = calloc(a1,sizeof(*adresse));
+    
+    
     break;
 
     case 10 :

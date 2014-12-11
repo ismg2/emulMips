@@ -125,9 +125,10 @@ inter2->mode = INTERACTIF;
 int erreur;
 uint32_t fin_code = memoire->seg->start._32 + memoire->seg->size._32 ;
 int BP_search;
-//	int res;
+instruction inst;
 int etat;
-int pause;
+int pause=0;
+uint32_t ra;
 uint32_t PC = renvoi_reg_num(mrg,32);
 uint32_t PC_r;
 BP_search = rechercheBP(l_BP,PC);
@@ -144,28 +145,16 @@ while(1)
 			{
 				case NOT : 
 				DEBUG_MSG("\nNOT\n");
-				//PC = PC +4;
-            	//PC = renvoi_reg_num(mrg,32);
-            	//modif_reg_num(32,mrg,PC);
             	BP_search = rechercheBP(l_BP,PC);
 				if(BP_search == 0) {etat = PAUSE;break;}
 				else {etat = RUN;break;}
 
-				//}
-				//else 
-				//{
-				//	etat = ERREUR;
-				//	break;
-				//} 
-				//break;
-				
 				case RUN :
 				DEBUG_MSG("\nRUN\n");
 				if(PC==fin_code) etat = TERM;
 				else
 				{
 					DEBUG_MSG("RUN : On commence :");
-					instruction inst;
 					inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande);
 					DEBUG_MSG("DESASSAMBLAGE TERMINEE");
 					PC_r = renvoi_reg_num(mrg,32);
@@ -177,6 +166,27 @@ while(1)
 					if(erreur != OK ) etat = EXIT;
 					else if(erreur == PAUSE) etat = PAUSE;
 					else if(pause==1) etat = PAUSE;
+					else if(pause == 2) 
+					{
+						ra = renvoi_reg_num(mrg,31);
+						while(PC != fin_code && PC!=ra && erreur ==0)
+						{
+							inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande);
+							DEBUG_MSG("DESASSAMBLAGE TERMINEE");
+							PC_r = renvoi_reg_num(mrg,32);
+							if(PC==PC_r) PC = PC + 4;
+							else PC = PC_r;
+							modif_reg_num(32,mrg,PC);
+							erreur = execut_instruction(mrg,memoire,inst);
+							DEBUG_MSG("EXEXUTION TERMINEE");
+						}
+
+						if(PC == ra) etat = PAUSE;
+
+						else if(PC == fin_code) etat = EXIT;
+
+						else if(erreur == 0) etat=EXIT;
+					}
 					else etat = NOT;
 
 				}
@@ -186,10 +196,27 @@ while(1)
 				DEBUG_MSG("PAUSE");
 				char * token2 = get_next_token(inter2);
 					if(token2==NULL) break;
-					else if(strcmp(token2,"run")==0) {etat = RUN;}
+					else if(strcmp(token2,"run")==0) {etat = RUN;pause=0;}
 					else if(PC==fin_code) etat = TERM;
 					else if(strcmp(token2,"exit")==0) etat = EXIT ;
-					else if(strcmp(token2,"step")==0) {etat = RUN;pause = 1;}
+					else if(strcmp(token2,"step")==0) 
+					{
+						char * token3 = get_next_token(inter2);
+						inst = desassamble(mrg,memoire,inter2,PC,dictionnaire_commande);
+						if(token3 == NULL)
+						{
+							etat = RUN;
+							if(inst.def->type == 'J') pause = 2;
+							else pause = 1;
+						}
+						else if(strcmp(token3,"into")==0)
+						{
+							etat = RUN;
+							pause = 1;	
+						}
+							/*pause=1;
+							etat = RUN;*/
+					}
 					else etat = ERREUR;
 				break;
 

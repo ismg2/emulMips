@@ -15,7 +15,7 @@ int taille(char* chaine);
 int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg *  mrg);
 int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_commander,map_reg * mrg);
 void erreur_cmd_disp(int verif);
-int test_cmd_disp_mem(interpreteur inter,char ** adr1,char ** adr2,mem memoires);
+int test_cmd_dispmem(interpreteur inter,char ** tab_mem);
 char** init_tab_registre();
 void execute_disp_reg(interpreteur inter,char ** tab_reg_demm,int verification,map_reg * mrg);
 int reg_exist(char * reg1,char ** tab_tout_reg,int * classement);

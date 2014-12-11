@@ -157,26 +157,66 @@ return tab_compar;
 // ou si on demande d'afficher la map
 
 
-int test_cmd_dispmem(interpreteur inter,char ** adr1,char ** adr2)
+int test_cmd_dispmem(interpreteur inter,char ** tab_mem)
 {
-    *adr1=get_next_token(inter);
+    int sortie=0;
+    int erreur=0;
+    char * adr1=get_next_token(inter);
     char * two_point=get_next_token(inter);
-    *adr2=get_next_token(inter);
+    char * adr2=get_next_token(inter);
+    if (strcmp(adr1,"map")==0) {return CMD_DISP_MEM_MAP_OK;} 
     int deux_point=1;
-    DEBUG_MSG("adresse analysed test_cmd_dispmem function  '%s'   '%s' ",*adr1,*adr2);
+    DEBUG_MSG("adresse analysed test_cmd_dispmem function  '%s' -->  '%s' ",adr1,adr2);
     DEBUG_MSG("LES FAMEUX DEUX POINT '%s' ",two_point);
-    if(two_point!=NULL) {deux_point=cherche_deux_point(two_point);}
+    int i=0;
+    if(two_point!=NULL) 
+        {
+            deux_point=cherche_deux_point(two_point);
+        }
+        else deux_point=1;
+    while(erreur == 0)
+    {
+        if(two_point!=NULL) 
+        {
+            deux_point=cherche_deux_point(two_point);
+        }
+        else deux_point=1;
 
-    if (*adr1==NULL||*adr2==NULL) {return PAS_DADRESSE_ENTREE;}
-        else if (strcmp(*adr1,"map")==0) {return CMD_DISP_MEM_MAP_OK;} 
-
-            else if (is_hexa_v2(*adr1)==0 || is_hexa_v2(*adr2)==0) {return  ADRS_NON_HEXA;}
-            else if (deux_point==1) {return DEUX_POINT_MANQUANT;}
+        if (adr1==NULL||adr2==NULL) 
+        {
+            erreur = 1;
+            sortie = PAS_DADRESSE_ENTREE;
             
-    else {return CMD_DISP_MEM_PLAGE_OK;}
-    
+        }
+        else if (is_hexa_v2(adr1)==0 || is_hexa_v2(adr2)==0) 
+        {
+            erreur = 1;
+            sortie = ADRS_NON_HEXA;
+            
+        }
+        else if (deux_point==1) 
+        {
+            erreur = 1;
+            sortie = DEUX_POINT_MANQUANT;
+            
+        }        
+        else 
+        {
+            tab_mem[i] = strdup(adr1);
+            i++;
+            tab_mem[i] = strdup(adr2);
+            i++;
+            adr1=get_next_token(inter);
+            two_point=get_next_token(inter);
+            adr2=get_next_token(inter);
+            sortie = CMD_DISP_MEM_PLAGE_OK;
+            erreur = 0;
+            if (adr1==NULL) {erreur=1;}
+        }
+    }
 
-    
+   
+return sortie;
 }
 
 //Execute la commande d'affichage d'une plage d'adresse ou de toute la map
@@ -185,7 +225,6 @@ int test_cmd_dispmem(interpreteur inter,char ** adr1,char ** adr2)
 
 void execute_disp_mem(char * adr1,char * adr2,int map,mem memoires,stab symtabs)
 { 
-    DEBUG_MSG("SA RENTRE !!");
     uint32_t pointeur;
     uint32_t adresse1;
     uint32_t adresse2;
@@ -199,7 +238,8 @@ void execute_disp_mem(char * adr1,char * adr2,int map,mem memoires,stab symtabs)
 
             for(pointeur=adresse1;pointeur<adresse2;pointeur++)
             {
-                if(pointeur%4==0) printf("\n 0x%08x : ",pointeur);
+                if(pointeur==adresse1) printf("\n 0x%08x : ",pointeur);
+                if(pointeur%4==0 && pointeur!=adresse1 ) printf("\n 0x%08x : ",pointeur);
                 //DEBUG_MSG("pointeur : 0x%08x",pointeur);
                 affiche_byte(memoires,pointeur);
                 //printf("\n");
@@ -261,41 +301,20 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
    int indicateur;
    int i=0;
    int numero;
-   
-        //INFO_MSG("INPUT test_cmd_dispreg : %s",token);
-        //INFO_MSG("TWO POINTS  : %s",two_point);
-
-
-    if(token==NULL) return NO_VALUE_REG;
+ if(token==NULL) return NO_VALUE_REG;
         
    else if(strcmp(token,"all")==0) return CMD_DISP_REG_ALL_OK;
-/*
-   else if(cherche_deux_point((two_point=get_next_token(inter)))==0)
-   {
-        char * token2=get_next_token(inter);
-            DEBUG_MSG(" REGISTRE entré sont : %s %s",token,token2);
-                
-        if(reg_exist(token,tab_tout_reg)==1 || reg_exist(token2,tab_tout_reg)==1 ) return REG_NON_EXISTANT;
 
-             
-        else {  strcpy(tab_reg_commander[0],token);
-                strcpy(tab_reg_commander[1],token2);
-                return CMD_DISP_REG_PLAGE_OK;
-            }
-   }
-*/              // Nous avons choisi d'afficher un message d'erreur lorsque un des registres entré n'est pas bon !!!
+// Nous avons choisi d'afficher un message d'erreur lorsque un des registres entré n'est pas bon !!!
 
    else if(reg_exist(token,tab_tout_reg,&indicateur)==0)  
-    {   //DEBUG_MSG("TOKEN : '%s' ",token);
-        while(token != NULL) //&& !reg_exist(token,tab_tout_reg))
+    {   
+        while(token != NULL) 
        { 
-            
-            //DEBUG_MSG("TOKEN BOUCLE : %s",token);
             if (reg_exist(token, tab_tout_reg,&indicateur)==0)
             {
                 if ( indicateur >= 35) 
                 {
-                    //DEBUG_MSG("INDICATEUR enclecnhé : convertie mnemo en nombre");
                     char dollar[32] = "$";
                     numero = convert_mnemo_num(mrg,token);
                     DEBUG_MSG("Le registre %s correspond au numero : %d",token,numero);
@@ -314,13 +333,12 @@ int test_cmd_dispreg(interpreteur inter,char ** tab_tout_reg,char ** tab_reg_com
             }
 
             token = get_next_token(inter);
-            //printf("%p\n", &token); // l'adresse du prochain token est NULL, ce n'est pas normal !!!!!
             i++;
         }
         
         return CMD_DISP_REG_OK;
     }   
-    else    return REG_NON_EXISTANT;
+    else    return REG_NON_EXISTANT; 
 
 
 return ERROR;
@@ -336,25 +354,34 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg)
     char * adresse2=NULL;
     char** tab_all_reg=NULL;
     char** tab_reg_dem=NULL;
+    char** tab_mem_dem=NULL;
+    int i=0;
+    tab_mem_dem=init_matrice();
     if((token = get_next_token(inter))!=NULL) 
     {
-            
-        
-        
         if(strcmp(token,"mem")==0)
         {  
-            verif = test_cmd_dispmem(inter,&adresse1,&adresse2);
+            verif = test_cmd_dispmem(inter,tab_mem_dem);
             switch(verif)
             {
                 case CMD_DISP_MEM_PLAGE_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK,memoire,symTAB);
+                        while(strcmp(tab_mem_dem[i],"")!=0)
+                        {
+                            adresse1=strdup(tab_mem_dem[i]);
+                            i++;
+                            adresse2=strdup(tab_mem_dem[i]);
+                            i++;
+                            execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_PLAGE_OK,memoire,symTAB);
+                            return CMD_OK_RETURN_VALUE;    
+                        }
+                        
                     break;
 
                 case CMD_DISP_MEM_MAP_OK :
-                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK,memoire,symTAB);
+                        execute_disp_mem(adresse1,adresse2,CMD_DISP_MEM_MAP_OK,memoire,symTAB);return CMD_OK_RETURN_VALUE;
                     break;
 
-                default : erreur_cmd_disp(verif);
+                default : erreur_cmd_disp(verif); return 1;
                     break;
             }
             
@@ -366,10 +393,10 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg)
                 verif = test_cmd_dispreg(inter,tab_all_reg,tab_reg_dem,mrg);
                 switch(verif)
                 {
-                case CMD_DISP_REG_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_OK,mrg);break;
-                case CMD_DISP_REG_ALL_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_ALL_OK,mrg);break;
+                case CMD_DISP_REG_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_OK,mrg);return CMD_OK_RETURN_VALUE;break;
+                case CMD_DISP_REG_ALL_OK : execute_disp_reg(inter,tab_reg_dem,CMD_DISP_REG_ALL_OK,mrg);return CMD_OK_RETURN_VALUE;break;
                    
-                default : erreur_cmd_disp(verif);break;
+                default : erreur_cmd_disp(verif);return 1;break;
                 }
         }
 
@@ -387,7 +414,7 @@ int cmd_disp(interpreteur inter,mem  memoire,stab  symTAB, map_reg * mrg)
             return 1;
     }
 
-return CMD_OK_RETURN_VALUE;}
+return 200;}
 
 
 
@@ -429,8 +456,8 @@ int cmd_load(char * file_name,mem * memoire,stab * symtab,stab * symtab_libc)
 int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * symtab_libc) 
 {
 
-    char* section_names[NB_SECTIONS]= {TEXT_SECTION_STR,RODATA_SECTION_STR,DATA_SECTION_STR,BSS_SECTION_STR,HEAP_SECTION_STR,LIB_SECTION_STR,STACK_SECTION_STR,VSYSCALL_SECTION_STR};
-    unsigned int segment_permissions[NB_SECTIONS]= {R_X,R__,RW_,RW_,RW_,R__,RW_,R__};
+    char* section_names[NB_SECTIONS]= {TEXT_SECTION_STR,RODATA_SECTION_STR,DATA_SECTION_STR,BSS_SECTION_STR};
+    unsigned int segment_permissions[NB_SECTIONS]= {R_X,R__,RW_,RW_};
     unsigned int nsegments;
     unsigned int nsegments_;
     int i=0,j=0;
@@ -438,6 +465,11 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
     unsigned int endianness;   //little ou big endian
     unsigned int bus_width;    // 32 bits ou 64bits
     unsigned int next_segment_start = START_MEM; // compteur pour designer le début de la prochaine section
+
+
+    // on fait le ménage avant de partir
+    //del_mem(*memoire);
+    //del_stab(*symtab);
 
     *symtab= new_stab(0); // table des symboles
     *symtab_libc= new_stab(0); // table des symboles de la libc
@@ -469,17 +501,21 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
 
     nsegments = get_nsegments(*symtab,section_names,NB_SECTIONS);
     nsegments += get_nsegments(*symtab_libc,section_names,NB_SECTIONS);
-    nsegments_ = get_nsegments(*symtab,section_names,NB_SECTIONS)+4;
-    DEBUG_MSG("NOMBRE DE SEGMENT : %u",nsegments);
+    nsegments = nsegments + 2 ;
+    //DEBUG_MSG("NOMBRE DE SEGMENT : %u",nsegments_);
 
     // allouer la memoire virtuelle
     *memoire=init_mem(nsegments);
+
+    next_segment_start = LIBC_MEM_START;
+    printf("\ndebut : %08x\n",next_segment_start);
+    j=0;
 //-------------------------------------------------------------------------
         // on alloue libc
     for (i=0; i<NB_SECTIONS; i++) {
         if (is_in_symbols(section_names[i],*symtab_libc)) {
             elf_load_section_in_memory(pf_libc,(*memoire), section_names[i],segment_permissions[i],next_segment_start);
-            next_segment_start-= (((*memoire)->seg[j].size._32+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
+            next_segment_start+= (((*memoire)->seg[j].size._32+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
             (*memoire)->seg[j].start._32 = next_segment_start;
 //            print_segment_raw_content(&memoire->seg[j]);
             j++;
@@ -500,52 +536,37 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
         (*memoire)->seg[i].name=strdup(seg_name);
     }
 //----------------------------------------------------------------------------
-    // Ne pas oublier d'allouer les differentes sections
+    // On va chercher les sections du fichier
     int k =j;
     next_segment_start = START_MEM;
     for (i=0; i<NB_SECTIONS; i++) {
         if (is_in_symbols(section_names[i],*symtab)) {
             elf_load_section_in_memory(pf_elf,*memoire, section_names[i],segment_permissions[i],next_segment_start);
             next_segment_start+= (((*memoire)->seg[j].size._32+0x1000)>>12 )<<12; // on arrondit au 1k suppérieur
-         // print_segment_raw_content(&(*memoire)->seg[j]);
+            //print_segment_raw_content(&memory->seg[j]);
             j++;
         }
     }
+
     for (i=k; i<j; i++) {
         reloc_segment(pf_elf, (*memoire)->seg[i], *memoire,endianness,symtab,symtab_libc,pf_libc);
 
     }
     //print_mem(*memoire);
     //stab32_print(*symtab); 
-    //TO DO allouer la pile (et donc modifier le nb de segments)
-    /* alloue le segment [heap] */
-    (*memoire)->seg[j].name          = strdup("[heap]");     
-    (*memoire)->seg[j].size._32      = 0xff7f8000;    // le segment est initialement vide
-    (*memoire)->seg[j].start._32     = (*memoire)->seg[j-1].start._32 + 0x1000;      
-    (*memoire)->seg[j].attr          = SCN_ATTR(1, R__);       
-    (*memoire)->seg[j].content       = calloc((*memoire)->seg[j].size._32, sizeof(char)); 
-
-// alloue le segment [lib] 
-    (*memoire)->seg[j+1].name          = strdup("[lib]");   
-    (*memoire)->seg[j+1].size._32      = (*memoire)->seg[j].start._32;   
-    (*memoire)->seg[j+1].start._32     = 0xff7fd000;     
-    (*memoire)->seg[j+1].attr          = SCN_ATTR(1, R__);       
-    (*memoire)->seg[j+1].content       = calloc((*memoire)->seg[j+1].size._32, sizeof(char));    
-
-// alloue le stack 
-    (*memoire)->seg[j+2].name        = strdup("[stack]");   
-    (*memoire)->seg[j+2].size._32    = 0x800000;    
-    (*memoire)->seg[j+2].start._32   = 0xff7ff000;
-    (*memoire)->seg[j+2].attr        = SCN_ATTR(1, RW_);
-    (*memoire)->seg[j+2].content     = calloc((*memoire)->seg[j+2].size._32, sizeof(char));
-    //print_segment_raw_content(&(*memoire)->seg[j+2]); 
-
-// alloue le segment [vsyscall] 
-    (*memoire)->seg[j+3].name        = strdup("[vsyscall]");
-    (*memoire)->seg[j+3].size._32    = 0xfff;  
-    (*memoire)->seg[j+3].start._32   = 0xfffff000;  
-    (*memoire)->seg[j+3].attr        = SCN_ATTR(1, R_X);
-    (*memoire)->seg[j+3].content     = calloc((*memoire)->seg[j+3].size._32, sizeof(char));
+    // alloue le stack 
+    (*memoire)->seg[j].name        = strdup("[stack]");   
+    (*memoire)->seg[j].size._32    = 0x800000;    
+    (*memoire)->seg[j].start._32   = 0xff7ff000;
+    (*memoire)->seg[j].attr        = SCN_ATTR(1, RW_);
+    (*memoire)->seg[j].content     = calloc((*memoire)->seg[j].size._32, sizeof(char));
+    //print_segment_raw_content(&(*memoire)->seg[k+2]); 
+    
+    (*memoire)->seg[j+1].name        = strdup("[vsyscall]");
+    (*memoire)->seg[j+1].size._32    = 0xfff;  
+    (*memoire)->seg[j+1].start._32   = 0xfffff000;  
+    (*memoire)->seg[j+1].attr        = SCN_ATTR(1, R_X);
+    (*memoire)->seg[j+1].content     = calloc((*memoire)->seg[j+1].size._32, sizeof(char));
 
     //printf("\n------ Fichier ELF \"%s\" : sections lues lors du chargement ------\n", file_name) ;
        
@@ -553,10 +574,10 @@ int execute_fonction_load(char * file_name,mem * memoire, stab * symtab,stab * s
     printf("-----------------------------------------------------------------------------");
 
 
-    // on fait le ménage avant de partir
-    //del_mem(memory);
-    //del_stab(symtab);
+    //stab32_print(*symtab_libc);
+    
     fclose(pf_elf);
+    fclose(pf_libc);
     puts("");
  return CMD_OK_RETURN_VALUE;}
 

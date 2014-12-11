@@ -127,12 +127,19 @@ int test_cmd_disasm(interpreteur inter, uint32_t * adr1, uint32_t * adr2,int * d
 
   char * token=get_next_token(inter);
   if(token==NULL) return PAS_ADRESSE;
+  
   else if(is_hexa_v2(token)==0) return ADRS_NON_HEXA3;
+  
   else {
     sscanf(token,"%x",&temp_adr1);
     *adr1 = temp_adr1;
-    if (*adr1<0x3000) return HORS_ZONE_TEXTE;
+    
+    if (*adr1<START_MEM) *adr1=START_MEM; 
+    
+    else if(*adr1>START_MEM+0x1000) return HORS_ZONE_TEXTE;
+    
     token=get_next_token(inter);
+    
     if (token == NULL) return ERREUR_SYNTAXE;
     else if(strcmp(token,"+")==0)
             {   
@@ -206,6 +213,8 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
   uint32_t adr_2bis;
   union_RIJ union_struct;
   uint32_t target;
+  uint32_t fin_code=memoire->seg[3].start._32+memoire->seg[3].size._32;
+  DEBUG_MSG("fin_code = %08x",fin_code);
 
   switch(decalage_plage)
   {
@@ -216,6 +225,8 @@ int execute_cmd_disasm( uint32_t adr1 , uint32_t adr2 , int decalage, int decala
      adr_2bis = adr1 | (uint32_t) decalage;
     break;
   }
+
+if(adr_2bis>fin_code) adr_2bis=fin_code;
 
 DEBUG_MSG("ADRESSE DE DEBUT DE DESSASAMBLAGE : %08x",adr1);
 DEBUG_MSG("ADRESSE DE FIN DU DESSASAMBLAGE : %08x",adr_2bis);

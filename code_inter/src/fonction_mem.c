@@ -138,7 +138,7 @@ int set_byte (mem virtualm, uint32_t vaddr1,uint8_t byte,map_reg * mrg)
     uint32_t adr_f_stack = 0xfffff000;
     uint32_t size_stack = 0x800000;
     int j;
-    //DEBUG_MSG("NOMBRE DE SEG : %d",nbre_seg);
+    DEBUG_MSG("NOMBRE DE SEG : %d",nbre_seg);
     int i;
     for(i=0; i < nbre_seg; i++) 
     {
